@@ -1,11 +1,14 @@
 package com.yo1000.haystacks.domain.entity
 
+import com.yo1000.haystacks.domain.valueobject.ColumnName
+import com.yo1000.haystacks.domain.valueobject.Comment
+
 /**
  * @author yo1000
  */
 class Column(
-        name: String,
-        comment: String,
+        name: ColumnName,
+        comment: Comment,
         val type: String,
         val nullable: Boolean,
         val defaultValue: String?,
@@ -21,14 +24,14 @@ class Column(
     }
 
     fun indexesPrimary(indices: Collection<Index>): Boolean {
-        return getContainedIn(indices).any { it.category == Index.Category.PRIMARY }
+        return getContainedIn(indices).any { it.type == Index.Type.PRIMARY }
     }
 
     fun indexesUnique(indices: Collection<Index>): Boolean {
-        return getContainedIn(indices).any { it.category == Index.Category.UNIQUE }
+        return getContainedIn(indices).any { it.type == Index.Type.UNIQUE }
     }
 
     fun indexesPerformance(indices: Collection<Index>): Boolean {
-        return getContainedIn(indices).any { it.category == Index.Category.PERFORMANCE }
+        return getContainedIn(indices).any { it.type == Index.Type.PERFORMANCE }
     }
 }

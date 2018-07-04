@@ -1,11 +1,14 @@
 package com.yo1000.haystacks.domain.entity
 
+import com.yo1000.haystacks.domain.valueobject.Comment
+import com.yo1000.haystacks.domain.valueobject.IndexName
+
 /**
  * @author yo1000
  */
 class Index(
-        name: String,
-        comment: String,
+        name: IndexName,
+        comment: Comment,
         val columns: List<Column>,
         val type: Type
 ) : Object(name, comment) {
