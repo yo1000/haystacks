@@ -14,7 +14,8 @@ interface TableRepository {
     fun findTable(name: TableName): Table
     fun findColumns(name: TableName): List<Column>
     fun findIndexes(name: TableName): List<Index>
-    fun findRowSizeMap(name: TableName): Map<TableName, Long>
-    fun findParentRelationCountMap(vararg query: TableName): Map<TableName, Int>
-    fun findChildrenRelationCountMap(vararg query: TableName): Map<TableName, Int>
+    fun findColumnCountMap(): Map<TableName, Int>
+    fun findRowCountMap(): Map<TableName, Long>
+    fun findReferencedCountFromChildrenMap(): Map<TableName, Int>
+    fun findReferencingCountToParentMap(): Map<TableName, Int>
 }
