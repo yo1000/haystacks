@@ -26,12 +26,16 @@ class TableService(
     }
 
     fun getTablesAll(): List<TableOutline> {
+        return findTables()
+    }
+
+    fun findTables(vararg q: String): List<TableOutline> {
         val columnCountMap = tableRepository.findColumnCountMap()
         val rowCountMap = tableRepository.findRowCountMap()
         val childrenCountMap = tableRepository.findReferencedCountFromChildrenMap()
         val parentCountMap = tableRepository.findReferencingCountToParentMap()
 
-        return tableRepository.findNamedness().map {
+        return tableRepository.findNamedness(*q).map {
             TableOutline(
                     namedness = TableNamedness(
                             tablePhysicalName = TablePhysicalName(it.key.physicalName.value),
@@ -43,9 +47,5 @@ class TableService(
                     referencingCountToParent = parentCountMap[it.key.physicalName] ?: 0
             )
         }
-    }
-
-    fun findTables(vararg q: String): List<Table> {
-        TODO("thinking..")
     }
 }
