@@ -21,5 +21,6 @@
 	<modules>
 		<module>haystacks-parent</module>
 		<module>haystacks-core</module>
+		<module>haystacks-assembly-mysql</module>
 	</modules>
 </project>
