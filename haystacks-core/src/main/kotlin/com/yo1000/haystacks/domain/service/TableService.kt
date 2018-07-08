@@ -1,9 +1,10 @@
 package com.yo1000.haystacks.domain.service
 
 import com.yo1000.haystacks.domain.entity.Table
+import com.yo1000.haystacks.domain.entity.TableNamedness
 import com.yo1000.haystacks.domain.entity.TableOutline
 import com.yo1000.haystacks.domain.repository.TableRepository
-import com.yo1000.haystacks.domain.valueobject.TableName
+import com.yo1000.haystacks.domain.valueobject.TablePhysicalName
 import org.springframework.stereotype.Service
 
 /**
@@ -14,8 +15,14 @@ import org.springframework.stereotype.Service
 class TableService(
         private val tableRepository: TableRepository
 ) {
-    fun getTable(name: TableName): Table {
-        TODO("thinking..")
+    fun getTable(name: TablePhysicalName): Table = tableRepository.findTableNamedness(name).let {
+        Table(
+                namedness = it,
+                columns = tableRepository.findColumns(name),
+                indexes = tableRepository.findIndexes(name),
+                rowCount = tableRepository.findRowCountMap()[it.physicalName] ?: 0L,
+                statement = tableRepository.findStatement(name)
+        )
     }
 
     fun getTablesAll(): List<TableOutline> {
@@ -24,14 +31,16 @@ class TableService(
         val childrenCountMap = tableRepository.findReferencedCountFromChildrenMap()
         val parentCountMap = tableRepository.findReferencingCountToParentMap()
 
-        return tableRepository.findTableObjects().map {
+        return tableRepository.findNamedness().map {
             TableOutline(
-                    name = TableName(it.name.value),
-                    comment = it.comment,
-                    columnCount = columnCountMap[it.name] ?: 0,
-                    rowCount = rowCountMap[it.name] ?: 0L,
-                    referencedCountFromChildren = childrenCountMap[it.name] ?: 0,
-                    referencingCountToParent = parentCountMap[it.name] ?: 0
+                    namedness = TableNamedness(
+                            tablePhysicalName = TablePhysicalName(it.key.physicalName.value),
+                            logicalName = it.key.logicalName
+                    ),
+                    columnCount = columnCountMap[it.key.physicalName] ?: 0,
+                    rowCount = rowCountMap[it.key.physicalName] ?: 0L,
+                    referencedCountFromChildren = childrenCountMap[it.key.physicalName] ?: 0,
+                    referencingCountToParent = parentCountMap[it.key.physicalName] ?: 0
             )
         }
     }
