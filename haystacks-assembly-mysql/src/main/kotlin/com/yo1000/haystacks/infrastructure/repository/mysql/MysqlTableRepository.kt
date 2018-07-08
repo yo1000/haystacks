@@ -7,11 +7,13 @@ import com.yo1000.haystacks.domain.entity.TableNamedness
 import com.yo1000.haystacks.domain.repository.TableRepository
 import com.yo1000.haystacks.domain.valueobject.Statement
 import com.yo1000.haystacks.domain.valueobject.TablePhysicalName
+import org.springframework.stereotype.Repository
 
 /**
  *
  * @author yo1000
  */
+@Repository
 class MysqlTableRepository : TableRepository {
     override fun findNamedness(vararg q: String): FoundNamednessMap {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
