@@ -1,24 +1,20 @@
 package com.yo1000.haystacks.domain.entity
 
-import com.yo1000.haystacks.domain.valueobject.ColumnName
-import com.yo1000.haystacks.domain.valueobject.Comment
-
 /**
  * @author yo1000
  */
 class Column(
-        name: ColumnName,
-        comment: Comment,
+        val namedness: ColumnNamedness,
         val type: String,
         val nullable: Boolean,
         val defaultValue: String?,
         val children: List<Relation>,
         val parent: Relation
-) : Object(name, comment) {
+) {
     fun getContainedIn(indices: Collection<Index>): List<Index> {
         return indices.filter {
             it.columns.any {
-                it.name == this.name
+                it.namedness.physicalName == this.namedness.physicalName
             }
         }
     }

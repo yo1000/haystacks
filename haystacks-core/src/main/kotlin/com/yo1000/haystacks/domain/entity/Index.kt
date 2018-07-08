@@ -1,17 +1,13 @@
 package com.yo1000.haystacks.domain.entity
 
-import com.yo1000.haystacks.domain.valueobject.Comment
-import com.yo1000.haystacks.domain.valueobject.IndexName
-
 /**
  * @author yo1000
  */
 class Index(
-        name: IndexName,
-        comment: Comment,
+        val namedness: IndexNamednes,
         val columns: List<Column>,
         val type: Type
-) : Object(name, comment) {
+) {
     enum class Type(val order: Int) {
         NONE(0),
         PRIMARY(10),
