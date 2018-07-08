@@ -1,16 +1,16 @@
 package com.yo1000.haystacks.domain.entity
 
+import com.yo1000.haystacks.domain.valueobject.ColumnPhysicalName
 import com.yo1000.haystacks.domain.valueobject.LogicalName
-import com.yo1000.haystacks.domain.valueobject.TablePhysicalName
 
 /**
  *
  * @author yo1000
  */
-class TableNamedness(
-        tablePhysicalName: TablePhysicalName,
+class ColumnNames(
+        physicalName: ColumnPhysicalName,
         logicalName: LogicalName
-) : Namedness(
-        tablePhysicalName,
+) : Names(
+        physicalName,
         logicalName
 )

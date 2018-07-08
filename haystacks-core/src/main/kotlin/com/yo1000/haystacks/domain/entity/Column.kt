@@ -4,7 +4,7 @@ package com.yo1000.haystacks.domain.entity
  * @author yo1000
  */
 class Column(
-        val namedness: ColumnNamedness,
+        val names: ColumnNames,
         val type: String,
         val nullable: Boolean,
         val defaultValue: String?,
@@ -14,7 +14,7 @@ class Column(
     fun getContainedIn(indices: Collection<Index>): List<Index> {
         return indices.filter {
             it.columns.any {
-                it.namedness.physicalName == this.namedness.physicalName
+                it.names.physicalName == this.names.physicalName
             }
         }
     }

@@ -1,16 +1,16 @@
 package com.yo1000.haystacks.domain.entity
 
-import com.yo1000.haystacks.domain.valueobject.IndexPhysicalName
 import com.yo1000.haystacks.domain.valueobject.LogicalName
+import com.yo1000.haystacks.domain.valueobject.TablePhysicalName
 
 /**
  *
  * @author yo1000
  */
-class IndexNamednes(
-        indexPhysicalName: IndexPhysicalName,
+class TableNames(
+        physicalName: TablePhysicalName,
         logicalName: LogicalName
-) : Namedness(
-        indexPhysicalName,
+) : Names(
+        physicalName,
         logicalName
 )

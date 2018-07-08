@@ -8,7 +8,7 @@ import com.yo1000.haystacks.domain.valueobject.PhysicalName
  *
  * @author yo1000
  */
-open class Namedness(
+open class Names(
         val physicalName: PhysicalName,
         val logicalName: LogicalName
 )

@@ -4,7 +4,7 @@ package com.yo1000.haystacks.domain.entity
  * @author yo1000
  */
 class Index(
-        val namedness: IndexNamednes,
+        val names: IndexNames,
         val columns: List<Column>,
         val type: Type
 ) {
