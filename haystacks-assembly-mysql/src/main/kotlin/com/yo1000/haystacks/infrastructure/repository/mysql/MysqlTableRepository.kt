@@ -50,7 +50,7 @@ class MysqlTableRepository(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun findRowCountMap(): Map<TablePhysicalName, Long>  = jdbcTemplate.query("""
+    override fun findRowCountMap(): Map<TablePhysicalName, Long> = jdbcTemplate.query("""
         SELECT
             tbl.table_name    AS `name`,
             tbl.table_rows    AS `rowSize`
@@ -66,12 +66,53 @@ class MysqlTableRepository(
         TablePhysicalName(resultSet.getString("name")) to resultSet.getLong("rowSize")
     }.toMap()
 
-    override fun findReferencedCountFromChildrenMap(): Map<TablePhysicalName, Int> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun findReferencedCountFromChildrenMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
+        SELECT
+            table_name AS "table",
+            sum(count) AS "references"
+        FROM
+            (
+                SELECT
+                    referenced_table_name AS table_name,
+                    count(column_name)    AS count
+                FROM
+                    information_schema.key_column_usage
+                WHERE
+                    table_schema = :schemaName
+                    AND
+                    referenced_table_name IS NOT NULL
+                GROUP BY
+                    referenced_table_name, table_name
+            ) child_col
+        GROUP BY
+            table_name
+        """.trimIndent(), mapOf(
+            "schemaName" to dataSourceProperties.name
+    )) { resultSet, _ ->
+        TablePhysicalName(resultSet.getString("table")) to resultSet.getInt("references")
+    }.toMap()
 
-    override fun findReferencingCountToParentMap(): Map<TablePhysicalName, Int> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
+    override fun findReferencingCountToParentMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
+        SELECT
+            table_name     AS "table",
+            sum(col_count) AS "references"
+        FROM
+            (
+                SELECT
+                    table_name,
+                    count(referenced_column_name) AS col_count
+                FROM
+                    information_schema.key_column_usage
+                WHERE
+                    table_schema = :schemaName
+                GROUP BY
+                    table_name, referenced_table_name
+            ) parent_col
+        GROUP BY
+            table_name
+        """.trimIndent(), mapOf(
+            "schemaName" to dataSourceProperties.name
+    )) { resultSet, _ ->
+        TablePhysicalName(resultSet.getString("table")) to resultSet.getInt("references")
+    }.toMap()
 }
