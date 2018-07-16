@@ -17,7 +17,9 @@
 	</parent>
 
 	<properties>
+		<maven.spring.profile/>
 		<mysql.version>8.0.11</mysql.version>
+		<wix-embedded-mysql.version>2.2.9</wix-embedded-mysql.version>
 	</properties>
 
 	<dependencies>
@@ -67,6 +69,12 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${mysql.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.wix</groupId>
+			<artifactId>wix-embedded-mysql</artifactId>
+			<version>${wix-embedded-mysql.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -77,13 +85,38 @@
 
 	<profiles>
 		<profile>
-			<id>develop</id>
+			<id>demo</id>
+			<properties>
+				<maven.spring.profile>demo</maven.spring.profile>
+			</properties>
 			<dependencies>
 				<dependency>
-					<groupId>org.flywaydb</groupId>
-					<artifactId>flyway-core</artifactId>
+					<groupId>com.wix</groupId>
+					<artifactId>wix-embedded-mysql</artifactId>
+					<version>${wix-embedded-mysql.version}</version>
 				</dependency>
 			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>add-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>src/demo</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 

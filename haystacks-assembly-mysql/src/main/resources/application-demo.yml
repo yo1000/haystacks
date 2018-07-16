@@ -1,9 +1,7 @@
 spring:
-  profiles:
-    active: @maven.spring.profile@
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo
+    url: jdbc:mysql://localhost:3306/demo?useSSL=true
     name: demo
     username: sa
     password:
