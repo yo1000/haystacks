@@ -72,7 +72,7 @@ class EmbeddedMysqlInitializer(
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Pictures';
             """.trimIndent()
         )
-        var dml = listOf("""
+        val dml = listOf("""
             INSERT INTO `countries` VALUES ('1000', 'France');
             """.trimIndent(), """
             INSERT INTO `artists` VALUES ('2000', 'Claude Monet', '1000');
