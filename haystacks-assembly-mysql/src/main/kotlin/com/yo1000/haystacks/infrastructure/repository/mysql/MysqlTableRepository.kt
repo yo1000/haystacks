@@ -46,9 +46,26 @@ class MysqlTableRepository(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun findColumnCountMap(): Map<TablePhysicalName, Int> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun findColumnCountMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
+        SELECT
+            tbl.table_name              AS "table",
+            count(col.column_name) AS "references"
+        FROM
+            information_schema.tables tbl
+        INNER JOIN
+            information_schema.columns col
+                ON  tbl.table_schema  = col.table_schema
+                AND tbl.table_name    = col.table_name
+        WHERE
+            tbl.table_schema  = :schemaName
+        AND tbl.table_type    = 'BASE TABLE'
+        GROUP BY
+            tbl.table_name
+        """.trimIndent(), mapOf(
+            "schemaName" to dataSourceProperties.name
+    )) { resultSet, _ ->
+        TablePhysicalName(resultSet.getString("table")) to resultSet.getInt("references")
+    }.toMap()
 
     override fun findRowCountMap(): Map<TablePhysicalName, Long> = jdbcTemplate.query("""
         SELECT
