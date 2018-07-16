@@ -37,60 +37,58 @@ class EmbeddedMysqlInitializer(
 ) {
     @PostConstruct
     fun setup() {
-        val statement = dataSource.connection.createStatement()
-        val ddl = listOf("""
-            CREATE TABLE `countries` (
-                `id`    varchar(4)  NOT NULL    COMMENT 'ID',
-                `name`  varchar(40) NOT NULL    COMMENT 'Country name',
-                PRIMARY KEY(`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Artists';
-            """.trimIndent(), """
-            CREATE TABLE `artists` (
-                `id`            varchar(4)  NOT NULL    COMMENT 'ID',
-                `name`          varchar(40) NOT NULL    COMMENT 'Artist name',
-                `country_id`    varchar(4)  NOT NULL    COMMENT 'Country ID',
-                PRIMARY KEY(`id`),
-                CONSTRAINT `fk_artists_country_id`  FOREIGN KEY (`country_id`)  REFERENCES `countries`  (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Artists';
-            """.trimIndent(), """
-            CREATE TABLE `mediums` (
-              `id`          varchar(4)  NOT NULL    COMMENT 'ID',
-              `description` varchar(80) NOT NULL    COMMENT 'Description',
-              PRIMARY KEY(`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Mediums';
-            """.trimIndent(), """
-            CREATE TABLE `pictures` (
-              `id`          varchar(4)  NOT NULL    COMMENT 'ID',
-              `title`       varchar(80) NOT NULL    COMMENT 'Title',
-              `country_id`  varchar(4)  NOT NULL    COMMENT 'Country ID',
-              `artist_id`   varchar(4)  NOT NULL    COMMENT 'Artist ID',
-              `medium_id`   varchar(4)  NOT NULL    COMMENT 'Medium ID',
-              PRIMARY KEY(`id`),
-              CONSTRAINT `fk_pictures_country_id`   FOREIGN KEY (`country_id`)  REFERENCES `countries`  (`id`),
-              CONSTRAINT `fk_pictures_artist_id`    FOREIGN KEY (`artist_id`)   REFERENCES `artists`    (`id`),
-              CONSTRAINT `fk_pictures_medium_id`    FOREIGN KEY (`medium_id`)   REFERENCES `mediums`    (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Pictures';
-            """.trimIndent()
-        )
-        val dml = listOf("""
-            INSERT INTO `countries` VALUES ('1000', 'France');
-            """.trimIndent(), """
-            INSERT INTO `artists` VALUES ('2000', 'Claude Monet', '1000');
-            """.trimIndent(), """
-            INSERT INTO `artists` VALUES ('2001', 'Gustave Caillebotte', '1000');
-            """.trimIndent(), """
-            INSERT INTO `mediums` VALUES ('3000', 'Oil on canvas');
-            """.trimIndent(), """
-            INSERT INTO `pictures` VALUES ('4000', 'Haystacks', '1000', '2000', '3000');
-            """.trimIndent(), """
-            INSERT INTO `pictures` VALUES ('4001', 'Water Lilies', '1000', '2000', '3000');
-            """.trimIndent()
-        )
+        dataSource.connection.createStatement().use {
+            listOf("""
+                CREATE TABLE `countries` (
+                    `id`    varchar(4)  NOT NULL    COMMENT 'ID',
+                    `name`  varchar(40) NOT NULL    COMMENT 'Country name',
+                    PRIMARY KEY(`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Artists';
+                """.trimIndent(), """
+                CREATE TABLE `artists` (
+                    `id`            varchar(4)  NOT NULL    COMMENT 'ID',
+                    `name`          varchar(40) NOT NULL    COMMENT 'Artist name',
+                    `country_id`    varchar(4)  NOT NULL    COMMENT 'Country ID',
+                    PRIMARY KEY(`id`),
+                    CONSTRAINT `fk_artists_country_id`  FOREIGN KEY (`country_id`)  REFERENCES `countries`  (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Artists';
+                """.trimIndent(), """
+                CREATE TABLE `mediums` (
+                  `id`          varchar(4)  NOT NULL    COMMENT 'ID',
+                  `description` varchar(80) NOT NULL    COMMENT 'Description',
+                  PRIMARY KEY(`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Mediums';
+                """.trimIndent(), """
+                CREATE TABLE `pictures` (
+                  `id`          varchar(4)  NOT NULL    COMMENT 'ID',
+                  `title`       varchar(80) NOT NULL    COMMENT 'Title',
+                  `country_id`  varchar(4)  NOT NULL    COMMENT 'Country ID',
+                  `artist_id`   varchar(4)  NOT NULL    COMMENT 'Artist ID',
+                  `medium_id`   varchar(4)  NOT NULL    COMMENT 'Medium ID',
+                  PRIMARY KEY(`id`),
+                  CONSTRAINT `fk_pictures_country_id`   FOREIGN KEY (`country_id`)  REFERENCES `countries`  (`id`),
+                  CONSTRAINT `fk_pictures_artist_id`    FOREIGN KEY (`artist_id`)   REFERENCES `artists`    (`id`),
+                  CONSTRAINT `fk_pictures_medium_id`    FOREIGN KEY (`medium_id`)   REFERENCES `mediums`    (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Pictures';
+                """.trimIndent()
+            ).forEach(it::addBatch)
+            it.executeBatch()
 
-        ddl.forEach(statement::addBatch)
-        statement.executeBatch()
-
-        dml.forEach(statement::addBatch)
-        statement.executeBatch()
+            listOf("""
+                INSERT INTO `countries` VALUES ('1000', 'France');
+                """.trimIndent(), """
+                INSERT INTO `artists` VALUES ('2000', 'Claude Monet', '1000');
+                """.trimIndent(), """
+                INSERT INTO `artists` VALUES ('2001', 'Gustave Caillebotte', '1000');
+                """.trimIndent(), """
+                INSERT INTO `mediums` VALUES ('3000', 'Oil on canvas');
+                """.trimIndent(), """
+                INSERT INTO `pictures` VALUES ('4000', 'Haystacks', '1000', '2000', '3000');
+                """.trimIndent(), """
+                INSERT INTO `pictures` VALUES ('4001', 'Water Lilies', '1000', '2000', '3000');
+                """.trimIndent()
+            ).forEach(it::addBatch)
+            it.executeBatch()
+        }
     }
 }
