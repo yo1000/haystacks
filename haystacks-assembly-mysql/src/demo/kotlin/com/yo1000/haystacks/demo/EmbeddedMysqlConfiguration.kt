@@ -38,20 +38,28 @@ class EmbeddedMysqlInitializer(
     @PostConstruct
     fun setup() {
         val statement = dataSource.connection.createStatement()
-        statement.addBatch("""
+        val sql = listOf("""
             CREATE TABLE `authors` (
-              `id`      varchar(4)  NOT NULL COMMENT 'ID',
-              `name`    varchar(40) NOT NULL COMMENT 'Author name',
-              PRIMARY KEY(`id`)
+                `id`    varchar(4)  NOT NULL    COMMENT 'ID',
+                `name`  varchar(40) NOT NULL    COMMENT 'Author name',
+                PRIMARY KEY(`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Authors';
-        """.trimIndent())
-        statement.addBatch("""
+            """.trimIndent(), """
             INSERT INTO authors VALUES ('1000', 'ISHIKAWA Takuboku');
-        """.trimIndent())
-        statement.addBatch("""
+            """.trimIndent(), """
             INSERT INTO authors VALUES ('1001', 'DAZAI Osamu');
-        """.trimIndent())
+            """.trimIndent(), """
+            CREATE TABLE `books` (
+              `id`          varchar(4)  NOT NULL    COMMENT 'ID',
+              `title`       varchar(80) NOT NULL    COMMENT 'Title',
+              `author_id`   varchar(4)  NOT NULL    COMMENT 'Author ID',
+              PRIMARY KEY(`id`),
+              CONSTRAINT `fk_books_author_id`   FOREIGN KEY (`author_id`) REFERENCES `authors` (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Books';
+            """.trimIndent()
+        )
 
+        sql.forEach(statement::addBatch)
         statement.executeBatch()
     }
 }
