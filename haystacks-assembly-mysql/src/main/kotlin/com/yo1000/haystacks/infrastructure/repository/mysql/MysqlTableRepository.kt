@@ -117,7 +117,7 @@ class MysqlTableRepository(
             AND tbl.table_type = 'BASE TABLE'
             ORDER BY
                 col.ordinal_position
-            """, mapOf(
+            """.trimIndent(), mapOf(
                 "schemaName" to dataSourceProperties.name,
                 "tableName" to name.value
         )) { resultSet, _ ->
