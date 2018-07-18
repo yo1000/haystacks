@@ -7,9 +7,9 @@ class Column(
         val names: ColumnNames,
         val type: String,
         val nullable: Boolean,
-        val defaultValue: String?,
+        val default: String?,
         val children: List<Relation>,
-        val parent: Relation
+        val parent: Relation?
 ) {
     fun getContainedIn(indices: Collection<Index>): List<Index> {
         return indices.filter {
