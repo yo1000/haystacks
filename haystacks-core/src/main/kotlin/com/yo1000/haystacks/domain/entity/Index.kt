@@ -5,7 +5,7 @@ package com.yo1000.haystacks.domain.entity
  */
 class Index(
         val names: IndexNames,
-        val columns: List<Column>,
+        val columns: List<ColumnNames>,
         val type: Type
 ) {
     enum class Type(val order: Int) {
