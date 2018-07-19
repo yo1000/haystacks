@@ -19,20 +19,22 @@ class MysqlTableRepository(
         private val jdbcTemplate: NamedParameterJdbcTemplate
 ) : TableRepository {
     companion object {
-        const val TABLE_NAME = "table_name"
-        const val TABLE_COMMENT = "table_comment"
-        const val TABLE_ROWS = "table_rows"
-        const val COLUMN_NAME = "column_name"
-        const val COLUMN_COMMENT = "column_comment"
-        const val COLUMN_TYPE = "column_type"
-        const val COLUMN_DEFAULT = "column_default"
-        const val COLUMN_NULLABLE = "column_nullable"
-        const val PARENT_TABLE_NAME = "parent_table_name"
-        const val PARENT_COLUMN_NAME = "parent_column_name"
-        const val CHILD_TABLE_NAME = "child_table_name"
-        const val CHILD_COLUMN_NAME = "child_column_name"
-        const val REFERENCE_COUNT = "reference_count"
+        const val OUTPUT_TABLE_NAME = "table_name"
+        const val OUTPUT_TABLE_COMMENT = "table_comment"
+        const val OUTPUT_TABLE_ROWS = "table_rows"
+        const val OUTPUT_COLUMN_NAME = "column_name"
+        const val OUTPUT_COLUMN_COMMENT = "column_comment"
+        const val OUTPUT_COLUMN_TYPE = "column_type"
+        const val OUTPUT_COLUMN_DEFAULT = "column_default"
+        const val OUTPUT_COLUMN_NULLABLE = "column_nullable"
+        const val OUTPUT_PARENT_TABLE_NAME = "parent_table_name"
+        const val OUTPUT_PARENT_COLUMN_NAME = "parent_column_name"
+        const val OUTPUT_CHILD_TABLE_NAME = "child_table_name"
+        const val OUTPUT_CHILD_COLUMN_NAME = "child_column_name"
+        const val OUTPUT_REFERENCE_COUNT = "reference_count"
 
+        const val INPUT_SCHEMA_NAME = "schemaName"
+        const val INPUT_TABLE_NAME = "tableName"
     }
 
     override fun findNames(vararg q: String): FoundNamesMap {
@@ -41,20 +43,20 @@ class MysqlTableRepository(
 
     override fun findTableNamesAll(): List<TableNames> = jdbcTemplate.query("""
         SELECT
-            tbl.table_name    AS $TABLE_NAME,
-            tbl.table_comment AS $TABLE_COMMENT
+            tbl.table_name    AS $OUTPUT_TABLE_NAME,
+            tbl.table_comment AS $OUTPUT_TABLE_COMMENT
         FROM
             information_schema.tables tbl
         WHERE
-            tbl.table_schema = :schemaName
+            tbl.table_schema = :$INPUT_SCHEMA_NAME
         AND
             tbl.table_type = 'BASE TABLE'
         """.trimIndent(), mapOf(
-            "schemaName" to dataSourceProperties.name
+            INPUT_SCHEMA_NAME to dataSourceProperties.name
     )) { resultSet, _ ->
         TableNames(
-                physicalName = TablePhysicalName(resultSet.getString(TABLE_NAME)),
-                logicalName = LogicalName(resultSet.getString(TABLE_COMMENT))
+                physicalName = TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)),
+                logicalName = LogicalName(resultSet.getString(OUTPUT_TABLE_COMMENT))
         )
     }
 
@@ -84,18 +86,18 @@ class MysqlTableRepository(
 
         return jdbcTemplate.query("""
             SELECT
-                tbl.table_name                AS $TABLE_NAME,
-                tbl.table_comment             AS $TABLE_COMMENT,
-                tbl.table_rows                AS $TABLE_ROWS,
-                col.column_name               AS $COLUMN_NAME,
-                col.column_comment            AS $COLUMN_COMMENT,
-                col.column_type               AS $COLUMN_TYPE,
-                col.is_nullable               AS $COLUMN_NULLABLE,
-                col.column_default            AS $COLUMN_DEFAULT,
-                parent.referenced_table_name  AS $PARENT_TABLE_NAME,
-                parent.referenced_column_name AS $PARENT_COLUMN_NAME,
-                child.table_name              AS $CHILD_TABLE_NAME,
-                child.column_name             AS $CHILD_COLUMN_NAME
+                tbl.table_name                AS $OUTPUT_TABLE_NAME,
+                tbl.table_comment             AS $OUTPUT_TABLE_COMMENT,
+                tbl.table_rows                AS $OUTPUT_TABLE_ROWS,
+                col.column_name               AS $OUTPUT_COLUMN_NAME,
+                col.column_comment            AS $OUTPUT_COLUMN_COMMENT,
+                col.column_type               AS $OUTPUT_COLUMN_TYPE,
+                col.is_nullable               AS $OUTPUT_COLUMN_NULLABLE,
+                col.column_default            AS $OUTPUT_COLUMN_DEFAULT,
+                parent.referenced_table_name  AS $OUTPUT_PARENT_TABLE_NAME,
+                parent.referenced_column_name AS $OUTPUT_PARENT_COLUMN_NAME,
+                child.table_name              AS $OUTPUT_CHILD_TABLE_NAME,
+                child.column_name             AS $OUTPUT_CHILD_COLUMN_NAME
             FROM
                 information_schema.tables tbl
             INNER JOIN
@@ -113,29 +115,29 @@ class MysqlTableRepository(
                 AND col.table_name = child.referenced_table_name
                 AND col.column_name = child.referenced_column_name
             WHERE
-                tbl.table_schema = :schemaName
-            AND tbl.table_name = :tableName
+                tbl.table_schema = :$INPUT_SCHEMA_NAME
+            AND tbl.table_name = :$INPUT_TABLE_NAME
             AND tbl.table_type = 'BASE TABLE'
             ORDER BY
                 col.ordinal_position
             """.trimIndent(), mapOf(
-                "schemaName" to dataSourceProperties.name,
-                "tableName" to name.value
+                INPUT_SCHEMA_NAME to dataSourceProperties.name,
+                INPUT_TABLE_NAME to name.value
         )) { resultSet, _ ->
-            val tableName = resultSet.getString(TABLE_NAME)
-            val tableComment = resultSet.getString(TABLE_COMMENT)
-            val tableRows = resultSet.getLong(TABLE_ROWS)
+            val tableName = resultSet.getString(OUTPUT_TABLE_NAME)
+            val tableComment = resultSet.getString(OUTPUT_TABLE_COMMENT)
+            val tableRows = resultSet.getLong(OUTPUT_TABLE_ROWS)
 
-            val columnName = resultSet.getString(COLUMN_NAME)
-            val columnComment = resultSet.getString(COLUMN_COMMENT)
-            val columnType = resultSet.getString(COLUMN_TYPE)
-            val columnNullable = resultSet.getString(COLUMN_NULLABLE)
-            val columnDefault = resultSet.getString(COLUMN_DEFAULT)
+            val columnName = resultSet.getString(OUTPUT_COLUMN_NAME)
+            val columnComment = resultSet.getString(OUTPUT_COLUMN_COMMENT)
+            val columnType = resultSet.getString(OUTPUT_COLUMN_TYPE)
+            val columnNullable = resultSet.getString(OUTPUT_COLUMN_NULLABLE)
+            val columnDefault = resultSet.getString(OUTPUT_COLUMN_DEFAULT)
 
-            val parentTableName = resultSet.getString(PARENT_TABLE_NAME)
-            val parentColumnName = resultSet.getString(PARENT_COLUMN_NAME)
-            val childTableName = resultSet.getString(CHILD_TABLE_NAME)
-            val childColumnName = resultSet.getString(CHILD_COLUMN_NAME)
+            val parentTableName = resultSet.getString(OUTPUT_PARENT_TABLE_NAME)
+            val parentColumnName = resultSet.getString(OUTPUT_PARENT_COLUMN_NAME)
+            val childTableName = resultSet.getString(OUTPUT_CHILD_TABLE_NAME)
+            val childColumnName = resultSet.getString(OUTPUT_CHILD_COLUMN_NAME)
 
             ResultItem(
                     tableItem = TableItem(
@@ -207,8 +209,8 @@ class MysqlTableRepository(
 
     override fun findColumnCountMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
         SELECT
-            tbl.table_name          AS $TABLE_NAME,
-            count(col.column_name)  AS $REFERENCE_COUNT
+            tbl.table_name          AS $OUTPUT_TABLE_NAME,
+            count(col.column_name)  AS $OUTPUT_REFERENCE_COUNT
         FROM
             information_schema.tables tbl
         INNER JOIN
@@ -216,36 +218,36 @@ class MysqlTableRepository(
                 ON  tbl.table_schema  = col.table_schema
                 AND tbl.table_name    = col.table_name
         WHERE
-            tbl.table_schema  = :schemaName
+            tbl.table_schema  = :$INPUT_SCHEMA_NAME
         AND tbl.table_type    = 'BASE TABLE'
         GROUP BY
             tbl.table_name
         """.trimIndent(), mapOf(
-            "schemaName" to dataSourceProperties.name
+            INPUT_SCHEMA_NAME to dataSourceProperties.name
     )) { resultSet, _ ->
-        TablePhysicalName(resultSet.getString(TABLE_NAME)) to resultSet.getInt(REFERENCE_COUNT)
+        TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
     }.toMap()
 
     override fun findRowCountMap(): Map<TablePhysicalName, Long> = jdbcTemplate.query("""
         SELECT
-            tbl.table_name  AS $TABLE_NAME,
-            tbl.table_rows  AS $TABLE_ROWS
+            tbl.table_name  AS $OUTPUT_TABLE_NAME,
+            tbl.table_rows  AS $OUTPUT_TABLE_ROWS
         FROM
             information_schema.tables tbl
         WHERE
-            tbl.table_schema = :schemaName
+            tbl.table_schema = :$INPUT_SCHEMA_NAME
         AND
             tbl.table_type = 'BASE TABLE'
         """.trimIndent(), mapOf(
-            "schemaName" to dataSourceProperties.name
+            INPUT_SCHEMA_NAME to dataSourceProperties.name
     )) { resultSet, _ ->
-        TablePhysicalName(resultSet.getString(TABLE_NAME)) to resultSet.getLong(TABLE_ROWS)
+        TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getLong(OUTPUT_TABLE_ROWS)
     }.toMap()
 
     override fun findReferencedCountFromChildrenMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
         SELECT
-            table_name AS $TABLE_NAME,
-            sum(count) AS $REFERENCE_COUNT
+            table_name AS $OUTPUT_TABLE_NAME,
+            sum(count) AS $OUTPUT_REFERENCE_COUNT
         FROM
             (
                 SELECT
@@ -254,7 +256,7 @@ class MysqlTableRepository(
                 FROM
                     information_schema.key_column_usage
                 WHERE
-                    table_schema = :schemaName
+                    table_schema = :$INPUT_SCHEMA_NAME
                     AND
                     referenced_table_name IS NOT NULL
                 GROUP BY
@@ -263,15 +265,15 @@ class MysqlTableRepository(
         GROUP BY
             table_name
         """.trimIndent(), mapOf(
-            "schemaName" to dataSourceProperties.name
+            INPUT_SCHEMA_NAME to dataSourceProperties.name
     )) { resultSet, _ ->
-        TablePhysicalName(resultSet.getString(TABLE_NAME)) to resultSet.getInt(REFERENCE_COUNT)
+        TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
     }.toMap()
 
     override fun findReferencingCountToParentMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
         SELECT
-            table_name      AS $TABLE_NAME,
-            sum(col_count)  AS $REFERENCE_COUNT
+            table_name      AS $OUTPUT_TABLE_NAME,
+            sum(col_count)  AS $OUTPUT_REFERENCE_COUNT
         FROM
             (
                 SELECT
@@ -280,15 +282,15 @@ class MysqlTableRepository(
                 FROM
                     information_schema.key_column_usage
                 WHERE
-                    table_schema = :schemaName
+                    table_schema = :$INPUT_SCHEMA_NAME
                 GROUP BY
                     table_name, referenced_table_name
             ) parent_col
         GROUP BY
             table_name
         """.trimIndent(), mapOf(
-            "schemaName" to dataSourceProperties.name
+            INPUT_SCHEMA_NAME to dataSourceProperties.name
     )) { resultSet, _ ->
-        TablePhysicalName(resultSet.getString(TABLE_NAME)) to resultSet.getInt(REFERENCE_COUNT)
+        TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
     }.toMap()
 }
