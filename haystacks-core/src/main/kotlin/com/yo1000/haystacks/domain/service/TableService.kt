@@ -1,9 +1,12 @@
 package com.yo1000.haystacks.domain.service
 
 import com.yo1000.haystacks.domain.entity.FoundNamesMap
+import com.yo1000.haystacks.domain.entity.Index
 import com.yo1000.haystacks.domain.entity.Table
 import com.yo1000.haystacks.domain.entity.TableOutline
+import com.yo1000.haystacks.domain.repository.IndexRepository
 import com.yo1000.haystacks.domain.repository.TableRepository
+import com.yo1000.haystacks.domain.valueobject.Statement
 import com.yo1000.haystacks.domain.valueobject.TablePhysicalName
 import org.springframework.stereotype.Service
 
@@ -13,10 +16,9 @@ import org.springframework.stereotype.Service
  */
 @Service
 class TableService(
-        private val tableRepository: TableRepository
+        private val tableRepository: TableRepository,
+        private val indexRepository: IndexRepository
 ) {
-    fun getTable(name: TablePhysicalName): Table = tableRepository.findTable(name)
-
     fun getTableOutlines(): List<TableOutline> {
         val columnCountMap = tableRepository.findColumnCountMap()
         val rowCountMap = tableRepository.findRowCountMap()
@@ -33,6 +35,10 @@ class TableService(
             )
         }
     }
+
+    fun getTable(name: TablePhysicalName): Table = tableRepository.findTable(name)
+    fun getIndexes(name: TablePhysicalName): List<Index> = indexRepository.findByTableName(name)
+    fun getStatement(name: TablePhysicalName): Statement = tableRepository.findStatementByName(name)
 
     fun find(vararg q: String): FoundNamesMap = tableRepository.findNames(*q)
 }
