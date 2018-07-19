@@ -14,7 +14,7 @@ class Column(
     fun getContainedIn(indices: Collection<Index>): List<Index> {
         return indices.filter {
             it.columns.any {
-                it.names.physicalName == this.names.physicalName
+                it.physicalName == this.names.physicalName
             }
         }
     }

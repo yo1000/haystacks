@@ -4,6 +4,7 @@ import com.yo1000.haystacks.domain.entity.*
 import com.yo1000.haystacks.domain.repository.TableRepository
 import com.yo1000.haystacks.domain.valueobject.ColumnPhysicalName
 import com.yo1000.haystacks.domain.valueobject.LogicalName
+import com.yo1000.haystacks.domain.valueobject.Statement
 import com.yo1000.haystacks.domain.valueobject.TablePhysicalName
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -293,4 +294,8 @@ class MysqlTableRepository(
     )) { resultSet, _ ->
         TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
     }.toMap()
+
+    override fun findStatementByName(name: TablePhysicalName): Statement {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }
