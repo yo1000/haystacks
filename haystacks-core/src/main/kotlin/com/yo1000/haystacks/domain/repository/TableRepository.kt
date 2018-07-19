@@ -3,6 +3,7 @@ package com.yo1000.haystacks.domain.repository
 import com.yo1000.haystacks.domain.entity.FoundNamesMap
 import com.yo1000.haystacks.domain.entity.Table
 import com.yo1000.haystacks.domain.entity.TableNames
+import com.yo1000.haystacks.domain.valueobject.Statement
 import com.yo1000.haystacks.domain.valueobject.TablePhysicalName
 
 /**
@@ -16,4 +17,5 @@ interface TableRepository {
     fun findRowCountMap(): Map<TablePhysicalName, Long>
     fun findReferencedCountFromChildrenMap(): Map<TablePhysicalName, Int>
     fun findReferencingCountToParentMap(): Map<TablePhysicalName, Int>
+    fun findStatementByName(name: TablePhysicalName): Statement
 }
