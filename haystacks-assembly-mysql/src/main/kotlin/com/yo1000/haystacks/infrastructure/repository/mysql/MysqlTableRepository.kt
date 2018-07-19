@@ -31,6 +31,7 @@ class MysqlTableRepository(
         const val PARENT_COLUMN_NAME = "parent_column_name"
         const val CHILD_TABLE_NAME = "child_table_name"
         const val CHILD_COLUMN_NAME = "child_column_name"
+        const val REFERENCE_COUNT = "reference_count"
 
     }
 
@@ -40,8 +41,8 @@ class MysqlTableRepository(
 
     override fun findTableNamesAll(): List<TableNames> = jdbcTemplate.query("""
         SELECT
-            tbl.table_name    AS `name`,
-            tbl.table_comment AS `comment`
+            tbl.table_name    AS $TABLE_NAME,
+            tbl.table_comment AS $TABLE_COMMENT
         FROM
             information_schema.tables tbl
         WHERE
@@ -52,8 +53,8 @@ class MysqlTableRepository(
             "schemaName" to dataSourceProperties.name
     )) { resultSet, _ ->
         TableNames(
-                physicalName = TablePhysicalName(resultSet.getString("name")),
-                logicalName = LogicalName(resultSet.getString("comment"))
+                physicalName = TablePhysicalName(resultSet.getString(TABLE_NAME)),
+                logicalName = LogicalName(resultSet.getString(TABLE_COMMENT))
         )
     }
 
@@ -206,8 +207,8 @@ class MysqlTableRepository(
 
     override fun findColumnCountMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
         SELECT
-            tbl.table_name              AS "table",
-            count(col.column_name) AS "references"
+            tbl.table_name          AS $TABLE_NAME,
+            count(col.column_name)  AS $REFERENCE_COUNT
         FROM
             information_schema.tables tbl
         INNER JOIN
@@ -222,13 +223,13 @@ class MysqlTableRepository(
         """.trimIndent(), mapOf(
             "schemaName" to dataSourceProperties.name
     )) { resultSet, _ ->
-        TablePhysicalName(resultSet.getString("table")) to resultSet.getInt("references")
+        TablePhysicalName(resultSet.getString(TABLE_NAME)) to resultSet.getInt(REFERENCE_COUNT)
     }.toMap()
 
     override fun findRowCountMap(): Map<TablePhysicalName, Long> = jdbcTemplate.query("""
         SELECT
-            tbl.table_name    AS `name`,
-            tbl.table_rows    AS `rowSize`
+            tbl.table_name  AS $TABLE_NAME,
+            tbl.table_rows  AS $TABLE_ROWS
         FROM
             information_schema.tables tbl
         WHERE
@@ -238,18 +239,18 @@ class MysqlTableRepository(
         """.trimIndent(), mapOf(
             "schemaName" to dataSourceProperties.name
     )) { resultSet, _ ->
-        TablePhysicalName(resultSet.getString("name")) to resultSet.getLong("rowSize")
+        TablePhysicalName(resultSet.getString(TABLE_NAME)) to resultSet.getLong(TABLE_ROWS)
     }.toMap()
 
     override fun findReferencedCountFromChildrenMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
         SELECT
-            table_name AS "table",
-            sum(count) AS "references"
+            table_name AS $TABLE_NAME,
+            sum(count) AS $REFERENCE_COUNT
         FROM
             (
                 SELECT
-                    referenced_table_name AS table_name,
-                    count(column_name)    AS count
+                    referenced_table_name   AS table_name,
+                    count(column_name)      AS count
                 FROM
                     information_schema.key_column_usage
                 WHERE
@@ -264,13 +265,13 @@ class MysqlTableRepository(
         """.trimIndent(), mapOf(
             "schemaName" to dataSourceProperties.name
     )) { resultSet, _ ->
-        TablePhysicalName(resultSet.getString("table")) to resultSet.getInt("references")
+        TablePhysicalName(resultSet.getString(TABLE_NAME)) to resultSet.getInt(REFERENCE_COUNT)
     }.toMap()
 
     override fun findReferencingCountToParentMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
         SELECT
-            table_name     AS "table",
-            sum(col_count) AS "references"
+            table_name      AS $TABLE_NAME,
+            sum(col_count)  AS $REFERENCE_COUNT
         FROM
             (
                 SELECT
@@ -288,6 +289,6 @@ class MysqlTableRepository(
         """.trimIndent(), mapOf(
             "schemaName" to dataSourceProperties.name
     )) { resultSet, _ ->
-        TablePhysicalName(resultSet.getString("table")) to resultSet.getInt("references")
+        TablePhysicalName(resultSet.getString(TABLE_NAME)) to resultSet.getInt(REFERENCE_COUNT)
     }.toMap()
 }
