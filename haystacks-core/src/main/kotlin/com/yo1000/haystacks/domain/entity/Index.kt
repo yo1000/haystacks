@@ -1,11 +1,13 @@
 package com.yo1000.haystacks.domain.entity
 
+import com.yo1000.haystacks.domain.valueobject.ColumnPhysicalName
+
 /**
  * @author yo1000
  */
 class Index(
         val names: IndexNames,
-        val columns: List<ColumnNames>,
+        val columnNames: List<ColumnPhysicalName>,
         val type: Type
 ) {
     enum class Type(val order: Int) {

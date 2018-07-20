@@ -13,8 +13,8 @@ class Column(
 ) {
     fun getContainedIn(indices: Collection<Index>): List<Index> {
         return indices.filter {
-            it.columns.any {
-                it.physicalName == this.names.physicalName
+            it.columnNames.any {
+                it.value == names.physicalName.value
             }
         }
     }
