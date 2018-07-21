@@ -295,7 +295,10 @@ class MysqlTableRepository(
         TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
     }.toMap()
 
-    override fun findStatementByName(name: TablePhysicalName): Statement {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun findStatementByName(name: TablePhysicalName): Statement = jdbcTemplate.query("""
+        SHOW CREATE TABLE `${name.value}`
+        """.trimIndent()
+    ) { resultSet, _ ->
+        Statement(resultSet.getString("create table"))
+    }.first()
 }

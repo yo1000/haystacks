@@ -4,6 +4,7 @@ import com.yo1000.haystacks.domain.entity.Index
 import com.yo1000.haystacks.domain.entity.Table
 import com.yo1000.haystacks.domain.entity.TableOutline
 import com.yo1000.haystacks.domain.service.TableService
+import com.yo1000.haystacks.domain.valueobject.Statement
 import com.yo1000.haystacks.domain.valueobject.TablePhysicalName
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -28,4 +29,6 @@ class TableRestController(
     @GetMapping("/{name}/indexes")
     fun getIndexesByName(@PathVariable name: String): List<Index> = tableService.getIndexes(TablePhysicalName(name))
 
+    @GetMapping("/{name}/statement")
+    fun getStatementByName(@PathVariable name: String): Statement = tableService.getStatement(TablePhysicalName(name))
 }
