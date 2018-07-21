@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.yo1000</groupId>
-	<artifactId>haystacks-build</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>haystacks-starters</artifactId>
 	<packaging>pom</packaging>
 
-	<name>haystacks-build</name>
+	<name>haystacks-starters</name>
 	<description/>
+
+	<parent>
+		<groupId>com.yo1000</groupId>
+		<artifactId>haystacks-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../haystacks-parent</relativePath>
+	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,10 +24,8 @@
 	</properties>
 
 	<modules>
-		<module>haystacks-parent</module>
-		<module>haystacks</module>
-		<module>haystacks-autoconfigure</module>
-		<module>haystacks-starters</module>
-		<module>haystacks-assemblies</module>
+		<module>haystacks-starter</module>
+		<module>haystacks-starter-web</module>
+		<module>haystacks-starter-data-mysql</module>
 	</modules>
 </project>

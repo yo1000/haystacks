@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.yo1000.haystacks.autoconfigure.core.ServiceAutoConfiguration,\
+com.yo1000.haystacks.autoconfigure.web.RestControllerAutoConfiguration,\
+com.yo1000.haystacks.autoconfigure.data.mysql.MysqlRepositoryAutoConfiguration

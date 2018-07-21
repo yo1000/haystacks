@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.yo1000</groupId>
-	<artifactId>haystacks-build</artifactId>
+	<artifactId>haystacks-starter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 
-	<name>haystacks-build</name>
+	<name>haystacks-starter</name>
 	<description/>
+
+	<parent>
+		<groupId>com.yo1000</groupId>
+		<artifactId>haystacks-starters</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,11 +25,10 @@
 		<kotlin.version>1.2.41</kotlin.version>
 	</properties>
 
-	<modules>
-		<module>haystacks-parent</module>
-		<module>haystacks</module>
-		<module>haystacks-autoconfigure</module>
-		<module>haystacks-starters</module>
-		<module>haystacks-assemblies</module>
-	</modules>
+	<dependencies>
+		<dependency>
+			<groupId>com.yo1000</groupId>
+			<artifactId>haystacks-autoconfigure</artifactId>
+		</dependency>
+	</dependencies>
 </project>
