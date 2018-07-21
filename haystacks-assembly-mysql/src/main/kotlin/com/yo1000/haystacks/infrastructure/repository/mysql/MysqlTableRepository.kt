@@ -50,8 +50,9 @@ class MysqlTableRepository(
             information_schema.tables tbl
         WHERE
             tbl.table_schema = :$INPUT_SCHEMA_NAME
-        AND
-            tbl.table_type = 'BASE TABLE'
+        AND tbl.table_type = 'BASE TABLE'
+        ORDER BY
+            tbl.table_name
         """.trimIndent(), mapOf(
             INPUT_SCHEMA_NAME to dataSourceProperties.name
     )) { resultSet, _ ->
@@ -237,8 +238,7 @@ class MysqlTableRepository(
             information_schema.tables tbl
         WHERE
             tbl.table_schema = :$INPUT_SCHEMA_NAME
-        AND
-            tbl.table_type = 'BASE TABLE'
+        AND tbl.table_type = 'BASE TABLE'
         """.trimIndent(), mapOf(
             INPUT_SCHEMA_NAME to dataSourceProperties.name
     )) { resultSet, _ ->
@@ -258,8 +258,7 @@ class MysqlTableRepository(
                     information_schema.key_column_usage
                 WHERE
                     table_schema = :$INPUT_SCHEMA_NAME
-                    AND
-                    referenced_table_name IS NOT NULL
+                AND referenced_table_name IS NOT NULL
                 GROUP BY
                     referenced_table_name, table_name
             ) child_col
