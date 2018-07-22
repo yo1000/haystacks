@@ -1,0 +1,32 @@
+.navbar-brand object {
+    position:static;
+    margin:.8rem 1rem .65rem 1rem;
+}
+
+.navbar-brand a object {
+    pointer-events:none;
+}
+
+.navbar.is-white {
+    border-bottom: .015625rem solid #000;
+}
+
+.navbar .input {
+    width: 16rem;
+    margin-right: -6px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.navbar .button.search {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.navbar .control:last-of-type {
+    margin-right: .375rem;
+}
+
+.input {
+    box-shadow: none;
+}

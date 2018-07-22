@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragments :: head (title='Tables ' + ${dataSourceName})">
+  <meta charset="UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Tables sample - shishamo</title>
+  <link rel="stylesheet" href="../static/bootstrap-4.0.0-alpha.6/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="../static/font-awesome-4.7.0/css/font-awesome.min.css"/>
+  <link rel="stylesheet" href="../static/app/css/app.css"/>
+</head>
+<body>
+<div th:replace="_fragments :: navbar"></div>
+<section class="section">
+  <div class="container">
+    <h1 class="title">Tables</h1>
+    <p class="subtitle">
+      My first website with <strong>Bulma</strong>!
+    </p>
+  </div>
+</section>
+</body>
+</html>
