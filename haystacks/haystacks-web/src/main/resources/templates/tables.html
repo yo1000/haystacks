@@ -15,9 +15,93 @@
   <div class="container">
     <h1 class="title">Tables</h1>
     <p class="subtitle">
-      My first website with <strong>Bulma</strong>!
+      DataSource: <strong th:text="${dataSourceName}">dataSourceName</strong>
     </p>
+    <div id="contents"></div>
   </div>
 </section>
+<script>
+const render = (containerElement, tables) => {
+    const tableElement = document.createElement("table")
+    containerElement.appendChild(tableElement)
+    tableElement.classList.add("table")
+    tableElement.classList.add("is-narrow")
+    tableElement.classList.add("is-hoverable")
+    tableElement.classList.add("is-fullwidth")
+
+    const tableHeaderElement = document.createElement("thead")
+    tableElement.appendChild(tableHeaderElement)
+
+    const headsRowElement = document.createElement("tr")
+    tableHeaderElement.appendChild(headsRowElement)
+
+    const nameHeadElement = document.createElement("th")
+    const colsCountHeadElement = document.createElement("th")
+    const rowsCountHeadElement = document.createElement("th")
+    const parentCountHeadElement = document.createElement("th")
+    const childrenCountHeadElement = document.createElement("th")
+    const commentHeadElement = document.createElement("th")
+    headsRowElement.appendChild(nameHeadElement)
+    headsRowElement.appendChild(colsCountHeadElement)
+    headsRowElement.appendChild(rowsCountHeadElement)
+    headsRowElement.appendChild(parentCountHeadElement)
+    headsRowElement.appendChild(childrenCountHeadElement)
+    headsRowElement.appendChild(commentHeadElement)
+
+    nameHeadElement.appendChild(document.createTextNode("Name"))
+    colsCountHeadElement.appendChild(document.createTextNode("Columns"))
+    rowsCountHeadElement.appendChild(document.createTextNode("Rows"))
+    parentCountHeadElement.appendChild(document.createTextNode("Parents"))
+    childrenCountHeadElement.appendChild(document.createTextNode("Children"))
+    commentHeadElement.appendChild(document.createTextNode("Comment"))
+
+    const tableBodyElement = document.createElement("tbody")
+    tableElement.appendChild(tableBodyElement)
+
+
+    tables.forEach(item => {
+        const cellsRowElement = document.createElement("tr")
+        tableBodyElement.appendChild(cellsRowElement)
+
+        const nameCellElement = document.createElement("td")
+        const colsCountCellElement = document.createElement("td")
+        const rowsCountCellElement = document.createElement("td")
+        const parentCountCellElement = document.createElement("td")
+        const childrenCountCellElement = document.createElement("td")
+        const commentCellElement = document.createElement("td")
+        cellsRowElement.appendChild(nameCellElement)
+        cellsRowElement.appendChild(colsCountCellElement)
+        cellsRowElement.appendChild(rowsCountCellElement)
+        cellsRowElement.appendChild(parentCountCellElement)
+        cellsRowElement.appendChild(childrenCountCellElement)
+        cellsRowElement.appendChild(commentCellElement)
+
+        nameCellElement.appendChild(document.createTextNode(item.names.physicalName.value))
+        colsCountCellElement.appendChild(document.createTextNode(item.columnCount))
+        rowsCountCellElement.appendChild(document.createTextNode(item.rowCount))
+        parentCountCellElement.appendChild(document.createTextNode(item.referencingCountToParent))
+        childrenCountCellElement.appendChild(document.createTextNode(item.referencedCountFromChildren))
+        commentCellElement.appendChild(document.createTextNode(item.names.logicalName.value))
+    })
+}
+(function () {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "/api/tables", true);
+    xhr.onload = (e) => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                const tables = JSON.parse(xhr.responseText)
+                render(document.querySelector("#contents"), tables)
+            } else {
+                console.error(xhr.statusText)
+            }
+        }
+    }
+    xhr.onerror = (e) => {
+        console.error(xhr.statusText)
+    }
+    xhr.send(null)
+})()
+</script>
 </body>
 </html>

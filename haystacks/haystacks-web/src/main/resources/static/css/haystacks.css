@@ -7,8 +7,13 @@
     pointer-events:none;
 }
 
-.navbar.is-white {
+.navbar.is-white,
+.navbar.is-white .navbar-start>a.navbar-item:hover {
     border-bottom: .015625rem solid #000;
+}
+
+.navbar.is-white .navbar-start>a.navbar-item:hover {
+    border-top: .015625rem solid transparent;
 }
 
 .navbar .input {
