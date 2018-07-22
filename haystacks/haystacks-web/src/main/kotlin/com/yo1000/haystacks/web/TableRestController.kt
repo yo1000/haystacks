@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping
  *
  * @author yo1000
  */
-@RequestMapping("/tables")
+@RequestMapping("/api/tables")
 open class TableRestController(
-        private val tableService: TableService
+        private val tableService: TableService,
+        private val dataSourceName: String
 ) {
     @GetMapping("")
     fun get(): List<TableOutline> = tableService.getTableOutlines()
