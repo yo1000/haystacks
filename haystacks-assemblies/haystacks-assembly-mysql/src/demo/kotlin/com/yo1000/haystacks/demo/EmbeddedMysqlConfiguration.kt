@@ -43,7 +43,7 @@ class EmbeddedMysqlInitializer(
                     `id`    varchar(4)  NOT NULL    COMMENT 'ID',
                     `name`  varchar(40) NOT NULL    COMMENT 'Country name',
                     PRIMARY KEY(`id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Artists';
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Countries';
                 """.trimIndent(), """
                 CREATE TABLE `artists` (
                     `id`            varchar(4)  NOT NULL    COMMENT 'ID',
@@ -57,7 +57,7 @@ class EmbeddedMysqlInitializer(
                   `id`          varchar(4)  NOT NULL    COMMENT 'ID',
                   `description` varchar(80) NOT NULL    COMMENT 'Description',
                   PRIMARY KEY(`id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Mediums';
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
                 """.trimIndent(), """
                 CREATE TABLE `pictures` (
                   `id`          varchar(4)  NOT NULL    COMMENT 'ID',
