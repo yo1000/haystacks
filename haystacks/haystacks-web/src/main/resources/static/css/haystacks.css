@@ -7,13 +7,28 @@
     pointer-events:none;
 }
 
-.navbar.is-white,
-.navbar.is-white .navbar-start>a.navbar-item:hover {
+.navbar.is-white {
     border-bottom: .015625rem solid #000;
 }
 
-.navbar.is-white .navbar-start>a.navbar-item:hover {
-    border-top: .015625rem solid transparent;
+@media screen and (max-width: 1087px) {
+    .navbar-menu {
+        box-shadow: none;
+        border-bottom: .015625rem solid transparent;
+    }
+}
+
+@media screen and (min-width: 1088px) {
+    .navbar-start>.navbar-item,
+    .navbar-start>.navbar-item:hover,
+    .navbar-end>.navbar-item,
+    .navbar-end>.navbar-item:hover {
+        height: 4.75rem;
+    }
+}
+
+.navbar-burger {
+    height: 4.75rem;
 }
 
 .navbar .input {
