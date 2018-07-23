@@ -47,6 +47,10 @@
     margin-right: .375rem;
 }
 
+.section {
+    padding-bottom: 0;
+}
+
 .input {
     box-shadow: none;
 }

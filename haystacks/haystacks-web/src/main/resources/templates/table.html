@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragments :: head (title='Table ' + ${tableName} + '@' + ${dataSourceName})">
+  <meta charset="UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Tables sample - shishamo</title>
+  <link rel="stylesheet" href="../static/bootstrap-4.0.0-alpha.6/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="../static/font-awesome-4.7.0/css/font-awesome.min.css"/>
+  <link rel="stylesheet" href="../static/app/css/app.css"/>
+</head>
+<body>
+<div th:replace="_fragments :: navbar"></div>
+<section class="section">
+  <div class="container">
+    <h1 class="title is-2">Table</h1>
+    <p id="tableName" class="subtitle"></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">Columns</h2>
+    <div id="contents"></div>
+  </div>
+</section>
+<script th:inline="javascript">
+const render = (containerElement, table) => {
+    const tableNameElement = document.querySelector("#tableName")
+    const tableNameTextNode = document.createTextNode("Name: ")
+    tableNameElement.appendChild(tableNameTextNode)
+    const tableNameStrongElement = document.createElement("strong")
+    tableNameElement.appendChild(tableNameStrongElement)
+    tableNameStrongElement.appendChild(document.createTextNode(table.names.physicalName.value))
+    if (table.names.logicalName && table.names.logicalName.value) {
+        const tableCommentTextNode = document.createTextNode(", Comment: ")
+        tableNameElement.appendChild(tableCommentTextNode)
+        const tableCommentStrongElement = document.createElement("strong")
+        tableNameElement.appendChild(tableCommentStrongElement)
+        tableCommentStrongElement.appendChild(document.createTextNode(table.names.logicalName.value))
+    }
+
+    const tableElement = document.createElement("table")
+    containerElement.appendChild(tableElement)
+    tableElement.classList.add("table")
+    tableElement.classList.add("is-narrow")
+    tableElement.classList.add("is-hoverable")
+    tableElement.classList.add("is-fullwidth")
+
+    const tableHeadElement = document.createElement("thead")
+    tableElement.appendChild(tableHeadElement)
+    const headsTrElement = document.createElement("tr")
+    tableHeadElement.appendChild(headsTrElement)
+    const nameHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(nameHeadThElement)
+    nameHeadThElement.appendChild(document.createTextNode("Name"))
+    const typeHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(typeHeadThElement)
+    typeHeadThElement.appendChild(document.createTextNode("Type"))
+    const nullableHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(nullableHeadThElement)
+    nullableHeadThElement.appendChild(document.createTextNode("Nullable"))
+    const defaultHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(defaultHeadThElement)
+    defaultHeadThElement.appendChild(document.createTextNode("Default"))
+    const parentHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(parentHeadThElement)
+    parentHeadThElement.appendChild(document.createTextNode("Parent"))
+    const childrenHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(childrenHeadThElement)
+    childrenHeadThElement.appendChild(document.createTextNode("Children"))
+    const commentHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(commentHeadThElement)
+    commentHeadThElement.appendChild(document.createTextNode("Comment"))
+
+    const tableBodyElement = document.createElement("tbody")
+    tableElement.appendChild(tableBodyElement)
+
+    table.columns.forEach(column => {
+        const dataRowElement = document.createElement("tr")
+        tableBodyElement.appendChild(dataRowElement)
+
+        const nameDataElement = document.createElement("td")
+        dataRowElement.appendChild(nameDataElement)
+        nameDataElement.appendChild(document.createTextNode(column.names.physicalName.value))
+
+        const typeDataElement = document.createElement("td")
+        dataRowElement.appendChild(typeDataElement)
+        typeDataElement.appendChild(document.createTextNode(column.type))
+
+        const nullableDataElement = document.createElement("td")
+        dataRowElement.appendChild(nullableDataElement)
+        nullableDataElement.appendChild(document.createTextNode(column.nullable))
+
+        const defaultDataElement = document.createElement("td")
+        dataRowElement.appendChild(defaultDataElement)
+        defaultDataElement.appendChild(document.createTextNode(column.default))
+
+        const parentDataElement = document.createElement("td")
+        dataRowElement.appendChild(parentDataElement)
+        parentDataElement.appendChild(document.createTextNode(column.parent))
+
+        const childrenDataElement = document.createElement("td")
+        dataRowElement.appendChild(childrenDataElement)
+        childrenDataElement.appendChild(document.createTextNode(column.children))
+
+        const commentDataElement = document.createElement("td")
+        dataRowElement.appendChild(commentDataElement)
+        commentDataElement.appendChild(document.createTextNode(column.names.logicalName.value))
+    })
+}
+(function () {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "/api/tables/" + [[${tableName}]], true);
+    xhr.onload = (e) => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                const table = JSON.parse(xhr.responseText)
+                render(document.querySelector("#contents"), table)
+            } else {
+                console.error(xhr.statusText)
+            }
+        }
+    }
+    xhr.onerror = (e) => {
+        console.error(xhr.statusText)
+    }
+    xhr.send(null)
+})()
+</script>
+</body>
+</html>
