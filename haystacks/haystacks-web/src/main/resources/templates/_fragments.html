@@ -16,13 +16,14 @@
               data="../static/img/haystacks-logo.svg"
               th:attr="data=@{/img/haystacks-logo.svg}"></object>
     </a>
-    <div class="navbar-burger burger" data-target="navbarExampleTransparentExample">
-      <span></span>
-      <span></span>
-      <span></span>
+    <div role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
+         onclick="document.querySelector('.navbar-menu').classList.toggle('is-active');">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
     </div>
   </div>
-  <div id="navbarExampleTransparentExample" class="navbar-menu">
+  <div class="navbar-menu">
     <div class="navbar-start">
       <a class="navbar-item" href="https://bulma.io/">
         Home
