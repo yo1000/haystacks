@@ -89,7 +89,12 @@ const render = (containerElement, table) => {
 
         const nullableDataElement = document.createElement("td")
         dataRowElement.appendChild(nullableDataElement)
-        nullableDataElement.appendChild(document.createTextNode(column.nullable))
+        if (column.nullable) {
+            const iconElement = document.createElement("i")
+            nullableDataElement.appendChild(iconElement)
+            iconElement.classList.add("fas")
+            iconElement.classList.add("fa-check")
+        }
 
         const defaultDataElement = document.createElement("td")
         dataRowElement.appendChild(defaultDataElement)
@@ -97,11 +102,23 @@ const render = (containerElement, table) => {
 
         const parentDataElement = document.createElement("td")
         dataRowElement.appendChild(parentDataElement)
-        parentDataElement.appendChild(document.createTextNode(column.parent))
+        if (column.parent) {
+            parentDataElement.appendChild(document.createTextNode(
+                column.parent.tablePhysicalName.value + '.' + column.parent.columnPhysicalName.value))
+        }
 
         const childrenDataElement = document.createElement("td")
         dataRowElement.appendChild(childrenDataElement)
-        childrenDataElement.appendChild(document.createTextNode(column.children))
+        if (column.children && column.children.length) {
+            const childrenListElement = document.createElement("ul")
+            childrenDataElement.appendChild(childrenListElement)
+            column.children.forEach(child => {
+                const childListItemElement = document.createElement("li")
+                childrenListElement.appendChild(childListItemElement)
+                childListItemElement.appendChild(document.createTextNode(
+                    child.tablePhysicalName.value + '.' + child.columnPhysicalName.value))
+            })
+        }
 
         const commentDataElement = document.createElement("td")
         dataRowElement.appendChild(commentDataElement)
