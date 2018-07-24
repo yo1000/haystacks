@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="_fragments :: head (title='Table ' + ${tableName} + '@' + ${dataSourceName})">
-  <meta charset="UTF-8"/>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Tables sample - shishamo</title>
-  <link rel="stylesheet" href="../static/bootstrap-4.0.0-alpha.6/css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="../static/font-awesome-4.7.0/css/font-awesome.min.css"/>
-  <link rel="stylesheet" href="../static/app/css/app.css"/>
+<head th:replace="_fragments :: head (title='Table ' + ${tableName})">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Table name | haystacks</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+  <link rel="stylesheet" href="../static/css/haystacks.css" th:href="@{/css/haystacks.css}">
+  <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
 </head>
 <body>
 <div th:replace="_fragments :: navbar"></div>
 <section class="section">
   <div class="container">
-    <h1 class="title is-2">Table</h1>
-    <p id="tableName" class="subtitle"></p>
+    <h1 id="tableName" class="title is-2"></h1>
+    <p id="tableComment" class="subtitle"></p>
   </div>
 </section>
 <section class="section">
@@ -26,17 +25,10 @@
 <script th:inline="javascript">
 const render = (containerElement, table) => {
     const tableNameElement = document.querySelector("#tableName")
-    const tableNameTextNode = document.createTextNode("Name: ")
-    tableNameElement.appendChild(tableNameTextNode)
-    const tableNameStrongElement = document.createElement("strong")
-    tableNameElement.appendChild(tableNameStrongElement)
-    tableNameStrongElement.appendChild(document.createTextNode(table.names.physicalName.value))
+    tableNameElement.appendChild(document.createTextNode(table.names.physicalName.value))
+    const tableCommentElement = document.querySelector("#tableComment")
     if (table.names.logicalName && table.names.logicalName.value) {
-        const tableCommentTextNode = document.createTextNode(", Comment: ")
-        tableNameElement.appendChild(tableCommentTextNode)
-        const tableCommentStrongElement = document.createElement("strong")
-        tableNameElement.appendChild(tableCommentStrongElement)
-        tableCommentStrongElement.appendChild(document.createTextNode(table.names.logicalName.value))
+        tableCommentElement.appendChild(document.createTextNode(table.names.logicalName.value))
     }
 
     const tableElement = document.createElement("table")
