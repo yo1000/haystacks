@@ -19,18 +19,31 @@
 <section class="section">
   <div class="container">
     <h2 class="title is-4">Columns</h2>
-    <div id="contents"></div>
+    <div id="columns"></div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">Indexes</h2>
+    <div id="indexes"></div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">Statement</h2>
+    <div id="statement"></div>
   </div>
 </section>
 <script th:inline="javascript">
-const render = (containerElement, table) => {
-    const tableNameElement = document.querySelector("#tableName")
-    tableNameElement.appendChild(document.createTextNode(table.name))
-    const tableCommentElement = document.querySelector("#tableComment")
+const renderTableName =  (containerElement, table) => {
+    containerElement.appendChild(document.createTextNode(table.name))
+}
+const renderTableComment =  (containerElement, table) => {
     if (table.comment) {
-        tableCommentElement.appendChild(document.createTextNode(table.comment))
+        containerElement.appendChild(document.createTextNode(table.comment))
     }
-
+}
+const renderColumns = (containerElement, table) => {
     const tableElement = document.createElement("table")
     containerElement.appendChild(tableElement)
     tableElement.classList.add("table")
@@ -95,7 +108,11 @@ const render = (containerElement, table) => {
         const parentDataElement = document.createElement("td")
         dataRowElement.appendChild(parentDataElement)
         if (column.parent) {
-            parentDataElement.appendChild(document.createTextNode(column.parent))
+            const parentAnchorElement = document.createElement("a")
+            parentDataElement.appendChild(parentAnchorElement)
+            parentAnchorElement.setAttribute("href", column.parent.table)
+            parentAnchorElement.appendChild(
+                document.createTextNode(`${column.parent.table}.${column.parent.column}`))
         }
 
         const childrenDataElement = document.createElement("td")
@@ -106,7 +123,11 @@ const render = (containerElement, table) => {
             column.children.forEach(child => {
                 const childListItemElement = document.createElement("li")
                 childrenListElement.appendChild(childListItemElement)
-                childListItemElement.appendChild(document.createTextNode(child))
+                const childAnchorElement = document.createElement("a")
+                childListItemElement.appendChild(childAnchorElement)
+                childAnchorElement.setAttribute("href", child.table)
+                childAnchorElement.appendChild(
+                    document.createTextNode(`${child.table}.${child.column}`))
             })
         }
 
@@ -115,6 +136,89 @@ const render = (containerElement, table) => {
         commentDataElement.appendChild(document.createTextNode(column.comment))
     })
 }
+const renderIndexes = (containerElement, table) => {
+    const tableElement = document.createElement("table")
+    containerElement.appendChild(tableElement)
+    tableElement.classList.add("table")
+    tableElement.classList.add("is-narrow")
+    tableElement.classList.add("is-hoverable")
+    tableElement.classList.add("is-fullwidth")
+
+    const tableHeadElement = document.createElement("thead")
+    tableElement.appendChild(tableHeadElement)
+    const headsTrElement = document.createElement("tr")
+    tableHeadElement.appendChild(headsTrElement)
+    const nameHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(nameHeadThElement)
+    nameHeadThElement.appendChild(document.createTextNode("Name"))
+    const typeHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(typeHeadThElement)
+    typeHeadThElement.appendChild(document.createTextNode("Type"))
+    const columnsHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(columnsHeadThElement)
+    columnsHeadThElement.appendChild(document.createTextNode("Columns"))
+    const commentHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(commentHeadThElement)
+    commentHeadThElement.appendChild(document.createTextNode("Comment"))
+
+    const tableBodyElement = document.createElement("tbody")
+    tableElement.appendChild(tableBodyElement)
+
+    table.indexes.forEach(index => {
+        const dataRowElement = document.createElement("tr")
+        tableBodyElement.appendChild(dataRowElement)
+
+        const nameDataElement = document.createElement("td")
+        dataRowElement.appendChild(nameDataElement)
+        const iconElement = document.createElement("i")
+        nameDataElement.appendChild(iconElement)
+        if (index.type === "PRIMARY") {
+            iconElement.classList.add("fas")
+            iconElement.classList.add("fa-circle")
+        } else if (index.type === "UNIQUE") {
+            iconElement.classList.add("far")
+            iconElement.classList.add("fa-dot-circle")
+        } else if (index.type === "PERFORMANCE") {
+            iconElement.classList.add("far")
+            iconElement.classList.add("fa-circle")
+        }
+        nameDataElement.appendChild(document.createTextNode(` ${index.name}`))
+
+        const typeDataElement = document.createElement("td")
+        dataRowElement.appendChild(typeDataElement)
+        typeDataElement.appendChild(document.createTextNode(index.type))
+
+        const columnsDataElement = document.createElement("td")
+        dataRowElement.appendChild(columnsDataElement)
+        if (index.columns && index.columns.length) {
+            const columnsListElement = document.createElement("ul")
+            columnsDataElement.appendChild(columnsListElement)
+            index.columns.forEach(column => {
+                const columnsListItemElement = document.createElement("li")
+                columnsListElement.appendChild(columnsListItemElement)
+                const columnsAnchorElement = document.createElement("a")
+                columnsListItemElement.appendChild(columnsAnchorElement)
+                columnsAnchorElement.setAttribute("href", column.table)
+                columnsAnchorElement.appendChild(
+                    document.createTextNode(`${column.table}.${column.column}`))
+            })
+        }
+
+        const commentDataElement = document.createElement("td")
+        dataRowElement.appendChild(commentDataElement)
+        commentDataElement.appendChild(document.createTextNode(index.comment))
+    })
+}
+const renderStatement = (containerElement, table) => {
+    const preElement = document.createElement("pre")
+    containerElement.appendChild(preElement)
+    const codeElement = document.createElement("code")
+    preElement.appendChild(codeElement)
+    codeElement.classList.add("sql")
+    codeElement.appendChild(document.createTextNode(table.statement))
+
+    hljs.initHighlightingOnLoad()
+}
 (function () {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", "/api/tables/" + [[${tableName}]], true);
@@ -122,7 +226,11 @@ const render = (containerElement, table) => {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 const table = JSON.parse(xhr.responseText)
-                render(document.querySelector("#contents"), table)
+                renderTableName(document.querySelector("#tableName"), table)
+                renderTableComment(document.querySelector("#tableComment"), table)
+                renderColumns(document.querySelector("#columns"), table)
+                renderIndexes(document.querySelector("#indexes"), table)
+                renderStatement(document.querySelector("#statement"), table)
             } else {
                 console.error(xhr.statusText)
             }

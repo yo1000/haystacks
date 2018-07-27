@@ -32,51 +32,61 @@ const render = (containerElement, tables) => {
     tableHeaderElement.appendChild(headsRowElement)
 
     const nameHeadElement = document.createElement("th")
-    const colsCountHeadElement = document.createElement("th")
-    const rowsCountHeadElement = document.createElement("th")
-    const parentCountHeadElement = document.createElement("th")
-    const childrenCountHeadElement = document.createElement("th")
-    const commentHeadElement = document.createElement("th")
     headsRowElement.appendChild(nameHeadElement)
-    headsRowElement.appendChild(colsCountHeadElement)
-    headsRowElement.appendChild(rowsCountHeadElement)
-    headsRowElement.appendChild(parentCountHeadElement)
-    headsRowElement.appendChild(childrenCountHeadElement)
-    headsRowElement.appendChild(commentHeadElement)
-
     nameHeadElement.appendChild(document.createTextNode("Name"))
+
+    const colsCountHeadElement = document.createElement("th")
+    headsRowElement.appendChild(colsCountHeadElement)
     colsCountHeadElement.appendChild(document.createTextNode("Columns"))
+
+    const rowsCountHeadElement = document.createElement("th")
+    headsRowElement.appendChild(rowsCountHeadElement)
     rowsCountHeadElement.appendChild(document.createTextNode("Rows"))
+
+    const parentCountHeadElement = document.createElement("th")
+    headsRowElement.appendChild(parentCountHeadElement)
     parentCountHeadElement.appendChild(document.createTextNode("Parents"))
+
+    const childrenCountHeadElement = document.createElement("th")
+    headsRowElement.appendChild(childrenCountHeadElement)
     childrenCountHeadElement.appendChild(document.createTextNode("Children"))
+
+    const commentHeadElement = document.createElement("th")
+    headsRowElement.appendChild(commentHeadElement)
     commentHeadElement.appendChild(document.createTextNode("Comment"))
 
     const tableBodyElement = document.createElement("tbody")
     tableElement.appendChild(tableBodyElement)
-
 
     tables.forEach(item => {
         const cellsRowElement = document.createElement("tr")
         tableBodyElement.appendChild(cellsRowElement)
 
         const nameCellElement = document.createElement("td")
-        const colsCountCellElement = document.createElement("td")
-        const rowsCountCellElement = document.createElement("td")
-        const parentCountCellElement = document.createElement("td")
-        const childrenCountCellElement = document.createElement("td")
-        const commentCellElement = document.createElement("td")
         cellsRowElement.appendChild(nameCellElement)
-        cellsRowElement.appendChild(colsCountCellElement)
-        cellsRowElement.appendChild(rowsCountCellElement)
-        cellsRowElement.appendChild(parentCountCellElement)
-        cellsRowElement.appendChild(childrenCountCellElement)
-        cellsRowElement.appendChild(commentCellElement)
+        const nameAnchorElement = document.createElement("a")
+        nameCellElement.appendChild(nameAnchorElement)
+        nameAnchorElement.setAttribute("href", `table/${item.name}`)
+        nameAnchorElement.appendChild(document.createTextNode(item.name))
 
-        nameCellElement.appendChild(document.createTextNode(item.name))
+        const colsCountCellElement = document.createElement("td")
+        cellsRowElement.appendChild(colsCountCellElement)
         colsCountCellElement.appendChild(document.createTextNode(item.columnCount))
+
+        const rowsCountCellElement = document.createElement("td")
+        cellsRowElement.appendChild(rowsCountCellElement)
         rowsCountCellElement.appendChild(document.createTextNode(item.rowCount))
+
+        const parentCountCellElement = document.createElement("td")
+        cellsRowElement.appendChild(parentCountCellElement)
         parentCountCellElement.appendChild(document.createTextNode(item.parentCount))
+
+        const childrenCountCellElement = document.createElement("td")
+        cellsRowElement.appendChild(childrenCountCellElement)
         childrenCountCellElement.appendChild(document.createTextNode(item.childCount))
+
+        const commentCellElement = document.createElement("td")
+        cellsRowElement.appendChild(commentCellElement)
         commentCellElement.appendChild(document.createTextNode(item.comment))
     })
 }

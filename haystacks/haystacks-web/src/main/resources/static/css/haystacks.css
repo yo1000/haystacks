@@ -1,3 +1,7 @@
+body {
+    padding-bottom: 4rem;
+}
+
 .navbar-brand object {
     position:static;
     margin:.8rem 1rem .65rem 1rem;
@@ -53,4 +57,13 @@
 
 .input {
     box-shadow: none;
+}
+
+#statement pre {
+    padding: 0;
+}
+
+.hljs {
+    padding: 1.25rem 1.5rem;
+    background-color: transparent;
 }
