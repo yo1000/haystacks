@@ -72,12 +72,12 @@ const render = (containerElement, tables) => {
         cellsRowElement.appendChild(childrenCountCellElement)
         cellsRowElement.appendChild(commentCellElement)
 
-        nameCellElement.appendChild(document.createTextNode(item.names.physicalName.value))
+        nameCellElement.appendChild(document.createTextNode(item.name))
         colsCountCellElement.appendChild(document.createTextNode(item.columnCount))
         rowsCountCellElement.appendChild(document.createTextNode(item.rowCount))
-        parentCountCellElement.appendChild(document.createTextNode(item.referencingCountToParent))
-        childrenCountCellElement.appendChild(document.createTextNode(item.referencedCountFromChildren))
-        commentCellElement.appendChild(document.createTextNode(item.names.logicalName.value))
+        parentCountCellElement.appendChild(document.createTextNode(item.parentCount))
+        childrenCountCellElement.appendChild(document.createTextNode(item.childCount))
+        commentCellElement.appendChild(document.createTextNode(item.comment))
     })
 }
 (function () {

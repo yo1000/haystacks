@@ -1,7 +1,7 @@
 package com.yo1000.haystacks.autoconfigure.web
 
 import com.yo1000.haystacks.core.service.TableService
-import com.yo1000.haystacks.web.TableController
+import com.yo1000.haystacks.web.controller.TableController
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass

@@ -25,10 +25,10 @@
 <script th:inline="javascript">
 const render = (containerElement, table) => {
     const tableNameElement = document.querySelector("#tableName")
-    tableNameElement.appendChild(document.createTextNode(table.names.physicalName.value))
+    tableNameElement.appendChild(document.createTextNode(table.name))
     const tableCommentElement = document.querySelector("#tableComment")
-    if (table.names.logicalName && table.names.logicalName.value) {
-        tableCommentElement.appendChild(document.createTextNode(table.names.logicalName.value))
+    if (table.comment) {
+        tableCommentElement.appendChild(document.createTextNode(table.comment))
     }
 
     const tableElement = document.createElement("table")
@@ -73,7 +73,7 @@ const render = (containerElement, table) => {
 
         const nameDataElement = document.createElement("td")
         dataRowElement.appendChild(nameDataElement)
-        nameDataElement.appendChild(document.createTextNode(column.names.physicalName.value))
+        nameDataElement.appendChild(document.createTextNode(column.name))
 
         const typeDataElement = document.createElement("td")
         dataRowElement.appendChild(typeDataElement)
@@ -95,8 +95,7 @@ const render = (containerElement, table) => {
         const parentDataElement = document.createElement("td")
         dataRowElement.appendChild(parentDataElement)
         if (column.parent) {
-            parentDataElement.appendChild(document.createTextNode(
-                column.parent.tablePhysicalName.value + '.' + column.parent.columnPhysicalName.value))
+            parentDataElement.appendChild(document.createTextNode(column.parent))
         }
 
         const childrenDataElement = document.createElement("td")
@@ -107,14 +106,13 @@ const render = (containerElement, table) => {
             column.children.forEach(child => {
                 const childListItemElement = document.createElement("li")
                 childrenListElement.appendChild(childListItemElement)
-                childListItemElement.appendChild(document.createTextNode(
-                    child.tablePhysicalName.value + '.' + child.columnPhysicalName.value))
+                childListItemElement.appendChild(document.createTextNode(child))
             })
         }
 
         const commentDataElement = document.createElement("td")
         dataRowElement.appendChild(commentDataElement)
-        commentDataElement.appendChild(document.createTextNode(column.names.logicalName.value))
+        commentDataElement.appendChild(document.createTextNode(column.comment))
     })
 }
 (function () {

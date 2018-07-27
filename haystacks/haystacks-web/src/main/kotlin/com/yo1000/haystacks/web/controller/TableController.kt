@@ -1,4 +1,4 @@
-package com.yo1000.haystacks.web
+package com.yo1000.haystacks.web.controller
 
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
