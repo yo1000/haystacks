@@ -45,10 +45,16 @@ open class TableRestController(
                             nullable = it.nullable,
                             default = it.default,
                             parent = it.parent?.let {
-                                "${it.tablePhysicalName.value}.${it.columnPhysicalName.value}"
+                                Table.Reference(
+                                        table = it.tablePhysicalName.value,
+                                        column = it.columnPhysicalName.value
+                                )
                             },
                             children = it.children.map {
-                                "${it.tablePhysicalName.value}.${it.columnPhysicalName.value}"
+                                Table.Reference(
+                                        table = it.tablePhysicalName.value,
+                                        column = it.columnPhysicalName.value
+                                )
                             },
                             comment = it.names.logicalName.value
                     )
@@ -58,7 +64,10 @@ open class TableRestController(
                             name = it.names.physicalName.value,
                             type = it.type.name,
                             columns = it.columnNames.map {
-                                it.value
+                                Table.Reference(
+                                        table = table.names.physicalName.value,
+                                        column = it.value
+                                )
                             },
                             comment = it.names.logicalName.value
                     )

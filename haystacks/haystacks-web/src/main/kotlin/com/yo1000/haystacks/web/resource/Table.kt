@@ -16,15 +16,20 @@ data class Table(
             val type: String,
             val nullable: Boolean,
             val default: String?,
-            val parent: String?,
-            val children: List<String>,
+            val parent: Reference?,
+            val children: List<Reference>,
             val comment: String
     )
 
     data class Index(
             val name: String,
             val type: String,
-            val columns: List<String>,
+            val columns: List<Reference>,
             val comment: String
+    )
+
+    data class Reference(
+            val table: String,
+            val column: String
     )
 }
