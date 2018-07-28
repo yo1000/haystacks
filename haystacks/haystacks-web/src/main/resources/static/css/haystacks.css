@@ -80,3 +80,21 @@ body {
 .is-foreign-key-column {
     border-bottom: 1px dashed #000;
 }
+
+.is-search-result li {
+    display: inline-block;
+}
+
+.is-search-result div,
+.is-search-result li {
+    margin: .2rem;
+}
+
+.is-search-result ruby {
+    padding: .7rem .5rem 0 .5rem;
+    margin: .2rem 0;
+}
+
+.is-search-result ruby:first-of-type {
+    padding: .7rem .5rem 0 0;
+}

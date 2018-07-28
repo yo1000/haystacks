@@ -232,8 +232,9 @@ const renderStatement = (containerElement, table) => {
     hljs.initHighlightingOnLoad()
 }
 (function () {
+    const tableName = /*[[${tableName}]]*/ "tableName";
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", "/api/tables/" + [[${tableName}]], true);
+    xhr.open("GET", "/api/tables/" + tableName, true);
     xhr.onload = (e) => {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
