@@ -1,6 +1,7 @@
 package com.yo1000.haystacks.autoconfigure.web
 
 import com.yo1000.haystacks.core.service.TableService
+import com.yo1000.haystacks.web.controller.SearchRestController
 import com.yo1000.haystacks.web.controller.TableRestController
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
@@ -8,7 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
 import org.springframework.context.annotation.Configuration
@@ -29,6 +29,10 @@ import javax.servlet.Servlet
 @AutoConfigureAfter(DispatcherServletAutoConfiguration::class, ValidationAutoConfiguration::class)
 class RestControllerAutoConfiguration {
     @RestController
-    class TableRestControllerBean(tableService: TableService, dataSourceProperties: DataSourceProperties)
-        : TableRestController(tableService, dataSourceProperties.name)
+    class TableRestControllerBean(tableService: TableService)
+        : TableRestController(tableService)
+
+    @RestController
+    class SearchRestControllerBean(tableService: TableService)
+        : SearchRestController(tableService)
 }
