@@ -1,6 +1,6 @@
 package com.yo1000.haystacks.core.service
 
-import com.yo1000.haystacks.core.entity.FoundNamesMap
+import com.yo1000.haystacks.core.entity.FoundNames
 import com.yo1000.haystacks.core.entity.Index
 import com.yo1000.haystacks.core.entity.Table
 import com.yo1000.haystacks.core.entity.TableOutline
@@ -40,5 +40,5 @@ class TableService(
     fun getIndexes(name: TablePhysicalName): List<Index> = indexRepository.findByTableName(name)
     fun getStatement(name: TablePhysicalName): Statement = tableRepository.findStatementByName(name)
 
-    fun find(vararg q: String): FoundNamesMap = tableRepository.findNames(*q)
+    fun find(vararg q: String): List<FoundNames> = tableRepository.findNames(*q)
 }

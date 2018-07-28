@@ -35,13 +35,12 @@ class MysqlTableRepository(
         const val INPUT_TABLE_NAME = "tableName"
     }
 
-    override fun findNames(vararg q: String): FoundNamesMap  = FoundNamesMap(*jdbcTemplate.query("""
+    override fun findNames(vararg q: String): List<FoundNames>  = jdbcTemplate.query("""
         SELECT DISTINCT
             tbl.table_name      AS $OUTPUT_TABLE_NAME,
             tbl.table_comment   AS $OUTPUT_TABLE_COMMENT,
             col.column_name     AS $OUTPUT_COLUMN_NAME,
-            col.column_comment  AS $OUTPUT_COLUMN_COMMENT,
-            col.ordinal_position
+            col.column_comment  AS $OUTPUT_COLUMN_COMMENT
         FROM
             (
                 SELECT
@@ -68,26 +67,33 @@ class MysqlTableRepository(
             information_schema.columns col
             ON  tbl.table_schema    = col.table_schema
             AND tbl.table_name      = col.table_name
-        ORDER BY
-            col.ordinal_position
         """.trimIndent(), (
             (1..q.size).map { "keyword_$it" to q[it - 1]
             } + (INPUT_SCHEMA_NAME to dataSourceName)).toMap()
     ) { resultSet, _ ->
+        val tableName = resultSet.getString(OUTPUT_TABLE_NAME)
+        val tableComment = resultSet.getString(OUTPUT_TABLE_COMMENT)
+
+        val columnName = resultSet.getString(OUTPUT_COLUMN_NAME)
+        val columnComment = resultSet.getString(OUTPUT_COLUMN_COMMENT)
+
         TableNames(
-                physicalName = TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)),
-                logicalName = LogicalName(resultSet.getString(OUTPUT_TABLE_COMMENT))
+                physicalName = TablePhysicalName(tableName),
+                logicalName = LogicalName(tableComment)
         ) to ColumnNames(
-                physicalName = ColumnPhysicalName(resultSet.getString(OUTPUT_COLUMN_NAME)),
-                logicalName = LogicalName(resultSet.getString(OUTPUT_COLUMN_COMMENT))
+                physicalName = ColumnPhysicalName(columnName),
+                logicalName = LogicalName(columnComment)
         )
     }.groupBy({
         it.first
     }, {
         it.second
     }).map {
-        it.key to ColumnNamesList(*it.value.toTypedArray())
-    }.toTypedArray())
+        FoundNames(
+                tableNames = it.key,
+                columnNamesList = ColumnNamesList(*it.value.toTypedArray())
+        )
+    }
 
     override fun findTableNamesAll(): List<TableNames> = jdbcTemplate.query("""
         SELECT
