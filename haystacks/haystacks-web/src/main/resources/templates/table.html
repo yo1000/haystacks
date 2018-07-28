@@ -86,7 +86,23 @@ const renderColumns = (containerElement, table) => {
 
         const nameDataElement = document.createElement("td")
         dataRowElement.appendChild(nameDataElement)
-        nameDataElement.appendChild(document.createTextNode(column.name))
+        const foreignKeySpanElement = document.createElement("span")
+        nameDataElement.appendChild(foreignKeySpanElement)
+        foreignKeySpanElement.classList.add("is-column-name")
+        const primaryKeySpanElement = document.createElement("span")
+        foreignKeySpanElement.appendChild(primaryKeySpanElement)
+        primaryKeySpanElement.classList.add("is-column-name")
+        primaryKeySpanElement.appendChild(document.createTextNode(column.name))
+        if (table.indexes.find((element) => {
+            return element.type === "PRIMARY" && element.columns.find((col) => {
+                return col.column === column.name
+            })
+        })) {
+            primaryKeySpanElement.classList.add("is-primary-key-column")
+        }
+        if (column.parent) {
+            foreignKeySpanElement.classList.add("is-foreign-key-column")
+        }
 
         const typeDataElement = document.createElement("td")
         dataRowElement.appendChild(typeDataElement)
@@ -196,11 +212,7 @@ const renderIndexes = (containerElement, table) => {
             index.columns.forEach(column => {
                 const columnsListItemElement = document.createElement("li")
                 columnsListElement.appendChild(columnsListItemElement)
-                const columnsAnchorElement = document.createElement("a")
-                columnsListItemElement.appendChild(columnsAnchorElement)
-                columnsAnchorElement.setAttribute("href", column.table)
-                columnsAnchorElement.appendChild(
-                    document.createTextNode(`${column.table}.${column.column}`))
+                columnsListItemElement.appendChild(document.createTextNode(column.column))
             })
         }
 
