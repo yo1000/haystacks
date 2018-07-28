@@ -66,8 +66,8 @@
       <div class="navbar-item">
         <div class="field is-grouped">
           <p class="control">
-            <input class="input" type="text" placeholder="Search text">
-            <a class="button search">
+            <input id="searchText" class="input" type="text" placeholder="Search text">
+            <a id="searchButton" class="button search" href="#">
               <span class="icon">
                 <i class="fas fa-search"></i>
               </span>
@@ -86,7 +86,26 @@
       </div>
     </div>
   </div>
-</nav>
+  <script>
+  (function() {
+      const searchTextElement = document.getElementById("searchText")
+      const searchButtonElement = document.getElementById("searchButton")
+      const search = () => {
+          const searchText = searchTextElement.value
+          const queryString = searchText.split(/[\s　]+/).map((s, i) => {
+              return `${(i === 0 ? "?" : "&")}q=${s}`
+          }).join("")
+          location.href = `/search${queryString}`
+      }
+      searchTextElement.addEventListener("keypress", (event) => {
+          if (event.keyCode === 13) search()
+      })
+      searchButtonElement.addEventListener("click", (event) => {
+          search()
+      })
+  })()
+  </script>
+</nav><!-- th:fragment="navbar" -->
 
 <section class="section">
   <div class="container">
