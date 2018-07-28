@@ -35,9 +35,59 @@ class MysqlTableRepository(
         const val INPUT_TABLE_NAME = "tableName"
     }
 
-    override fun findNames(vararg q: String): FoundNamesMap {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun findNames(vararg q: String): FoundNamesMap  = FoundNamesMap(*jdbcTemplate.query("""
+        SELECT DISTINCT
+            tbl.table_name      AS $OUTPUT_TABLE_NAME,
+            tbl.table_comment   AS $OUTPUT_TABLE_COMMENT,
+            col.column_name     AS $OUTPUT_COLUMN_NAME,
+            col.column_comment  AS $OUTPUT_COLUMN_COMMENT,
+            col.ordinal_position
+        FROM
+            (
+                SELECT
+                    tbl_1.table_name,
+                    tbl_1.table_comment,
+                    tbl_1.table_schema
+                FROM
+                    information_schema.tables tbl_1
+                INNER JOIN
+                    information_schema.columns col_1
+                    ON  tbl_1.table_schema  = :$INPUT_SCHEMA_NAME
+                    AND tbl_1.table_schema  = col_1.table_schema
+                    AND tbl_1.table_name    = col_1.table_name
+                WHERE
+                    tbl_1.table_type = 'BASE TABLE'
+                AND ( ${(1..q.size).map { """
+                        tbl_1.table_name        LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    OR  tbl_1.table_comment     LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    OR  col_1.column_name       LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    OR  col_1.column_comment    LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    """ }.joinToString(separator = " OR ")} )
+            ) tbl
+        INNER JOIN
+            information_schema.columns col
+            ON  tbl.table_schema    = col.table_schema
+            AND tbl.table_name      = col.table_name
+        ORDER BY
+            col.ordinal_position
+        """.trimIndent(), (
+            (1..q.size).map { "keyword_$it" to q[it - 1]
+            } + (INPUT_SCHEMA_NAME to dataSourceName)).toMap()
+    ) { resultSet, _ ->
+        TableNames(
+                physicalName = TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)),
+                logicalName = LogicalName(resultSet.getString(OUTPUT_TABLE_COMMENT))
+        ) to ColumnNames(
+                physicalName = ColumnPhysicalName(resultSet.getString(OUTPUT_COLUMN_NAME)),
+                logicalName = LogicalName(resultSet.getString(OUTPUT_COLUMN_COMMENT))
+        )
+    }.groupBy({
+        it.first
+    }, {
+        it.second
+    }).map {
+        it.key to ColumnNamesList(*it.value.toTypedArray())
+    }.toTypedArray())
 
     override fun findTableNamesAll(): List<TableNames> = jdbcTemplate.query("""
         SELECT
