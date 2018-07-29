@@ -42,7 +42,8 @@ class EmbeddedMysqlInitializer(
                 CREATE TABLE `countries` (
                     `id`    varchar(4)  NOT NULL    COMMENT 'ID',
                     `name`  varchar(40) NOT NULL    COMMENT 'Country name',
-                    PRIMARY KEY(`id`)
+                    PRIMARY KEY(`id`),
+                    UNIQUE KEY `uq_countries_name` (`name`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Countries';
                 """.trimIndent(), """
                 CREATE TABLE `artists` (
