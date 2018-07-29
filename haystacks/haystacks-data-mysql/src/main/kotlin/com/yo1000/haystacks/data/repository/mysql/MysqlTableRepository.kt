@@ -51,11 +51,11 @@ class MysqlTableRepository(
                     information_schema.tables tbl_1
                 INNER JOIN
                     information_schema.columns col_1
-                    ON  tbl_1.table_schema  = :$INPUT_SCHEMA_NAME
-                    AND tbl_1.table_schema  = col_1.table_schema
+                    ON  tbl_1.table_schema  = col_1.table_schema
                     AND tbl_1.table_name    = col_1.table_name
                 WHERE
                     tbl_1.table_type = 'BASE TABLE'
+                AND tbl_1.table_schema  = :$INPUT_SCHEMA_NAME
                 AND ( ${(1..q.size).map { """
                         tbl_1.table_name        LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
                     OR  tbl_1.table_comment     LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
