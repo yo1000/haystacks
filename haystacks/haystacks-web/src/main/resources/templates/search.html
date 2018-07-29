@@ -114,10 +114,10 @@ const renderSearchResults = (containerElement, searchResults, queries) => {
 (function () {
     const queries = /*[[${queries}]]*/ []
     const queryString = queries.map((q, i) => {
-        return (i === 0 ? "?" : "&") + `q=${q}`
-    })
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "/api/search/" + queryString, true);
+        return `q=${q}`
+    }).join("&")
+    const xhr = new XMLHttpRequest()
+    xhr.open("GET", `/api/search/?${queryString}`, true)
     xhr.onload = (e) => {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
