@@ -1,6 +1,8 @@
 package com.yo1000.haystacks.autoconfigure.web
 
 import com.yo1000.haystacks.core.service.TableService
+import com.yo1000.haystacks.web.controller.IndexController
+import com.yo1000.haystacks.web.controller.InformationController
 import com.yo1000.haystacks.web.controller.SearchController
 import com.yo1000.haystacks.web.controller.TableController
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
@@ -36,4 +38,12 @@ class ControllerAutoConfiguration {
     @Controller
     class SearchControllerBean(dataSourceProperties: DataSourceProperties)
         : SearchController(dataSourceProperties.name)
+
+    @Controller
+    class InformationControllerBean()
+        : InformationController()
+
+    @Controller
+    class IndexControllerBean()
+        : IndexController()
 }

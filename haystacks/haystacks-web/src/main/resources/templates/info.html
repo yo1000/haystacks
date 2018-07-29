@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragments :: head (title='DataSource')">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Table name | haystacks</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+  <link rel="stylesheet" href="../static/css/haystacks.css" th:href="@{/css/haystacks.css}">
+  <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
+</head>
+<body>
+<div th:replace="_fragments :: navbar"></div>
+<section class="section">
+  <div class="container">
+    <h1 class="title is-2">Information</h1>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">Data Source</h2>
+    <div id="dataSource"></div>
+  </div>
+</section>
+<script th:inline="javascript">
+const renderDataSource = (containerElement, dataSource) => {
+    const tableElement = document.createElement("table")
+    containerElement.appendChild(tableElement)
+    tableElement.classList.add("table")
+    tableElement.classList.add("is-narrow")
+    tableElement.classList.add("is-hoverable")
+    tableElement.classList.add("is-fullwidth")
+
+    const tableBodyElement = document.createElement("tbody")
+    tableElement.appendChild(tableBodyElement)
+
+    const urlRowElement = document.createElement("tr")
+    tableBodyElement.appendChild(urlRowElement)
+    const urlHeadElement = document.createElement("th")
+    urlRowElement.appendChild(urlHeadElement)
+    urlHeadElement.appendChild(document.createTextNode("URL"))
+    const urlDataElement = document.createElement("td")
+    urlRowElement.appendChild(urlDataElement)
+    urlDataElement.appendChild(document.createTextNode(dataSource.url))
+
+    const nameRowElement = document.createElement("tr")
+    tableBodyElement.appendChild(nameRowElement)
+    const nameHeadElement = document.createElement("th")
+    nameRowElement.appendChild(nameHeadElement)
+    nameHeadElement.appendChild(document.createTextNode("Name"))
+    const nameDataElement = document.createElement("td")
+    nameRowElement.appendChild(nameDataElement)
+    nameDataElement.appendChild(document.createTextNode(dataSource.name))
+
+    const usernameRowElement = document.createElement("tr")
+    tableBodyElement.appendChild(usernameRowElement)
+    const usernameHeadElement = document.createElement("th")
+    usernameRowElement.appendChild(usernameHeadElement)
+    usernameHeadElement.appendChild(document.createTextNode("Username"))
+    const usernameDataElement = document.createElement("td")
+    usernameRowElement.appendChild(usernameDataElement)
+    usernameDataElement.appendChild(document.createTextNode(dataSource.username))
+
+    const driverRowElement = document.createElement("tr")
+    tableBodyElement.appendChild(driverRowElement)
+    const driverHeadElement = document.createElement("th")
+    driverRowElement.appendChild(driverHeadElement)
+    driverHeadElement.appendChild(document.createTextNode("Driver"))
+    const driverDataElement = document.createElement("td")
+    driverRowElement.appendChild(driverDataElement)
+    driverDataElement.appendChild(document.createTextNode(dataSource.driverClass))
+}
+(function () {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "/api/dataSource", true);
+    xhr.onload = (e) => {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                const dataSource = JSON.parse(xhr.responseText)
+                renderDataSource(document.querySelector("#dataSource"), dataSource)
+            } else {
+                console.error(xhr.statusText)
+            }
+        }
+    }
+    xhr.onerror = (e) => {
+        console.error(xhr.statusText)
+    }
+    xhr.send(null)
+})()
+</script>
+</body>
+</html>
