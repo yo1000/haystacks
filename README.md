@@ -27,12 +27,9 @@ cd haystacks
 
 ## Screenshots
 ![Screenshot1](docs/screenshots/haystacks-screenshot1.png?raw=true)
-<hr/>
 
 ![Screenshot2](docs/screenshots/haystacks-screenshot2.png?raw=true)
-<hr>
 
 ![Screenshot3](docs/screenshots/haystacks-screenshot3.png?raw=true)
-<hr>
 
 ![Screenshot4](docs/screenshots/haystacks-screenshot4.png?raw=true)
