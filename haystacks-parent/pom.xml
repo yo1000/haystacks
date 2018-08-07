@@ -30,6 +30,11 @@
 		<dependencies>
 			<dependency>
 				<groupId>com.yo1000</groupId>
+				<artifactId>haystacks</artifactId>
+				<version>${haystacks.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.yo1000</groupId>
 				<artifactId>haystacks-core</artifactId>
 				<version>${haystacks.version}</version>
 			</dependency>
@@ -50,6 +55,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.yo1000</groupId>
+				<artifactId>haystacks-starters</artifactId>
+				<version>${haystacks.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.yo1000</groupId>
 				<artifactId>haystacks-starter</artifactId>
 				<version>${haystacks.version}</version>
 			</dependency>
@@ -61,6 +71,11 @@
 			<dependency>
 				<groupId>com.yo1000</groupId>
 				<artifactId>haystacks-starter-data-mysql</artifactId>
+				<version>${haystacks.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.yo1000</groupId>
+				<artifactId>haystacks-assemblies</artifactId>
 				<version>${haystacks.version}</version>
 			</dependency>
 		</dependencies>
