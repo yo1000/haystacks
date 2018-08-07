@@ -50,6 +50,11 @@ class MysqlIndexRepository(
                 idx.table_schema    = :$INPUT_SCHEMA_NAME
             AND idx.table_name      = :$INPUT_TABLE_NAME
             ORDER BY
+                CASE
+                    WHEN idx.index_name = 'PRIMARY' THEN  1
+                    WHEN idx.non_unique = 0         THEN  2
+                    ELSE                                  3
+                END,
                 idx.seq_in_index
         """.trimIndent(), mapOf(
                 INPUT_SCHEMA_NAME to dataSourceName,
