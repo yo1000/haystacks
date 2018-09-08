@@ -23,7 +23,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<kotlin.version>1.2.41</kotlin.version>
-		<haystacks.version>0.0.1-SNAPSHOT</haystacks.version>
+		<haystacks.version>0.0.2-SNAPSHOT</haystacks.version>
 	</properties>
 
 	<dependencyManagement>
