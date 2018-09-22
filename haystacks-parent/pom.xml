@@ -23,6 +23,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<kotlin.version>1.2.41</kotlin.version>
+		<maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
 		<haystacks.version>0.0.2-SNAPSHOT</haystacks.version>
 	</properties>
 
@@ -91,9 +92,10 @@
 					<artifactId>spring-boot-maven-plugin</artifactId>
 				</plugin>
 				<plugin>
-					<artifactId>kotlin-maven-plugin</artifactId>
 					<groupId>org.jetbrains.kotlin</groupId>
+					<artifactId>kotlin-maven-plugin</artifactId>
 					<configuration>
+						<jvmTarget>${java.version}</jvmTarget>
 						<args>
 							<arg>-Xjsr305=strict</arg>
 						</args>
