@@ -13,45 +13,30 @@ import org.mockito.Mockito
 class TableServiceTests {
     @ParameterizedTest
     @CsvSource(delimiter = ';', value = [
-        "'t1=TableOne, t2=TableTwo'; 't1=3, t2=11'; 't1=123, t2=456'; 't1=1, t2=0'; 't1=0, t2=1'",
-        "'t1=TableA,   t2=TableB'  ; 't1=5, t2=7' ; 't1=78,  t2=90' ; 't1=0, t2=0'; 't1=0, t2=0'"
+        "'t1, t2' ; 'TableOne, TableTwo' ; '3, 11' ; '123, 456' ; '1, 0' ; '0, 1'",
+        "'t1, t2' ; 'TableA,   TableB'   ; '5, 7'  ; '78,  90'  ; '0, 0' ; '0, 0'"
     ])
     fun `Given a TableService when invoke getTableOutlines then return list of TableOutline`(
-            namePairsString: String,
-            columnCountMapString: String,
-            rowCountMapString: String,
-            childrenCountMapString: String,
-            parentCountMapString: String
+            physicalNamesString: String,
+            logicalNamesString: String,
+            columnCountsString: String,
+            rowCountsString: String,
+            childrenCountsString: String,
+            parentCountsString: String
     ) {
         // Given
-        val namePairs = namePairsString.split(Regex("[ ]*,[ ]*")).map {
-            it.split("=").let {
-                TableNames(
-                        physicalName = TablePhysicalName(it[0]),
-                        logicalName = LogicalName(it[1])
-                )
-            }
-        }
-        val columnCountMap = columnCountMapString.split(Regex("[ ]*,[ ]*")).map {
-            it.split("=").let {
-                TablePhysicalName(it[0]) to it[1].toInt()
-            }
-        }.toMap()
-        val rowCountMap = rowCountMapString.split(Regex("[ ]*,[ ]*")).map {
-            it.split("=").let {
-                TablePhysicalName(it[0]) to it[1].toLong()
-            }
-        }.toMap()
-        val childrenCountMap = childrenCountMapString.split(Regex("[ ]*,[ ]*")).map {
-            it.split("=").let {
-                TablePhysicalName(it[0]) to it[1].toInt()
-            }
-        }.toMap()
-        val parentCountMap = parentCountMapString.split(Regex("[ ]*,[ ]*")).map {
-            it.split("=").let {
-                TablePhysicalName(it[0]) to it[1].toInt()
-            }
-        }.toMap()
+        val physicalNames = physicalNamesString.split(Regex("[ ]*,[ ]*"))
+        val logicalNames = logicalNamesString.split(Regex("[ ]*,[ ]*"))
+        val columnCounts = columnCountsString.split(Regex("[ ]*,[ ]*")).map { it.toInt() }
+        val rowCounts = rowCountsString.split(Regex("[ ]*,[ ]*")).map { it.toLong() }
+        val childrenCounts = childrenCountsString.split(Regex("[ ]*,[ ]*")).map { it.toInt() }
+        val parentCounts = parentCountsString.split(Regex("[ ]*,[ ]*")).map { it.toInt() }
+
+        val namePairs = physicalNames.mapIndexed { i, s -> TableNames(TablePhysicalName(s), LogicalName(logicalNames[i])) }
+        val columnCountMap = physicalNames.mapIndexed { i, s -> TablePhysicalName(s) to columnCounts[i] }.toMap()
+        val rowCountMap = physicalNames.mapIndexed { i, s -> TablePhysicalName(s) to rowCounts[i] }.toMap()
+        val childrenCountMap = physicalNames.mapIndexed { i, s -> TablePhysicalName(s) to childrenCounts[i] }.toMap()
+        val parentCountMap = physicalNames.mapIndexed { i, s -> TablePhysicalName(s) to parentCounts[i] }.toMap()
 
         val tableRepository = Mockito.mock(TableRepository::class.java)
         Mockito.doReturn(namePairs).`when`(tableRepository).findTableNamesAll()
