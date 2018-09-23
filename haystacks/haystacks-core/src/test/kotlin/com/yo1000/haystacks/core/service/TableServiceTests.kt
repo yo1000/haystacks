@@ -25,12 +25,13 @@ class TableServiceTests {
             parentCountsString: String
     ) {
         // Given
-        val physicalNames = physicalNamesString.split(Regex("[ ]*,[ ]*"))
-        val logicalNames = logicalNamesString.split(Regex("[ ]*,[ ]*"))
-        val columnCounts = columnCountsString.split(Regex("[ ]*,[ ]*")).map { it.toInt() }
-        val rowCounts = rowCountsString.split(Regex("[ ]*,[ ]*")).map { it.toLong() }
-        val childrenCounts = childrenCountsString.split(Regex("[ ]*,[ ]*")).map { it.toInt() }
-        val parentCounts = parentCountsString.split(Regex("[ ]*,[ ]*")).map { it.toInt() }
+        fun String.splitByComma(): List<String> = this.split(Regex("[ ]*,[ ]*"))
+        val physicalNames = physicalNamesString.splitByComma()
+        val logicalNames = logicalNamesString.splitByComma()
+        val columnCounts = columnCountsString.splitByComma().map { it.toInt() }
+        val rowCounts = rowCountsString.splitByComma().map { it.toLong() }
+        val childrenCounts = childrenCountsString.splitByComma().map { it.toInt() }
+        val parentCounts = parentCountsString.splitByComma().map { it.toInt() }
 
         val namePairs = physicalNames.mapIndexed { i, s -> TableNames(TablePhysicalName(s), LogicalName(logicalNames[i])) }
         val columnCountMap = physicalNames.mapIndexed { i, s -> TablePhysicalName(s) to columnCounts[i] }.toMap()
