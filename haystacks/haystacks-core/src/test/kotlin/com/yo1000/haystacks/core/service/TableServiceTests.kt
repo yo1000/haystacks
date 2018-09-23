@@ -1,10 +1,13 @@
 package com.yo1000.haystacks.core.service
 
+import com.yo1000.haystacks.core.entity.FoundNames
+import com.yo1000.haystacks.core.entity.Index
 import com.yo1000.haystacks.core.entity.Table
 import com.yo1000.haystacks.core.entity.TableNames
 import com.yo1000.haystacks.core.repository.IndexRepository
 import com.yo1000.haystacks.core.repository.TableRepository
 import com.yo1000.haystacks.core.valueobject.LogicalName
+import com.yo1000.haystacks.core.valueobject.Statement
 import com.yo1000.haystacks.core.valueobject.TablePhysicalName
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -94,6 +97,72 @@ class TableServiceTests {
         Assertions.assertSame(table, actual)
         Mockito.verify(tableRepositoryMock, Times(1))
                 .findTable(any(TablePhysicalName::class.java))
+    }
+
+    @Test
+    fun `Given a TableService when invoke getIndexes by TablePhysicalName then should return Index list`() {
+        // Given
+        val indexes = listOf(Mockito.mock(Index::class.java), Mockito.mock(Index::class.java))
+        val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
+        val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
+        val tableService = TableService(
+                tableRepositoryMock,
+                indexRepositoryMock.also {
+                    Mockito.doReturn(indexes).`when`(it).findByTableName(any(TablePhysicalName::class.java))
+                }
+        )
+
+        // When
+        val actual = tableService.getIndexes(TablePhysicalName("any"))
+
+        // Then
+        Assertions.assertSame(indexes, actual)
+        Mockito.verify(indexRepositoryMock, Times(1))
+                .findByTableName(any(TablePhysicalName::class.java))
+    }
+
+    @Test
+    fun `Given a TableService when invoke getStatement by TablePhysicalName then should return Statement object`() {
+        // Given
+        val statement = Mockito.mock(Statement::class.java)
+        val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
+        val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
+        val tableService = TableService(
+                tableRepositoryMock.also {
+                    Mockito.doReturn(statement).`when`(it).findStatementByName(any(TablePhysicalName::class.java))
+                },
+                indexRepositoryMock
+        )
+
+        // When
+        val actual = tableService.getStatement(TablePhysicalName("any"))
+
+        // Then
+        Assertions.assertSame(statement, actual)
+        Mockito.verify(tableRepositoryMock, Times(1))
+                .findStatementByName(any(TablePhysicalName::class.java))
+    }
+
+    @Test
+    fun `Given a TableService when invoke find by query strings then should return FoundNames list`() {
+        // Given
+        val foundNamesList = listOf(Mockito.mock(FoundNames::class.java), Mockito.mock(FoundNames::class.java))
+        val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
+        val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
+        val tableService = TableService(
+                tableRepositoryMock.also {
+                    Mockito.doReturn(foundNamesList).`when`(it).findNames(Mockito.anyString(), Mockito.anyString())
+                },
+                indexRepositoryMock
+        )
+
+        // When
+        val actual = tableService.find("any", "some")
+
+        // Then
+        Assertions.assertSame(foundNamesList, actual)
+        Mockito.verify(tableRepositoryMock, Times(1))
+                .findNames(Mockito.anyString(), Mockito.anyString())
     }
 
     private fun <T> any(clazz: Class<T>): T {
