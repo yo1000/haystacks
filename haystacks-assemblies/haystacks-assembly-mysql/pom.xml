@@ -18,8 +18,6 @@
 
 	<properties>
 		<maven.spring.profile/>
-		<mysql.version>8.0.11</mysql.version>
-		<wix-embedded-mysql.version>2.2.9</wix-embedded-mysql.version>
 	</properties>
 
 	<dependencies>
@@ -72,12 +70,10 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.wix</groupId>
 			<artifactId>wix-embedded-mysql</artifactId>
-			<version>${wix-embedded-mysql.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -98,12 +94,10 @@
 				<dependency>
 					<groupId>com.wix</groupId>
 					<artifactId>wix-embedded-mysql</artifactId>
-					<version>${wix-embedded-mysql.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>org.bgee.log4jdbc-log4j2</groupId>
 					<artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
-					<version>1.16</version>
 				</dependency>
 			</dependencies>
 			<build>
