@@ -1,14 +1,17 @@
 package com.yo1000.haystacks.core.service
 
+import com.yo1000.haystacks.core.entity.Table
 import com.yo1000.haystacks.core.entity.TableNames
 import com.yo1000.haystacks.core.repository.IndexRepository
 import com.yo1000.haystacks.core.repository.TableRepository
 import com.yo1000.haystacks.core.valueobject.LogicalName
 import com.yo1000.haystacks.core.valueobject.TablePhysicalName
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.Mockito
+import org.mockito.internal.verification.Times
 
 class TableServiceTests {
     @ParameterizedTest
@@ -16,7 +19,7 @@ class TableServiceTests {
         "'t1, t2' ; 'TableOne, TableTwo' ; '3, 11' ; '123, 456' ; '1, 0' ; '0, 1'",
         "'t1, t2' ; 'TableA,   TableB'   ; '5, 7'  ; '78,  90'  ; '0, 0' ; '0, 0'"
     ])
-    fun `Given a TableService when invoke getTableOutlines then return list of TableOutline`(
+    fun `Given a TableService when invoke getTableOutlines then should return list of TableOutline`(
             physicalNamesString: String,
             logicalNamesString: String,
             columnCountsString: String,
@@ -39,15 +42,18 @@ class TableServiceTests {
         val childrenCountMap = physicalNames.mapIndexed { i, s -> TablePhysicalName(s) to childrenCounts[i] }.toMap()
         val parentCountMap = physicalNames.mapIndexed { i, s -> TablePhysicalName(s) to parentCounts[i] }.toMap()
 
-        val tableRepository = Mockito.mock(TableRepository::class.java)
-        Mockito.doReturn(namePairs).`when`(tableRepository).findTableNamesAll()
-        Mockito.doReturn(columnCountMap).`when`(tableRepository).findColumnCountMap()
-        Mockito.doReturn(rowCountMap).`when`(tableRepository).findRowCountMap()
-        Mockito.doReturn(childrenCountMap).`when`(tableRepository).findReferencedCountFromChildrenMap()
-        Mockito.doReturn(parentCountMap).`when`(tableRepository).findReferencingCountToParentMap()
-
-        val indexRepository = Mockito.mock(IndexRepository::class.java)
-        val tableService = TableService(tableRepository, indexRepository)
+        val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
+        val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
+        val tableService = TableService(
+                tableRepositoryMock.also {
+                    Mockito.doReturn(namePairs).`when`(it).findTableNamesAll()
+                    Mockito.doReturn(columnCountMap).`when`(it).findColumnCountMap()
+                    Mockito.doReturn(rowCountMap).`when`(it).findRowCountMap()
+                    Mockito.doReturn(childrenCountMap).`when`(it).findReferencedCountFromChildrenMap()
+                    Mockito.doReturn(parentCountMap).`when`(it).findReferencingCountToParentMap()
+                },
+                indexRepositoryMock
+        )
 
         // When
         val actual = tableService.getTableOutlines()
@@ -61,5 +67,36 @@ class TableServiceTests {
             Assertions.assertEquals(childrenCountMap[name], outline.referencedCountFromChildren)
             Assertions.assertEquals(parentCountMap[name], outline.referencingCountToParent)
         }
+        Mockito.verify(tableRepositoryMock, Times(1)).findColumnCountMap()
+        Mockito.verify(tableRepositoryMock, Times(1)).findRowCountMap()
+        Mockito.verify(tableRepositoryMock, Times(1)).findReferencedCountFromChildrenMap()
+        Mockito.verify(tableRepositoryMock, Times(1)).findReferencingCountToParentMap()
+        Mockito.verify(tableRepositoryMock, Times(1)).findTableNamesAll()
+    }
+
+    @Test
+    fun `Given a TableService when invoke getTable by TablePhysicalName then should return Table object`() {
+        // Given
+        val table = Mockito.mock(Table::class.java)
+        val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
+        val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
+        val tableService = TableService(
+                tableRepositoryMock.also {
+                    Mockito.doReturn(table).`when`(it).findTable(any(TablePhysicalName::class.java))
+                },
+                indexRepositoryMock
+        )
+
+        // When
+        val actual = tableService.getTable(TablePhysicalName("any"))
+
+        // Then
+        Assertions.assertSame(table, actual)
+        Mockito.verify(tableRepositoryMock, Times(1))
+                .findTable(any(TablePhysicalName::class.java))
+    }
+
+    private fun <T> any(clazz: Class<T>): T {
+        return Mockito.any(clazz)
     }
 }
