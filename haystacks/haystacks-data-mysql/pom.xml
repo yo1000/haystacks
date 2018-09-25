@@ -47,10 +47,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.yo1000</groupId>
 			<artifactId>haystacks-core</artifactId>
 		</dependency>
