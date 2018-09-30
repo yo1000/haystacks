@@ -7,13 +7,13 @@ import com.yo1000.haystacks.core.valueobject.ColumnPhysicalName
 import com.yo1000.haystacks.core.valueobject.IndexPhysicalName
 import com.yo1000.haystacks.core.valueobject.LogicalName
 import com.yo1000.haystacks.core.valueobject.TablePhysicalName
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations
 
 /**
  * @author yo1000
  */
 class MysqlIndexRepository(
-        private val jdbcTemplate: NamedParameterJdbcTemplate,
+        private val jdbcOperations: NamedParameterJdbcOperations,
         private val dataSourceName: String
 ) : IndexRepository {
     companion object {
@@ -34,7 +34,7 @@ class MysqlIndexRepository(
                 val columnName: String
         )
 
-        return jdbcTemplate.query("""
+        return jdbcOperations.query("""
             SELECT
                 idx.index_name  AS $OUTPUT_INDEX_NAME,
                 idx.comment     AS $OUTPUT_TABLE_COMMENT,

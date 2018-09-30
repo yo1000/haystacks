@@ -6,14 +6,14 @@ import com.yo1000.haystacks.core.valueobject.ColumnPhysicalName
 import com.yo1000.haystacks.core.valueobject.LogicalName
 import com.yo1000.haystacks.core.valueobject.Statement
 import com.yo1000.haystacks.core.valueobject.TablePhysicalName
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations
 
 /**
  *
  * @author yo1000
  */
 class MysqlTableRepository(
-        private val jdbcTemplate: NamedParameterJdbcTemplate,
+        private val jdbcOperations: NamedParameterJdbcOperations,
         private val dataSourceName: String
 ) : TableRepository {
     companion object {
@@ -35,7 +35,7 @@ class MysqlTableRepository(
         const val INPUT_TABLE_NAME = "tableName"
     }
 
-    override fun findNames(vararg q: String): List<FoundNames>  = jdbcTemplate.query("""
+    override fun findNames(vararg q: String): List<FoundNames>  = jdbcOperations.query("""
         SELECT DISTINCT
             tbl.table_name      AS $OUTPUT_TABLE_NAME,
             tbl.table_comment   AS $OUTPUT_TABLE_COMMENT,
@@ -95,7 +95,7 @@ class MysqlTableRepository(
         )
     }
 
-    override fun findTableNamesAll(): List<TableNames> = jdbcTemplate.query("""
+    override fun findTableNamesAll(): List<TableNames> = jdbcOperations.query("""
         SELECT
             tbl.table_name    AS $OUTPUT_TABLE_NAME,
             tbl.table_comment AS $OUTPUT_TABLE_COMMENT
@@ -139,7 +139,7 @@ class MysqlTableRepository(
                 val childItem: RelationItem?
         )
 
-        return jdbcTemplate.query("""
+        return jdbcOperations.query("""
             SELECT
                 tbl.table_name                AS $OUTPUT_TABLE_NAME,
                 tbl.table_comment             AS $OUTPUT_TABLE_COMMENT,
@@ -262,7 +262,7 @@ class MysqlTableRepository(
         }.first()
     }
 
-    override fun findColumnCountMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
+    override fun findColumnCountMap(): Map<TablePhysicalName, Int> = jdbcOperations.query("""
         SELECT
             tbl.table_name          AS $OUTPUT_TABLE_NAME,
             count(col.column_name)  AS $OUTPUT_REFERENCE_COUNT
@@ -283,7 +283,7 @@ class MysqlTableRepository(
         TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
     }.toMap()
 
-    override fun findRowCountMap(): Map<TablePhysicalName, Long> = jdbcTemplate.query("""
+    override fun findRowCountMap(): Map<TablePhysicalName, Long> = jdbcOperations.query("""
         SELECT
             tbl.table_name  AS $OUTPUT_TABLE_NAME,
             tbl.table_rows  AS $OUTPUT_TABLE_ROWS
@@ -298,7 +298,7 @@ class MysqlTableRepository(
         TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getLong(OUTPUT_TABLE_ROWS)
     }.toMap()
 
-    override fun findReferencedCountFromChildrenMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
+    override fun findReferencedCountFromChildrenMap(): Map<TablePhysicalName, Int> = jdbcOperations.query("""
         SELECT
             table_name AS $OUTPUT_TABLE_NAME,
             sum(count) AS $OUTPUT_REFERENCE_COUNT
@@ -323,7 +323,7 @@ class MysqlTableRepository(
         TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
     }.toMap()
 
-    override fun findReferencingCountToParentMap(): Map<TablePhysicalName, Int> = jdbcTemplate.query("""
+    override fun findReferencingCountToParentMap(): Map<TablePhysicalName, Int> = jdbcOperations.query("""
         SELECT
             table_name      AS $OUTPUT_TABLE_NAME,
             sum(col_count)  AS $OUTPUT_REFERENCE_COUNT
@@ -345,9 +345,9 @@ class MysqlTableRepository(
             INPUT_SCHEMA_NAME to dataSourceName
     )) { resultSet, _ ->
         TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
-    }.toMap()
+    }.filter { it.second > 0 }.toMap()
 
-    override fun findStatementByName(name: TablePhysicalName): Statement = jdbcTemplate.query("""
+    override fun findStatementByName(name: TablePhysicalName): Statement = jdbcOperations.query("""
         SHOW CREATE TABLE `${name.value}`
         """.trimIndent()
     ) { resultSet, _ ->
