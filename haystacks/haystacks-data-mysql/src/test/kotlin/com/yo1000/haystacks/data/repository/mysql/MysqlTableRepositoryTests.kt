@@ -6,6 +6,7 @@ import com.wix.mysql.config.Charset
 import com.wix.mysql.config.MysqldConfig
 import com.wix.mysql.distribution.Version
 import com.yo1000.haystacks.core.entity.TableNames
+import com.yo1000.haystacks.core.valueobject.FullyQualifiedName
 import com.yo1000.haystacks.core.valueobject.LogicalName
 import com.yo1000.haystacks.core.valueobject.TablePhysicalName
 import org.junit.jupiter.api.*
@@ -131,10 +132,22 @@ class MysqlTableRepositoryTests {
         // Then
         Assertions.assertEquals(4, actual.size)
         listOf(
-                TableNames(logicalName = LogicalName("Countries"), physicalName = TablePhysicalName("countries")),
-                TableNames(logicalName = LogicalName("Artists"), physicalName = TablePhysicalName("artists")),
-                TableNames(logicalName = LogicalName(""), physicalName = TablePhysicalName("mediums")),
-                TableNames(logicalName = LogicalName("Pictures"), physicalName = TablePhysicalName("pictures"))
+                TableNames(
+                        logicalName = LogicalName("Countries"),
+                        physicalName = TablePhysicalName("countries"),
+                        fullyQualifiedName = FullyQualifiedName("$DATABASE_NAME.countries")),
+                TableNames(
+                        logicalName = LogicalName("Artists"),
+                        physicalName = TablePhysicalName("artists"),
+                        fullyQualifiedName = FullyQualifiedName("$DATABASE_NAME.artists")),
+                TableNames(
+                        logicalName = LogicalName(""),
+                        physicalName = TablePhysicalName("mediums"),
+                        fullyQualifiedName = FullyQualifiedName("$DATABASE_NAME.mediums")),
+                TableNames(
+                        logicalName = LogicalName("Pictures"),
+                        physicalName = TablePhysicalName("pictures"),
+                        fullyQualifiedName = FullyQualifiedName("$DATABASE_NAME.pictures"))
         ).forEach {
             Assertions.assertTrue {
                 actual.contains(it)

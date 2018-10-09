@@ -1,12 +1,10 @@
 package com.yo1000.haystacks.data.repository.mysql
 
+import com.yo1000.haystacks.core.Quadruple
 import com.yo1000.haystacks.core.entity.Index
 import com.yo1000.haystacks.core.entity.IndexNames
 import com.yo1000.haystacks.core.repository.IndexRepository
-import com.yo1000.haystacks.core.valueobject.ColumnPhysicalName
-import com.yo1000.haystacks.core.valueobject.IndexPhysicalName
-import com.yo1000.haystacks.core.valueobject.LogicalName
-import com.yo1000.haystacks.core.valueobject.TablePhysicalName
+import com.yo1000.haystacks.core.valueobject.*
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations
 
 /**
@@ -18,7 +16,8 @@ class MysqlIndexRepository(
 ) : IndexRepository {
     companion object {
         const val OUTPUT_INDEX_NAME = "index_name"
-        const val OUTPUT_TABLE_COMMENT = "index_comment"
+        const val OUTPUT_INDEX_COMMENT = "index_comment"
+        const val OUTPUT_INDEX_FQN = "index_fqn"
         const val OUTPUT_INDEX_TYPE = "index_type"
         const val OUTPUT_INDEXED_COLUMN_NAME = "indexed_column_name"
 
@@ -30,6 +29,7 @@ class MysqlIndexRepository(
         data class IndexItem(
                 val name: String,
                 val comment: String,
+                val fqn: String,
                 val type: String,
                 val columnName: String
         )
@@ -37,7 +37,12 @@ class MysqlIndexRepository(
         return jdbcOperations.query("""
             SELECT
                 idx.index_name  AS $OUTPUT_INDEX_NAME,
-                idx.comment     AS $OUTPUT_TABLE_COMMENT,
+                idx.comment     AS $OUTPUT_INDEX_COMMENT,
+                CONCAT(
+                    idx.table_schema, '.',
+                    idx.table_name  , '.',
+                    idx.index_name
+                )               AS $OUTPUT_INDEX_FQN,
                 CASE
                     WHEN idx.index_name = 'PRIMARY' THEN  'PRIMARY'
                     WHEN idx.non_unique = 0         THEN  'UNIQUE'
@@ -62,21 +67,23 @@ class MysqlIndexRepository(
         )) { resultSet, _ ->
             IndexItem(
                     name = resultSet.getString(OUTPUT_INDEX_NAME),
-                    comment = resultSet.getString(OUTPUT_TABLE_COMMENT),
+                    comment = resultSet.getString(OUTPUT_INDEX_COMMENT),
+                    fqn = resultSet.getString(OUTPUT_INDEX_FQN),
                     type = resultSet.getString(OUTPUT_INDEX_TYPE),
                     columnName = resultSet.getString(OUTPUT_INDEXED_COLUMN_NAME)
             )
         }.groupBy({
-            Triple(it.name, it.comment, it.type)
+            Quadruple(it.name, it.comment, it.fqn, it.type)
         }, {
             it.columnName
         }).map {
             Index(
                     names = IndexNames(
                             IndexPhysicalName(it.key.first),
-                            LogicalName(it.key.second)
+                            LogicalName(it.key.second),
+                            FullyQualifiedName(it.key.third)
                     ),
-                    type = Index.Type.valueOf(it.key.third),
+                    type = Index.Type.valueOf(it.key.fourth),
                     columnNames = it.value.map {
                         ColumnPhysicalName(it)
                     }

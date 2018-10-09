@@ -5,6 +5,7 @@ import com.yo1000.haystacks.core.entity.Index
 import com.yo1000.haystacks.core.entity.Table
 import com.yo1000.haystacks.core.entity.TableOutline
 import com.yo1000.haystacks.core.repository.IndexRepository
+import com.yo1000.haystacks.core.repository.NoteRepository
 import com.yo1000.haystacks.core.repository.TableRepository
 import com.yo1000.haystacks.core.valueobject.Statement
 import com.yo1000.haystacks.core.valueobject.TablePhysicalName
@@ -17,7 +18,8 @@ import org.springframework.stereotype.Service
 @Service
 class TableService(
         private val tableRepository: TableRepository,
-        private val indexRepository: IndexRepository
+        private val indexRepository: IndexRepository,
+        private val noteRepository: NoteRepository
 ) {
     fun getTableOutlines(): List<TableOutline> {
         val columnCountMap = tableRepository.findColumnCountMap()

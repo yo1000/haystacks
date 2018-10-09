@@ -2,10 +2,7 @@ package com.yo1000.haystacks.data.repository.mysql
 
 import com.yo1000.haystacks.core.entity.*
 import com.yo1000.haystacks.core.repository.TableRepository
-import com.yo1000.haystacks.core.valueobject.ColumnPhysicalName
-import com.yo1000.haystacks.core.valueobject.LogicalName
-import com.yo1000.haystacks.core.valueobject.Statement
-import com.yo1000.haystacks.core.valueobject.TablePhysicalName
+import com.yo1000.haystacks.core.valueobject.*
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations
 
 /**
@@ -19,12 +16,16 @@ class MysqlTableRepository(
     companion object {
         const val OUTPUT_TABLE_NAME = "table_name"
         const val OUTPUT_TABLE_COMMENT = "table_comment"
+        const val OUTPUT_TABLE_FQN = "table_fqn"
         const val OUTPUT_TABLE_ROWS = "table_rows"
+
         const val OUTPUT_COLUMN_NAME = "column_name"
         const val OUTPUT_COLUMN_COMMENT = "column_comment"
+        const val OUTPUT_COLUMN_FQN = "column_fqn"
         const val OUTPUT_COLUMN_TYPE = "column_type"
         const val OUTPUT_COLUMN_DEFAULT = "column_default"
         const val OUTPUT_COLUMN_NULLABLE = "column_nullable"
+
         const val OUTPUT_PARENT_TABLE_NAME = "parent_table_name"
         const val OUTPUT_PARENT_COLUMN_NAME = "parent_column_name"
         const val OUTPUT_CHILD_TABLE_NAME = "child_table_name"
@@ -39,8 +40,17 @@ class MysqlTableRepository(
         SELECT DISTINCT
             tbl.table_name      AS $OUTPUT_TABLE_NAME,
             tbl.table_comment   AS $OUTPUT_TABLE_COMMENT,
+            CONCAT(
+                tbl.table_schema, '.',
+                tbl.table_name
+            )                   AS $OUTPUT_TABLE_FQN,
             col.column_name     AS $OUTPUT_COLUMN_NAME,
-            col.column_comment  AS $OUTPUT_COLUMN_COMMENT
+            col.column_comment  AS $OUTPUT_COLUMN_COMMENT,
+            CONCAT(
+                tbl.table_schema, '.',
+                tbl.table_name  , '.',
+                col.column_name
+            )                   AS $OUTPUT_COLUMN_FQN
         FROM
             (
                 SELECT
@@ -73,16 +83,20 @@ class MysqlTableRepository(
     ) { resultSet, _ ->
         val tableName = resultSet.getString(OUTPUT_TABLE_NAME)
         val tableComment = resultSet.getString(OUTPUT_TABLE_COMMENT)
+        val tableFqn = resultSet.getString(OUTPUT_TABLE_FQN)
 
         val columnName = resultSet.getString(OUTPUT_COLUMN_NAME)
         val columnComment = resultSet.getString(OUTPUT_COLUMN_COMMENT)
+        val columnFqn = resultSet.getString(OUTPUT_COLUMN_FQN)
 
         TableNames(
                 physicalName = TablePhysicalName(tableName),
-                logicalName = LogicalName(tableComment)
+                logicalName = LogicalName(tableComment),
+                fullyQualifiedName = FullyQualifiedName(tableFqn)
         ) to ColumnNames(
                 physicalName = ColumnPhysicalName(columnName),
-                logicalName = LogicalName(columnComment)
+                logicalName = LogicalName(columnComment),
+                fullyQualifiedName = FullyQualifiedName(columnFqn)
         )
     }.groupBy({
         it.first
@@ -98,7 +112,11 @@ class MysqlTableRepository(
     override fun findTableNamesAll(): List<TableNames> = jdbcOperations.query("""
         SELECT
             tbl.table_name    AS $OUTPUT_TABLE_NAME,
-            tbl.table_comment AS $OUTPUT_TABLE_COMMENT
+            tbl.table_comment AS $OUTPUT_TABLE_COMMENT,
+            CONCAT(
+                tbl.table_schema, '.',
+                tbl.table_name
+            )                 AS $OUTPUT_TABLE_FQN
         FROM
             information_schema.tables tbl
         WHERE
@@ -111,7 +129,8 @@ class MysqlTableRepository(
     )) { resultSet, _ ->
         TableNames(
                 physicalName = TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)),
-                logicalName = LogicalName(resultSet.getString(OUTPUT_TABLE_COMMENT))
+                logicalName = LogicalName(resultSet.getString(OUTPUT_TABLE_COMMENT)),
+                fullyQualifiedName = FullyQualifiedName(resultSet.getString(OUTPUT_TABLE_FQN))
         )
     }
 
@@ -119,11 +138,13 @@ class MysqlTableRepository(
         data class TableItem(
                 val name: String,
                 val comment: String,
+                val fqn: String,
                 val rows: Long
         )
         data class ColumnItem(
                 val name: String,
                 val comment: String,
+                val fqn: String,
                 val type: String,
                 val nullable: Boolean,
                 val default: String?
@@ -143,9 +164,18 @@ class MysqlTableRepository(
             SELECT
                 tbl.table_name                AS $OUTPUT_TABLE_NAME,
                 tbl.table_comment             AS $OUTPUT_TABLE_COMMENT,
+                CONCAT(
+                    tbl.table_schema, '.',
+                    tbl.table_name
+                )                             AS $OUTPUT_TABLE_FQN,
                 tbl.table_rows                AS $OUTPUT_TABLE_ROWS,
                 col.column_name               AS $OUTPUT_COLUMN_NAME,
                 col.column_comment            AS $OUTPUT_COLUMN_COMMENT,
+                CONCAT(
+                    tbl.table_schema, '.',
+                    tbl.table_name  , '.',
+                    col.column_name
+                )                             AS $OUTPUT_COLUMN_FQN,
                 col.column_type               AS $OUTPUT_COLUMN_TYPE,
                 col.is_nullable               AS $OUTPUT_COLUMN_NULLABLE,
                 col.column_default            AS $OUTPUT_COLUMN_DEFAULT,
@@ -181,10 +211,12 @@ class MysqlTableRepository(
         )) { resultSet, _ ->
             val tableName = resultSet.getString(OUTPUT_TABLE_NAME)
             val tableComment = resultSet.getString(OUTPUT_TABLE_COMMENT)
+            val tableFqn = resultSet.getString(OUTPUT_TABLE_FQN)
             val tableRows = resultSet.getLong(OUTPUT_TABLE_ROWS)
 
             val columnName = resultSet.getString(OUTPUT_COLUMN_NAME)
             val columnComment = resultSet.getString(OUTPUT_COLUMN_COMMENT)
+            val columnFqn = resultSet.getString(OUTPUT_COLUMN_FQN)
             val columnType = resultSet.getString(OUTPUT_COLUMN_TYPE)
             val columnNullable = resultSet.getString(OUTPUT_COLUMN_NULLABLE)
             val columnDefault = resultSet.getString(OUTPUT_COLUMN_DEFAULT)
@@ -198,11 +230,13 @@ class MysqlTableRepository(
                     tableItem = TableItem(
                             name = tableName,
                             comment = tableComment ?: "",
+                            fqn = tableFqn,
                             rows = tableRows
                     ),
                     columnItem = ColumnItem(
                             name = columnName,
                             comment = columnComment ?: "",
+                            fqn = columnFqn,
                             type = columnType,
                             nullable = columnNullable != "NO",
                             default = columnDefault
@@ -228,7 +262,8 @@ class MysqlTableRepository(
             Table(
                     names = TableNames(
                             physicalName = TablePhysicalName(it.key.name),
-                            logicalName = LogicalName(it.key.comment)
+                            logicalName = LogicalName(it.key.comment),
+                            fullyQualifiedName = FullyQualifiedName(it.key.fqn)
                     ),
                     rowCount = it.key.rows,
                     columns = it.value.groupBy({
@@ -239,7 +274,8 @@ class MysqlTableRepository(
                         Column(
                                 names = ColumnNames(
                                         physicalName = ColumnPhysicalName(it.key.name),
-                                        logicalName = LogicalName(it.key.comment)
+                                        logicalName = LogicalName(it.key.comment),
+                                        fullyQualifiedName = FullyQualifiedName(it.key.fqn)
                                 ),
                                 type = it.key.type,
                                 nullable = it.key.nullable,

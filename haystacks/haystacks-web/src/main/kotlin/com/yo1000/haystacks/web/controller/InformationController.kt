@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 @RequestMapping("/info")
 open class InformationController() {
     @GetMapping("")
-    fun get(model: Model): String {
+    fun get(): String {
         return "info"
     }
 }

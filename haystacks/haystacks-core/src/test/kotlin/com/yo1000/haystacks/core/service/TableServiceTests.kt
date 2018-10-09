@@ -5,7 +5,9 @@ import com.yo1000.haystacks.core.entity.Index
 import com.yo1000.haystacks.core.entity.Table
 import com.yo1000.haystacks.core.entity.TableNames
 import com.yo1000.haystacks.core.repository.IndexRepository
+import com.yo1000.haystacks.core.repository.NoteRepository
 import com.yo1000.haystacks.core.repository.TableRepository
+import com.yo1000.haystacks.core.valueobject.FullyQualifiedName
 import com.yo1000.haystacks.core.valueobject.LogicalName
 import com.yo1000.haystacks.core.valueobject.Statement
 import com.yo1000.haystacks.core.valueobject.TablePhysicalName
@@ -19,12 +21,13 @@ import org.mockito.internal.verification.Times
 class TableServiceTests {
     @ParameterizedTest
     @CsvSource(delimiter = ';', value = [
-        "'t1, t2' ; 'TableOne, TableTwo' ; '3, 11' ; '123, 456' ; '1, 0' ; '0, 1'",
-        "'t1, t2' ; 'TableA,   TableB'   ; '5, 7'  ; '78,  90'  ; '0, 0' ; '0, 0'"
+        "'t1, t2' ; 'TableOne, TableTwo' ; 's1.t1, s1.t2' ; '3, 11' ; '123, 456' ; '1, 0' ; '0, 1'",
+        "'t1, t2' ; 'TableA,   TableB'   ; 'sA.t1, sA.t2' ; '5, 7'  ; '78,  90'  ; '0, 0' ; '0, 0'"
     ])
     fun `Given a TableService when invoke getTableOutlines then should return list of TableOutline`(
             physicalNamesString: String,
             logicalNamesString: String,
+            fullyQualifiedName: String,
             columnCountsString: String,
             rowCountsString: String,
             childrenCountsString: String,
@@ -34,12 +37,14 @@ class TableServiceTests {
         fun String.splitByComma(): List<String> = this.split(Regex("[ ]*,[ ]*"))
         val physicalNames = physicalNamesString.splitByComma()
         val logicalNames = logicalNamesString.splitByComma()
+        val fullyQualifiedNames = fullyQualifiedName.splitByComma()
         val columnCounts = columnCountsString.splitByComma().map { it.toInt() }
         val rowCounts = rowCountsString.splitByComma().map { it.toLong() }
         val childrenCounts = childrenCountsString.splitByComma().map { it.toInt() }
         val parentCounts = parentCountsString.splitByComma().map { it.toInt() }
 
-        val namePairs = physicalNames.mapIndexed { i, s -> TableNames(TablePhysicalName(s), LogicalName(logicalNames[i])) }
+        val namePairs = physicalNames.mapIndexed { i, s -> TableNames(
+                TablePhysicalName(s), LogicalName(logicalNames[i]), FullyQualifiedName(fullyQualifiedNames[i])) }
         val columnCountMap = physicalNames.mapIndexed { i, s -> TablePhysicalName(s) to columnCounts[i] }.toMap()
         val rowCountMap = physicalNames.mapIndexed { i, s -> TablePhysicalName(s) to rowCounts[i] }.toMap()
         val childrenCountMap = physicalNames.mapIndexed { i, s -> TablePhysicalName(s) to childrenCounts[i] }.toMap()
@@ -47,6 +52,7 @@ class TableServiceTests {
 
         val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
         val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
+        val noteRepositoryMock = Mockito.mock(NoteRepository::class.java)
         val tableService = TableService(
                 tableRepositoryMock.also {
                     Mockito.doReturn(namePairs).`when`(it).findTableNamesAll()
@@ -55,7 +61,8 @@ class TableServiceTests {
                     Mockito.doReturn(childrenCountMap).`when`(it).findReferencedCountFromChildrenMap()
                     Mockito.doReturn(parentCountMap).`when`(it).findReferencingCountToParentMap()
                 },
-                indexRepositoryMock
+                indexRepositoryMock,
+                noteRepositoryMock
         )
 
         // When
@@ -83,11 +90,13 @@ class TableServiceTests {
         val table = Mockito.mock(Table::class.java)
         val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
         val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
+        val noteRepositoryMock = Mockito.mock(NoteRepository::class.java)
         val tableService = TableService(
                 tableRepositoryMock.also {
                     Mockito.doReturn(table).`when`(it).findTable(any(TablePhysicalName::class.java))
                 },
-                indexRepositoryMock
+                indexRepositoryMock,
+                noteRepositoryMock
         )
 
         // When
@@ -105,11 +114,13 @@ class TableServiceTests {
         val indexes = listOf(Mockito.mock(Index::class.java), Mockito.mock(Index::class.java))
         val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
         val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
+        val noteRepositoryMock = Mockito.mock(NoteRepository::class.java)
         val tableService = TableService(
                 tableRepositoryMock,
                 indexRepositoryMock.also {
                     Mockito.doReturn(indexes).`when`(it).findByTableName(any(TablePhysicalName::class.java))
-                }
+                },
+                noteRepositoryMock
         )
 
         // When
@@ -127,11 +138,13 @@ class TableServiceTests {
         val statement = Mockito.mock(Statement::class.java)
         val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
         val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
+        val noteRepositoryMock = Mockito.mock(NoteRepository::class.java)
         val tableService = TableService(
                 tableRepositoryMock.also {
                     Mockito.doReturn(statement).`when`(it).findStatementByName(any(TablePhysicalName::class.java))
                 },
-                indexRepositoryMock
+                indexRepositoryMock,
+                noteRepositoryMock
         )
 
         // When
@@ -149,11 +162,13 @@ class TableServiceTests {
         val foundNamesList = listOf(Mockito.mock(FoundNames::class.java), Mockito.mock(FoundNames::class.java))
         val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
         val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
+        val noteRepositoryMock = Mockito.mock(NoteRepository::class.java)
         val tableService = TableService(
                 tableRepositoryMock.also {
                     Mockito.doReturn(foundNamesList).`when`(it).findNames(Mockito.anyString(), Mockito.anyString())
                 },
-                indexRepositoryMock
+                indexRepositoryMock,
+                noteRepositoryMock
         )
 
         // When
