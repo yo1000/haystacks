@@ -6,13 +6,11 @@ import com.wix.mysql.config.Charset
 import com.wix.mysql.config.MysqldConfig
 import com.wix.mysql.distribution.Version
 import com.yo1000.haystacks.core.entity.Index
-import com.yo1000.haystacks.core.entity.TableNames
-import com.yo1000.haystacks.core.valueobject.LogicalName
 import com.yo1000.haystacks.core.valueobject.TablePhysicalName
-import org.junit.jupiter.api.*
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import javax.sql.DataSource
