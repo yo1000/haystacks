@@ -19,11 +19,13 @@ class PropertiesRepositoryAutoConfiguration(
                 !it.trim().isEmpty()
             }?.let {
                 Paths.get(it)
-            } ?: Paths.get(System.getProperty("user.dir")).resolve("note.properties")
+            } ?: Paths.get(System.getProperty("user.dir")).resolve("note.properties"),
+            props.createOnMissing
     )
 }
 
 @ConfigurationProperties("haystacks.note.file")
 class NoteFileConfigurationProperties(
-        var storeLocation: String = ""
+        var storeLocation: String = "",
+        var createOnMissing: Boolean = true
 )

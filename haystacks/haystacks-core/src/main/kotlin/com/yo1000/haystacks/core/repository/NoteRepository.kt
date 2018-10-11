@@ -3,7 +3,9 @@ package com.yo1000.haystacks.core.repository
 import com.yo1000.haystacks.core.valueobject.FullyQualifiedName
 import com.yo1000.haystacks.core.valueobject.Note
 import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
@@ -16,7 +18,8 @@ interface NoteRepository {
 }
 
 class PropertiesNoteRepository(
-        private val propertiesFilePath: Path
+        private val propertiesFilePath: Path,
+        private val createOnMissing: Boolean
 ) : NoteRepository {
     companion object {
         val noteMapLocker = ReentrantLock()
@@ -26,7 +29,8 @@ class PropertiesNoteRepository(
     private var noteMap: Map<FullyQualifiedName, Note>
 
     init {
-        properties = reload()
+        checkPath(propertiesFilePath, createOnMissing)
+        properties = reload(propertiesFilePath)
         noteMap = properties.toNoteMap()
     }
 
@@ -40,14 +44,24 @@ class PropertiesNoteRepository(
         noteMapLocker.withLock {
             properties.setProperty(fullyQualifiedName.value, note.value)
             properties.store(FileOutputStream(propertiesFilePath.toFile()), null)
-            properties = reload()
+            properties = reload(propertiesFilePath)
             noteMap = properties.toNoteMap()
         }
 
         return note
     }
 
-    private fun reload(): Properties {
+    private fun checkPath(propertiesFilePath: Path, createOnMissing: Boolean) {
+        if (Files.exists(propertiesFilePath)) return
+        if (createOnMissing) {
+            Files.createFile(propertiesFilePath)
+            return
+        }
+
+        throw FileNotFoundException("$propertiesFilePath is missing")
+    }
+
+    private fun reload(propertiesFilePath: Path): Properties {
         val props = Properties()
         FileInputStream(propertiesFilePath.toFile()).use {
             props.load(it)

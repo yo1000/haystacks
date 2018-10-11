@@ -23,3 +23,5 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
+
+note.properties
