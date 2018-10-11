@@ -7,6 +7,8 @@ import com.yo1000.haystacks.core.entity.TableOutline
 import com.yo1000.haystacks.core.repository.IndexRepository
 import com.yo1000.haystacks.core.repository.NoteRepository
 import com.yo1000.haystacks.core.repository.TableRepository
+import com.yo1000.haystacks.core.valueobject.FullyQualifiedName
+import com.yo1000.haystacks.core.valueobject.Note
 import com.yo1000.haystacks.core.valueobject.Statement
 import com.yo1000.haystacks.core.valueobject.TablePhysicalName
 import org.springframework.stereotype.Service
@@ -41,6 +43,10 @@ class TableService(
     fun getTable(name: TablePhysicalName): Table = tableRepository.findTable(name)
     fun getIndexes(name: TablePhysicalName): List<Index> = indexRepository.findByTableName(name)
     fun getStatement(name: TablePhysicalName): Statement = tableRepository.findStatementByName(name)
+
+    fun getNotesMap(): Map<FullyQualifiedName, Note> = noteRepository.findNoteMap()
+    fun getNotesMapByTable(fullyQualifiedTableName: FullyQualifiedName): Map<FullyQualifiedName, Note> =
+            noteRepository.findNoteMapByFullyQualifiedTableName(fullyQualifiedTableName)
 
     fun find(vararg q: String): List<FoundNames> = tableRepository.findNames(*q)
 }

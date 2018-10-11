@@ -10,5 +10,6 @@ data class TableOutline(
         val rowCount: Long,
         val parentCount: Int,
         val childCount: Int,
-        val comment: String
+        val comment: String,
+        val note: String
 )

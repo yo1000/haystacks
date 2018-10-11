@@ -17,15 +17,20 @@ open class TableRestController(
         private val tableService: TableService
 ) {
     @GetMapping("")
-    fun get(): List<TableOutline> = tableService.getTableOutlines().map {
-        TableOutline(
-                name = it.names.physicalName.value,
-                columnCount = it.columnCount,
-                rowCount = it.rowCount,
-                parentCount = it.referencingCountToParent,
-                childCount = it.referencedCountFromChildren,
-                comment = it.names.logicalName.value
-        )
+    fun get(): List<TableOutline> {
+        val notes = tableService.getNotesMap()
+
+        return tableService.getTableOutlines().map {
+            TableOutline(
+                    name = it.names.physicalName.value,
+                    columnCount = it.columnCount,
+                    rowCount = it.rowCount,
+                    parentCount = it.referencingCountToParent,
+                    childCount = it.referencedCountFromChildren,
+                    comment = it.names.logicalName.value,
+                    note = notes[it.names.fullyQualifiedName]?.value ?: ""
+            )
+        }
     }
 
     @GetMapping("/{name}")
@@ -33,6 +38,7 @@ open class TableRestController(
         val table = tableService.getTable(TablePhysicalName(name))
         val indexes = tableService.getIndexes(TablePhysicalName(name))
         val statement = tableService.getStatement(TablePhysicalName(name))
+        val notes = tableService.getNotesMapByTable(table.names.fullyQualifiedName)
 
         return Table(
                 name = table.names.physicalName.value,
@@ -55,7 +61,8 @@ open class TableRestController(
                                         column = it.columnPhysicalName.value
                                 )
                             },
-                            comment = it.names.logicalName.value
+                            comment = it.names.logicalName.value,
+                            note = notes[it.names.fullyQualifiedName]?.value ?: ""
                     )
                 },
                 indexes = indexes.map {
@@ -68,10 +75,12 @@ open class TableRestController(
                                         column = it.value
                                 )
                             },
-                            comment = it.names.logicalName.value
+                            comment = it.names.logicalName.value,
+                            note = notes[it.names.fullyQualifiedName]?.value ?: ""
                     )
                 },
-                statement = statement.value
+                statement = statement.value,
+                note = notes[table.names.fullyQualifiedName]?.value ?: ""
         )
     }
 }

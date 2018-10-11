@@ -11,7 +11,7 @@ import kotlin.concurrent.withLock
 
 interface NoteRepository {
     fun findNoteMap(): Map<FullyQualifiedName, Note>
-    fun findByTableColumnPhysicalNames(fullyQualifiedName: FullyQualifiedName): Note
+    fun findNoteMapByFullyQualifiedTableName(fullyQualifiedTableName: FullyQualifiedName): Map<FullyQualifiedName, Note>
     fun save(fullyQualifiedName: FullyQualifiedName, note: Note): Note
 }
 
@@ -32,9 +32,9 @@ class PropertiesNoteRepository(
 
     override fun findNoteMap(): Map<FullyQualifiedName, Note> = noteMap
 
-    override fun findByTableColumnPhysicalNames(
-            fullyQualifiedName: FullyQualifiedName): Note =
-            noteMap[fullyQualifiedName] ?: Note("")
+    override fun findNoteMapByFullyQualifiedTableName(
+            fullyQualifiedTableName: FullyQualifiedName): Map<FullyQualifiedName, Note> =
+            noteMap.filter { it.key.value.startsWith(fullyQualifiedTableName.value) }
 
     override fun save(fullyQualifiedName: FullyQualifiedName, note: Note): Note {
         noteMapLocker.withLock {

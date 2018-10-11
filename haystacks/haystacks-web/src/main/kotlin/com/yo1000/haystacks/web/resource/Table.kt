@@ -9,7 +9,8 @@ data class Table(
         val comment: String,
         val columns: List<Column>,
         val indexes: List<Index>,
-        val statement: String
+        val statement: String,
+        val note: String
 ) {
     data class Column(
             val name: String,
@@ -18,14 +19,16 @@ data class Table(
             val default: String?,
             val parent: Reference?,
             val children: List<Reference>,
-            val comment: String
+            val comment: String,
+            val note: String
     )
 
     data class Index(
             val name: String,
             val type: String,
             val columns: List<Reference>,
-            val comment: String
+            val comment: String,
+            val note: String
     )
 
     data class Reference(
