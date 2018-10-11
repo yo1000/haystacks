@@ -1,9 +1,7 @@
 package com.yo1000.haystacks.core.repository
 
-import com.yo1000.haystacks.core.entity.TableColumnPhysicalNames
-import com.yo1000.haystacks.core.valueobject.ColumnPhysicalName
+import com.yo1000.haystacks.core.valueobject.FullyQualifiedName
 import com.yo1000.haystacks.core.valueobject.Note
-import com.yo1000.haystacks.core.valueobject.TablePhysicalName
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Path
@@ -12,14 +10,9 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 interface NoteRepository {
-    fun findNoteMap(): Map<TableColumnPhysicalNames, Note>
-    fun findByTableColumnPhysicalNames(
-            tablePhysicalName: TablePhysicalName,
-            columnPhysicalName: ColumnPhysicalName): Note
-    fun save(
-            tablePhysicalName: TablePhysicalName,
-            columnPhysicalName: ColumnPhysicalName,
-            note: Note): Note
+    fun findNoteMap(): Map<FullyQualifiedName, Note>
+    fun findByTableColumnPhysicalNames(fullyQualifiedName: FullyQualifiedName): Note
+    fun save(fullyQualifiedName: FullyQualifiedName, note: Note): Note
 }
 
 class PropertiesNoteRepository(
@@ -30,28 +23,22 @@ class PropertiesNoteRepository(
     }
 
     private var properties: Properties
-    private var noteMap: Map<TableColumnPhysicalNames, Note>
+    private var noteMap: Map<FullyQualifiedName, Note>
 
     init {
         properties = reload()
         noteMap = properties.toNoteMap()
     }
 
-    override fun findNoteMap(): Map<TableColumnPhysicalNames, Note> = noteMap
+    override fun findNoteMap(): Map<FullyQualifiedName, Note> = noteMap
 
     override fun findByTableColumnPhysicalNames(
-            tablePhysicalName: TablePhysicalName,
-            columnPhysicalName: ColumnPhysicalName): Note =
-            noteMap[TableColumnPhysicalNames(tablePhysicalName, columnPhysicalName)] ?: Note("")
+            fullyQualifiedName: FullyQualifiedName): Note =
+            noteMap[fullyQualifiedName] ?: Note("")
 
-    override fun save(
-            tablePhysicalName: TablePhysicalName,
-            columnPhysicalName: ColumnPhysicalName,
-            note: Note): Note {
+    override fun save(fullyQualifiedName: FullyQualifiedName, note: Note): Note {
         noteMapLocker.withLock {
-            properties.setProperty(
-                    "${tablePhysicalName.value}.${columnPhysicalName.value}",
-                    note.value)
+            properties.setProperty(fullyQualifiedName.value, note.value)
             properties.store(FileOutputStream(propertiesFilePath.toFile()), null)
             properties = reload()
             noteMap = properties.toNoteMap()
@@ -68,12 +55,7 @@ class PropertiesNoteRepository(
         return props
     }
 
-    private fun Properties.toNoteMap(): Map<TableColumnPhysicalNames, Note> = this.mapNotNull {
-        val tableColumn = (it.key as String).split('.')
-        if (tableColumn.size != 2) null
-        else TableColumnPhysicalNames(
-                tablePhysicalName = TablePhysicalName(tableColumn[0]),
-                columnPhysicalName = ColumnPhysicalName(tableColumn[1])
-        ) to Note(it.value as String)
+    private fun Properties.toNoteMap(): Map<FullyQualifiedName, Note> = this.map {
+        FullyQualifiedName(it.key as String) to Note(it.value as String)
     }.toMap()
 }
