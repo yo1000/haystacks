@@ -5,6 +5,8 @@ import com.yo1000.haystacks.core.valueobject.Note
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.InputStreamReader
+import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
@@ -61,12 +63,12 @@ class PropertiesNoteRepository(
         throw FileNotFoundException("$propertiesFilePath is missing")
     }
 
-    private fun reload(propertiesFilePath: Path): Properties {
-        val props = Properties()
+    private fun reload(propertiesFilePath: Path): Properties = Properties().also { props ->
         FileInputStream(propertiesFilePath.toFile()).use {
-            props.load(it)
+            InputStreamReader(it, Charset.defaultCharset()).use {
+                props.load(it)
+            }
         }
-        return props
     }
 
     private fun Properties.toNoteMap(): Map<FullyQualifiedName, Note> = this.map {

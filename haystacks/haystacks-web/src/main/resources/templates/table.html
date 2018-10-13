@@ -76,6 +76,9 @@ const renderColumns = (containerElement, table) => {
     const commentHeadThElement = document.createElement("th")
     headsTrElement.appendChild(commentHeadThElement)
     commentHeadThElement.appendChild(document.createTextNode("Comment"))
+    const noteHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(noteHeadThElement)
+    noteHeadThElement.appendChild(document.createTextNode("Note"))
 
     const tableBodyElement = document.createElement("tbody")
     tableElement.appendChild(tableBodyElement)
@@ -150,6 +153,10 @@ const renderColumns = (containerElement, table) => {
         const commentDataElement = document.createElement("td")
         dataRowElement.appendChild(commentDataElement)
         commentDataElement.appendChild(document.createTextNode(column.comment))
+
+        const noteDataElement = document.createElement("td")
+        dataRowElement.appendChild(noteDataElement)
+        noteDataElement.appendChild(document.createTextNode(column.note))
     })
 }
 const renderIndexes = (containerElement, table) => {
@@ -176,6 +183,9 @@ const renderIndexes = (containerElement, table) => {
     const commentHeadThElement = document.createElement("th")
     headsTrElement.appendChild(commentHeadThElement)
     commentHeadThElement.appendChild(document.createTextNode("Comment"))
+    const noteHeadThElement = document.createElement("th")
+    headsTrElement.appendChild(noteHeadThElement)
+    noteHeadThElement.appendChild(document.createTextNode("Note"))
 
     const tableBodyElement = document.createElement("tbody")
     tableElement.appendChild(tableBodyElement)
@@ -219,6 +229,10 @@ const renderIndexes = (containerElement, table) => {
         const commentDataElement = document.createElement("td")
         dataRowElement.appendChild(commentDataElement)
         commentDataElement.appendChild(document.createTextNode(index.comment))
+
+        const noteDataElement = document.createElement("td")
+        dataRowElement.appendChild(noteDataElement)
+        noteDataElement.appendChild(document.createTextNode(index.note))
     })
 }
 const renderStatement = (containerElement, table) => {
