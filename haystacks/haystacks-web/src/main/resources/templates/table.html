@@ -13,7 +13,10 @@
 <section class="section">
   <div class="container">
     <h1 id="tableName" class="title is-2"></h1>
-    <p id="tableComment" class="subtitle"></p>
+    <p class="subtitle">
+      <span id="tableComment"></span>
+      <small><span id="tableNote"></span></small>
+    </p>
   </div>
 </section>
 <section class="section">
@@ -35,14 +38,22 @@
   </div>
 </section>
 <script th:inline="javascript">
-const renderTableName =  (containerElement, table) => {
+const renderTableName = (containerElement, table) => {
     containerElement.appendChild(document.createTextNode(table.name))
 }
-const renderTableComment =  (containerElement, table) => {
+
+const renderTableComment = (containerElement, table) => {
     if (table.comment) {
         containerElement.appendChild(document.createTextNode(table.comment))
     }
 }
+
+const renderTableNote = (containerElement, table) => {
+    containerElement.setAttribute("data-fqn", table.fqn)
+    containerElement.classList.add("is-data-note-container")
+    appendNote(containerElement, table.fqn, table.note)
+}
+
 const renderColumns = (containerElement, table) => {
     const tableElement = document.createElement("table")
     containerElement.appendChild(tableElement)
@@ -156,9 +167,116 @@ const renderColumns = (containerElement, table) => {
 
         const noteDataElement = document.createElement("td")
         dataRowElement.appendChild(noteDataElement)
-        noteDataElement.appendChild(document.createTextNode(column.note))
+        noteDataElement.setAttribute("data-fqn", column.fqn)
+        noteDataElement.classList.add("is-data-note-container")
+
+        appendNote(noteDataElement, column.fqn, column.note)
     })
 }
+
+const appendNote = (containerElm, fqn, value) => {
+    const spanElm = document.createElement("span")
+    spanElm.appendChild(document.createTextNode(value))
+
+    const iconElm = document.createElement("i")
+    iconElm.classList.add("fas")
+    iconElm.classList.add("fa-pencil-alt")
+
+    const anchorElm = document.createElement("a")
+    anchorElm.addEventListener("click", (event) => {
+        appendNoteEditor(event.target.closest(".is-data-note-container"))
+    })
+
+    removeChildren(containerElm)
+    containerElm.appendChild(spanElm)
+    containerElm.appendChild(anchorElm)
+    anchorElm.appendChild(iconElm)
+}
+
+const appendNoteEditor = (containerElm) => {
+    const spanElm = containerElm.querySelector("span")
+
+    const inputElm = document.createElement("input")
+    inputElm.setAttribute("type", "text")
+    inputElm.classList.add("input")
+    inputElm.value = spanElm.innerText
+
+    const iconElm = document.createElement("i")
+    iconElm.classList.add("fas")
+    iconElm.classList.add("fa-save")
+
+    const anchorElm = document.createElement("a")
+    anchorElm.addEventListener("click", (event) => {
+        appendNoteEditorSaving(event.target.closest(".is-data-note-container"))
+    })
+
+    removeChildren(containerElm)
+    containerElm.appendChild(inputElm)
+    containerElm.appendChild(anchorElm)
+    anchorElm.appendChild(iconElm)
+}
+
+const appendNoteEditorSaving = (containerElm) => {
+    const inputElm = containerElm.querySelector("input")
+    inputElm.setAttribute("readonly", "readonly")
+
+    const iconElm = document.createElement("i")
+    iconElm.classList.add("fas")
+    iconElm.classList.add("fa-circle-notch")
+    iconElm.classList.add("fa-spin")
+
+    removeChildren(containerElm)
+    containerElm.appendChild(inputElm)
+    containerElm.appendChild(iconElm)
+
+    fetchToNotes(containerElm, containerElm.dataset.fqn, inputElm.value)
+}
+
+const appendNoteEditorSavingError = (containerElm) => {
+    const inputElm = containerElm.querySelector("input")
+    inputElm.removeAttribute("readonly")
+
+    const iconElm = document.createElement("i")
+    iconElm.classList.add("fas")
+    iconElm.classList.add("fa-save")
+
+    const errorIconElm = document.createElement("i")
+    errorIconElm.setAttribute("title", "Has not been saved yet")
+    errorIconElm.classList.add("fas")
+    errorIconElm.classList.add("fa-exclamation-triangle")
+
+    const anchorElm = document.createElement("a")
+    anchorElm.addEventListener("click", (event) => {
+        appendNoteEditorSaving(event.target.closest(".is-data-note-container"))
+    })
+
+    removeChildren(containerElm)
+    containerElm.appendChild(inputElm)
+    containerElm.appendChild(anchorElm)
+    anchorElm.appendChild(iconElm)
+    containerElm.appendChild(errorIconElm)
+}
+
+const fetchToNotes = async (containerElm, fqn, note) => {
+    await fetch("/api/notes/" + fqn, {
+        method: "POST",
+        body: note
+    }).then(resp => {
+        if (!resp.ok) throw Error(resp.statusText)
+        return resp
+    }).then(() => {
+        appendNote(containerElm, fqn, note)
+    }).catch(err => {
+        appendNoteEditorSavingError(containerElm)
+    })
+}
+
+const removeChildren = (element) => {
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+}
+
 const renderIndexes = (containerElement, table) => {
     const tableElement = document.createElement("table")
     containerElement.appendChild(tableElement)
@@ -231,10 +349,15 @@ const renderIndexes = (containerElement, table) => {
         commentDataElement.appendChild(document.createTextNode(index.comment))
 
         const noteDataElement = document.createElement("td")
+        noteDataElement.setAttribute("data-fqn", index.fqn)
+        noteDataElement.classList.add("is-data-note-container")
         dataRowElement.appendChild(noteDataElement)
-        noteDataElement.appendChild(document.createTextNode(index.note))
+        appendNote(noteDataElement, index.fqn, index.note)
+        //
+        // noteDataElement.appendChild(document.createTextNode(index.note))
     })
 }
+
 const renderStatement = (containerElement, table) => {
     const preElement = document.createElement("pre")
     containerElement.appendChild(preElement)
@@ -255,6 +378,7 @@ const renderStatement = (containerElement, table) => {
                 const table = JSON.parse(xhr.responseText)
                 renderTableName(document.querySelector("#tableName"), table)
                 renderTableComment(document.querySelector("#tableComment"), table)
+                renderTableNote(document.querySelector("#tableNote"), table)
                 renderColumns(document.querySelector("#columns"), table)
                 renderIndexes(document.querySelector("#indexes"), table)
                 renderStatement(document.querySelector("#statement"), table)
