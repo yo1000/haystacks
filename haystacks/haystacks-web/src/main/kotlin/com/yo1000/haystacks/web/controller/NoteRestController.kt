@@ -17,7 +17,7 @@ open class NoteRestController(
         private val tableService: TableService
 ) {
     @PostMapping("/{fullyQualifiedName}")
-    fun post(@PathVariable fullyQualifiedName: String, @RequestBody note: String) {
-        tableService.setNote(FullyQualifiedName(fullyQualifiedName), Note(note))
+    fun post(@PathVariable fullyQualifiedName: String, @RequestBody(required = false) note: String?) {
+        tableService.setNote(FullyQualifiedName(fullyQualifiedName), Note(note ?: ""))
     }
 }
