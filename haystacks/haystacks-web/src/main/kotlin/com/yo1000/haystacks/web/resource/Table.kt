@@ -5,6 +5,7 @@ package com.yo1000.haystacks.web.resource
  * @author yo1000
  */
 data class Table(
+        val fqn: String,
         val name: String,
         val comment: String,
         val columns: List<Column>,
@@ -13,6 +14,7 @@ data class Table(
         val note: String
 ) {
     data class Column(
+            val fqn: String,
             val name: String,
             val type: String,
             val nullable: Boolean,
@@ -24,6 +26,7 @@ data class Table(
     )
 
     data class Index(
+            val fqn: String,
             val name: String,
             val type: String,
             val columns: List<Reference>,

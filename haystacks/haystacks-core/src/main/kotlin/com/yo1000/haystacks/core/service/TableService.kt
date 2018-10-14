@@ -47,6 +47,7 @@ class TableService(
     fun getNotesMap(): Map<FullyQualifiedName, Note> = noteRepository.findNoteMap()
     fun getNotesMapByTable(fullyQualifiedTableName: FullyQualifiedName): Map<FullyQualifiedName, Note> =
             noteRepository.findNoteMapByFullyQualifiedTableName(fullyQualifiedTableName)
+    fun setNote(fqn: FullyQualifiedName, note: Note) = noteRepository.save(fqn, note)
 
     fun find(vararg q: String): List<FoundNames> = tableRepository.findNames(*q)
 }

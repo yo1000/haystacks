@@ -22,6 +22,7 @@ open class TableRestController(
 
         return tableService.getTableOutlines().map {
             TableOutline(
+                    fqn = it.names.fullyQualifiedName.value,
                     name = it.names.physicalName.value,
                     columnCount = it.columnCount,
                     rowCount = it.rowCount,
@@ -34,17 +35,19 @@ open class TableRestController(
     }
 
     @GetMapping("/{name}")
-    fun getTableByName1(@PathVariable name: String): Table {
+    fun getTableByName(@PathVariable name: String): Table {
         val table = tableService.getTable(TablePhysicalName(name))
         val indexes = tableService.getIndexes(TablePhysicalName(name))
         val statement = tableService.getStatement(TablePhysicalName(name))
         val notes = tableService.getNotesMapByTable(table.names.fullyQualifiedName)
 
         return Table(
+                fqn = table.names.fullyQualifiedName.value,
                 name = table.names.physicalName.value,
                 comment = table.names.logicalName.value,
                 columns = table.columns.map {
                     Table.Column(
+                            fqn = it.names.fullyQualifiedName.value,
                             name = it.names.physicalName.value,
                             type = it.type,
                             nullable = it.nullable,
@@ -67,6 +70,7 @@ open class TableRestController(
                 },
                 indexes = indexes.map {
                     Table.Index(
+                            fqn = it.names.fullyQualifiedName.value,
                             name = it.names.physicalName.value,
                             type = it.type.name,
                             columns = it.columnNames.map {

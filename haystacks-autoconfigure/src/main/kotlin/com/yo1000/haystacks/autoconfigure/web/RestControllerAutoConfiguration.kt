@@ -2,6 +2,7 @@ package com.yo1000.haystacks.autoconfigure.web
 
 import com.yo1000.haystacks.core.service.TableService
 import com.yo1000.haystacks.web.controller.DataSourceRestController
+import com.yo1000.haystacks.web.controller.NoteRestController
 import com.yo1000.haystacks.web.controller.SearchRestController
 import com.yo1000.haystacks.web.controller.TableRestController
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
@@ -41,4 +42,8 @@ class RestControllerAutoConfiguration {
     @RestController
     class DataSourceRestControllerBean(dataSourceProperties: DataSourceProperties)
         : DataSourceRestController(dataSourceProperties)
+
+    @RestController
+    class NoteRestControllerBean(tableService: TableService)
+        : NoteRestController(tableService)
 }
