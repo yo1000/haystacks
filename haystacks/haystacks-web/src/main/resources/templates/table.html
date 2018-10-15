@@ -38,359 +38,280 @@
   </div>
 </section>
 <script th:inline="javascript">
-const renderTableName = (containerElement, table) => {
-    containerElement.appendChild(document.createTextNode(table.name))
-}
-
-const renderTableComment = (containerElement, table) => {
-    if (table.comment) {
-        containerElement.appendChild(document.createTextNode(table.comment))
-    }
-}
-
-const renderTableNote = (containerElement, table) => {
-    containerElement.setAttribute("data-fqn", table.fqn)
-    containerElement.classList.add("is-data-note-container")
-    appendNote(containerElement, table.fqn, table.note)
-}
-
-const renderColumns = (containerElement, table) => {
-    const tableElement = document.createElement("table")
-    containerElement.appendChild(tableElement)
-    tableElement.classList.add("table")
-    tableElement.classList.add("is-narrow")
-    tableElement.classList.add("is-hoverable")
-    tableElement.classList.add("is-fullwidth")
-
-    const tableHeadElement = document.createElement("thead")
-    tableElement.appendChild(tableHeadElement)
-    const headsTrElement = document.createElement("tr")
-    tableHeadElement.appendChild(headsTrElement)
-    const nameHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(nameHeadThElement)
-    nameHeadThElement.appendChild(document.createTextNode("Name"))
-    const typeHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(typeHeadThElement)
-    typeHeadThElement.appendChild(document.createTextNode("Type"))
-    const nullableHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(nullableHeadThElement)
-    nullableHeadThElement.appendChild(document.createTextNode("Nullable"))
-    const defaultHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(defaultHeadThElement)
-    defaultHeadThElement.appendChild(document.createTextNode("Default"))
-    const parentHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(parentHeadThElement)
-    parentHeadThElement.appendChild(document.createTextNode("Parent"))
-    const childrenHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(childrenHeadThElement)
-    childrenHeadThElement.appendChild(document.createTextNode("Children"))
-    const commentHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(commentHeadThElement)
-    commentHeadThElement.appendChild(document.createTextNode("Comment"))
-    const noteHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(noteHeadThElement)
-    noteHeadThElement.appendChild(document.createTextNode("Note"))
-
-    const tableBodyElement = document.createElement("tbody")
-    tableElement.appendChild(tableBodyElement)
-
-    table.columns.forEach(column => {
-        const dataRowElement = document.createElement("tr")
-        tableBodyElement.appendChild(dataRowElement)
-
-        const nameDataElement = document.createElement("td")
-        dataRowElement.appendChild(nameDataElement)
-        const foreignKeySpanElement = document.createElement("span")
-        nameDataElement.appendChild(foreignKeySpanElement)
-        foreignKeySpanElement.classList.add("is-column-name")
-        const primaryKeySpanElement = document.createElement("span")
-        foreignKeySpanElement.appendChild(primaryKeySpanElement)
-        primaryKeySpanElement.classList.add("is-column-name")
-        primaryKeySpanElement.appendChild(document.createTextNode(column.name))
-        if (table.indexes.find((element) => {
-            return element.type === "PRIMARY" && element.columns.find((col) => {
-                return col.column === column.name
-            })
-        })) {
-            primaryKeySpanElement.classList.add("is-primary-key-column")
-        }
-        if (column.parent) {
-            foreignKeySpanElement.classList.add("is-foreign-key-column")
-        }
-
-        const typeDataElement = document.createElement("td")
-        dataRowElement.appendChild(typeDataElement)
-        typeDataElement.appendChild(document.createTextNode(column.type))
-
-        const nullableDataElement = document.createElement("td")
-        dataRowElement.appendChild(nullableDataElement)
-        if (column.nullable) {
-            const iconElement = document.createElement("i")
-            nullableDataElement.appendChild(iconElement)
-            iconElement.classList.add("fas")
-            iconElement.classList.add("fa-check")
-        }
-
-        const defaultDataElement = document.createElement("td")
-        dataRowElement.appendChild(defaultDataElement)
-        defaultDataElement.appendChild(document.createTextNode(column.default))
-
-        const parentDataElement = document.createElement("td")
-        dataRowElement.appendChild(parentDataElement)
-        if (column.parent) {
-            const parentAnchorElement = document.createElement("a")
-            parentDataElement.appendChild(parentAnchorElement)
-            parentAnchorElement.setAttribute("href", column.parent.table)
-            parentAnchorElement.appendChild(
-                document.createTextNode(`${column.parent.table}.${column.parent.column}`))
-        }
-
-        const childrenDataElement = document.createElement("td")
-        dataRowElement.appendChild(childrenDataElement)
-        if (column.children && column.children.length) {
-            const childrenListElement = document.createElement("ul")
-            childrenDataElement.appendChild(childrenListElement)
-            column.children.forEach(child => {
-                const childListItemElement = document.createElement("li")
-                childrenListElement.appendChild(childListItemElement)
-                const childAnchorElement = document.createElement("a")
-                childListItemElement.appendChild(childAnchorElement)
-                childAnchorElement.setAttribute("href", child.table)
-                childAnchorElement.appendChild(
-                    document.createTextNode(`${child.table}.${child.column}`))
-            })
-        }
-
-        const commentDataElement = document.createElement("td")
-        dataRowElement.appendChild(commentDataElement)
-        commentDataElement.appendChild(document.createTextNode(column.comment))
-
-        const noteDataElement = document.createElement("td")
-        dataRowElement.appendChild(noteDataElement)
-        noteDataElement.setAttribute("data-fqn", column.fqn)
-        noteDataElement.classList.add("is-data-note-container")
-
-        appendNote(noteDataElement, column.fqn, column.note)
-    })
-}
-
-const appendNote = (containerElm, fqn, value) => {
-    const spanElm = document.createElement("span")
-    spanElm.appendChild(document.createTextNode(value))
-
-    const iconElm = document.createElement("i")
-    iconElm.classList.add("fas")
-    iconElm.classList.add("fa-pencil-alt")
-
-    const anchorElm = document.createElement("a")
-    anchorElm.addEventListener("click", (event) => {
-        appendNoteEditor(event.target.closest(".is-data-note-container"))
-    })
-
-    removeChildren(containerElm)
-    containerElm.appendChild(spanElm)
-    containerElm.appendChild(anchorElm)
-    anchorElm.appendChild(iconElm)
-}
-
-const appendNoteEditor = (containerElm) => {
-    const spanElm = containerElm.querySelector("span")
-
-    const inputElm = document.createElement("input")
-    inputElm.setAttribute("type", "text")
-    inputElm.classList.add("input")
-    inputElm.value = spanElm.innerText
-
-    const iconElm = document.createElement("i")
-    iconElm.classList.add("fas")
-    iconElm.classList.add("fa-save")
-
-    const anchorElm = document.createElement("a")
-    anchorElm.addEventListener("click", (event) => {
-        appendNoteEditorSaving(event.target.closest(".is-data-note-container"))
-    })
-
-    removeChildren(containerElm)
-    containerElm.appendChild(inputElm)
-    containerElm.appendChild(anchorElm)
-    anchorElm.appendChild(iconElm)
-}
-
-const appendNoteEditorSaving = (containerElm) => {
-    const inputElm = containerElm.querySelector("input")
-    inputElm.setAttribute("readonly", "readonly")
-
-    const iconElm = document.createElement("i")
-    iconElm.classList.add("fas")
-    iconElm.classList.add("fa-circle-notch")
-    iconElm.classList.add("fa-spin")
-
-    removeChildren(containerElm)
-    containerElm.appendChild(inputElm)
-    containerElm.appendChild(iconElm)
-
-    fetchToNotes(containerElm, containerElm.dataset.fqn, inputElm.value)
-}
-
-const appendNoteEditorSavingError = (containerElm) => {
-    const inputElm = containerElm.querySelector("input")
-    inputElm.removeAttribute("readonly")
-
-    const iconElm = document.createElement("i")
-    iconElm.classList.add("fas")
-    iconElm.classList.add("fa-save")
-
-    const errorIconElm = document.createElement("i")
-    errorIconElm.setAttribute("title", "Has not been saved yet")
-    errorIconElm.classList.add("fas")
-    errorIconElm.classList.add("fa-exclamation-triangle")
-
-    const anchorElm = document.createElement("a")
-    anchorElm.addEventListener("click", (event) => {
-        appendNoteEditorSaving(event.target.closest(".is-data-note-container"))
-    })
-
-    removeChildren(containerElm)
-    containerElm.appendChild(inputElm)
-    containerElm.appendChild(anchorElm)
-    anchorElm.appendChild(iconElm)
-    containerElm.appendChild(errorIconElm)
-}
-
-const fetchToNotes = async (containerElm, fqn, note) => {
-    await fetch("/api/notes/" + fqn, {
-        method: "POST",
-        body: note
-    }).then(resp => {
-        if (!resp.ok) throw Error(resp.statusText)
-        return resp
-    }).then(() => {
-        appendNote(containerElm, fqn, note)
-    }).catch(err => {
-        appendNoteEditorSavingError(containerElm)
-    })
-}
-
-const removeChildren = (element) => {
-    while (element.firstChild) {
-        element.removeChild(element.firstChild);
-    }
-}
-
-const renderIndexes = (containerElement, table) => {
-    const tableElement = document.createElement("table")
-    containerElement.appendChild(tableElement)
-    tableElement.classList.add("table")
-    tableElement.classList.add("is-narrow")
-    tableElement.classList.add("is-hoverable")
-    tableElement.classList.add("is-fullwidth")
-
-    const tableHeadElement = document.createElement("thead")
-    tableElement.appendChild(tableHeadElement)
-    const headsTrElement = document.createElement("tr")
-    tableHeadElement.appendChild(headsTrElement)
-    const nameHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(nameHeadThElement)
-    nameHeadThElement.appendChild(document.createTextNode("Name"))
-    const typeHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(typeHeadThElement)
-    typeHeadThElement.appendChild(document.createTextNode("Type"))
-    const columnsHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(columnsHeadThElement)
-    columnsHeadThElement.appendChild(document.createTextNode("Columns"))
-    const commentHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(commentHeadThElement)
-    commentHeadThElement.appendChild(document.createTextNode("Comment"))
-    const noteHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(noteHeadThElement)
-    noteHeadThElement.appendChild(document.createTextNode("Note"))
-
-    const tableBodyElement = document.createElement("tbody")
-    tableElement.appendChild(tableBodyElement)
-
-    table.indexes.forEach(index => {
-        const dataRowElement = document.createElement("tr")
-        tableBodyElement.appendChild(dataRowElement)
-
-        const nameDataElement = document.createElement("td")
-        dataRowElement.appendChild(nameDataElement)
-        const iconElement = document.createElement("i")
-        nameDataElement.appendChild(iconElement)
-        if (index.type === "PRIMARY") {
-            iconElement.classList.add("fas")
-            iconElement.classList.add("fa-circle")
-        } else if (index.type === "UNIQUE") {
-            iconElement.classList.add("far")
-            iconElement.classList.add("fa-dot-circle")
-        } else if (index.type === "PERFORMANCE") {
-            iconElement.classList.add("far")
-            iconElement.classList.add("fa-circle")
-        }
-        nameDataElement.appendChild(document.createTextNode(` ${index.name}`))
-
-        const typeDataElement = document.createElement("td")
-        dataRowElement.appendChild(typeDataElement)
-        typeDataElement.appendChild(document.createTextNode(index.type))
-
-        const columnsDataElement = document.createElement("td")
-        dataRowElement.appendChild(columnsDataElement)
-        if (index.columns && index.columns.length) {
-            const columnsListElement = document.createElement("ul")
-            columnsDataElement.appendChild(columnsListElement)
-            index.columns.forEach(column => {
-                const columnsListItemElement = document.createElement("li")
-                columnsListElement.appendChild(columnsListItemElement)
-                columnsListItemElement.appendChild(document.createTextNode(column.column))
-            })
-        }
-
-        const commentDataElement = document.createElement("td")
-        dataRowElement.appendChild(commentDataElement)
-        commentDataElement.appendChild(document.createTextNode(index.comment))
-
-        const noteDataElement = document.createElement("td")
-        noteDataElement.setAttribute("data-fqn", index.fqn)
-        noteDataElement.classList.add("is-data-note-container")
-        dataRowElement.appendChild(noteDataElement)
-        appendNote(noteDataElement, index.fqn, index.note)
-        //
-        // noteDataElement.appendChild(document.createTextNode(index.note))
-    })
-}
-
-const renderStatement = (containerElement, table) => {
-    const preElement = document.createElement("pre")
-    containerElement.appendChild(preElement)
-    const codeElement = document.createElement("code")
-    preElement.appendChild(codeElement)
-    codeElement.classList.add("sql")
-    codeElement.appendChild(document.createTextNode(table.statement))
-
-    hljs.initHighlightingOnLoad()
-}
 (function () {
-    const tableName = /*[[${tableName}]]*/ "tableName";
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "/api/tables/" + tableName, true);
-    xhr.onload = (e) => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                const table = JSON.parse(xhr.responseText)
-                renderTableName(document.querySelector("#tableName"), table)
-                renderTableComment(document.querySelector("#tableComment"), table)
-                renderTableNote(document.querySelector("#tableNote"), table)
-                renderColumns(document.querySelector("#columns"), table)
-                renderIndexes(document.querySelector("#indexes"), table)
-                renderStatement(document.querySelector("#statement"), table)
-            } else {
-                console.error(xhr.statusText)
-            }
+    Node.prototype.appendChildElm = function(name, func) {
+        const node = this.appendChild(document.createElement(name))
+        if (func) func(node)
+        return node
+    }
+
+    Node.prototype.appendChildTxt = function(text) {
+        return this.appendChild(document.createTextNode(text))
+    }
+
+    Node.prototype.removeChildren = function() {
+        while (this.firstChild) {
+            this.removeChild(this.firstChild);
         }
     }
-    xhr.onerror = (e) => {
-        console.error(xhr.statusText)
+
+    Node.prototype.appendChildNote = function(note) {
+        this.removeChildren()
+
+        this.appendChildElm("span", (spanElm) => {
+            spanElm.appendChildTxt(note)
+        })
+        this.appendChildElm("a", (aElm) => {
+            aElm.appendChildElm("i", (iElm) => {
+                iElm.classList.add("fas")
+                iElm.classList.add("fa-pencil-alt")
+            })
+            aElm.addEventListener("click", (event) => {
+                const clickEditContainerElm = event.target.closest(".is-data-note-container")
+                const inputValue = clickEditContainerElm.querySelector("span").innerText
+
+                clickEditContainerElm.removeChildren()
+
+                clickEditContainerElm.appendChildElm("input", (inputElm) => {
+                    inputElm.setAttribute("type", "text")
+                    inputElm.classList.add("input")
+                    inputElm.value = inputValue
+                })
+                clickEditContainerElm.appendChildElm("a", (aElm) => {
+                    const onClickSave = (event) => {
+                        const clickSaveContainerElm = event.target.closest(".is-data-note-container")
+                        const savingInputElm = clickSaveContainerElm.querySelector("input")
+                        savingInputElm.setAttribute("readonly", "readonly")
+
+                        const savingFqn = clickSaveContainerElm.dataset.fqn
+                        const savingInputValue = savingInputElm.value
+
+                        clickSaveContainerElm.removeChildren()
+
+                        clickSaveContainerElm.appendChild(savingInputElm)
+                        clickSaveContainerElm.appendChildElm("i", (iElm) => {
+                            iElm.classList.add("fas")
+                            iElm.classList.add("fa-circle-notch")
+                            iElm.classList.add("fa-spin")
+                        })
+
+                        fetch("/api/notes/" + savingFqn, {
+                            method: "POST",
+                            body: savingInputValue
+                        }).then(resp => {
+                            if (!resp.ok) throw Error(resp.statusText)
+                            return resp
+                        }).then(() => {
+                            clickSaveContainerElm.appendChildNote(savingInputValue)
+                        }).catch(() => {
+                            const failedInputElm = clickSaveContainerElm.querySelector("input")
+                            failedInputElm.removeAttribute("readonly")
+
+                            clickSaveContainerElm.removeChildren()
+
+                            clickSaveContainerElm.appendChild(failedInputElm)
+                            clickSaveContainerElm.appendChildElm("a", (aElm) => {
+                                aElm.appendChildElm("i", (iElm) => {
+                                    iElm.setAttribute("title", "Has not been saved yet")
+                                    iElm.classList.add("fas")
+                                    iElm.classList.add("fa-exclamation-triangle")
+                                })
+                                aElm.addEventListener("click", (event) => onClickSave(event))
+                            })
+                        })
+                    }
+
+                    aElm.appendChildElm("i", (iElm) => {
+                        iElm.classList.add("fas")
+                        iElm.classList.add("fa-save")
+                    })
+                    aElm.addEventListener("click", (event) => onClickSave(event))
+                })
+            })
+        })
     }
-    xhr.send(null)
+
+    const tableName = /*[[${tableName}]]*/ "tableName";
+    fetch("/api/tables/" + tableName).then(resp => {
+        if (!resp.ok) throw Error(resp.statusText)
+        return resp.json()
+    }).then((table) => {
+        document.querySelector("#tableName").appendChildTxt(table.name)
+
+        if (table.comment) {
+            document.querySelector("#tableComment").appendChildTxt(table.comment)
+        }
+
+        const tableNoteContainerElm = document.querySelector("#tableNote")
+        tableNoteContainerElm.setAttribute("data-fqn", table.fqn)
+        tableNoteContainerElm.classList.add("is-data-note-container")
+        tableNoteContainerElm.appendChildNote(table.note)
+
+        document.querySelector("#columns").appendChildElm("table", (tableElm) => {
+            tableElm.classList.add("table")
+            tableElm.classList.add("is-narrow")
+            tableElm.classList.add("is-hoverable")
+            tableElm.classList.add("is-fullwidth")
+
+            tableElm.appendChildElm("thead", (theadElm) => {
+                theadElm.appendChildElm("tr", (trElm) => {
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Name") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Type") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Nullable") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Default") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Parent") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Children") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Comment") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Note") })
+                })
+            })
+
+            tableElm.appendChildElm("tbody", (tbodyElm) => {
+                table.columns.forEach(column => {
+                    tbodyElm.appendChildElm("tr", (trElm) => {
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.appendChildElm("span", (fkSpanElm) => {
+                                fkSpanElm.classList.add("is-column-name")
+                                fkSpanElm.appendChildElm("span", (pkSpanElm) => {
+                                    pkSpanElm.classList.add("is-column-name")
+                                    pkSpanElm.appendChildTxt(column.name)
+
+                                    if (table.indexes.find((element) => {
+                                        return element.type === "PRIMARY" && element.columns.find((col) => {
+                                            return col.column === column.name
+                                        })
+                                    })) {
+                                        pkSpanElm.classList.add("is-primary-key-column")
+                                    }
+
+                                    if (column.parent) {
+                                        fkSpanElm.classList.add("is-foreign-key-column")
+                                    }
+                                })
+                            })
+                        })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.appendChildTxt(column.type)
+                        })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            if (column.nullable) {
+                                tdElm.appendChildElm("i", (iElm) => {
+                                    iElm.classList.add("fas")
+                                    iElm.classList.add("fa-check")
+                                })
+                            }
+                        })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.appendChildTxt(column.default)
+                        })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            if (column.parent) {
+                                tdElm.appendChildElm("a", (aElm) => {
+                                    aElm.setAttribute("href", column.parent.table)
+                                    aElm.appendChildTxt(`${column.parent.table}.${column.parent.column}`)
+                                })
+                            }
+                        })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            if (column.children && column.children.length) {
+                                tdElm.appendChildElm("ul", (ulElm) => {
+                                    column.children.forEach(child => {
+                                        ulElm.appendChildElm("li", (liElm) => {
+                                            liElm.appendChildElm("a", (aElm) => {
+                                                aElm.setAttribute("href", child.table)
+                                                aElm.appendChildTxt(`${child.table}.${child.column}`)
+                                            })
+                                        })
+                                    })
+                                })
+                            }
+                        })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.appendChildTxt(column.comment)
+                        })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.setAttribute("data-fqn", column.fqn)
+                            tdElm.classList.add("is-data-note-container")
+
+                            tdElm.appendChildNote(column.note)
+                        })
+                    })
+                })
+            })
+        })
+
+        document.querySelector("#indexes").appendChildElm("table", (tableElm) => {
+            tableElm.classList.add("table")
+            tableElm.classList.add("is-narrow")
+            tableElm.classList.add("is-hoverable")
+            tableElm.classList.add("is-fullwidth")
+
+            tableElm.appendChildElm("thead", (theadElm) => {
+                theadElm.appendChildElm("tr", (trElm) => {
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Name") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Type") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Columns") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Comment") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Note") })
+                })
+            })
+
+            tableElm.appendChildElm("tbody", (tbodyElm) => {
+                table.indexes.forEach(index => {
+                    tbodyElm.appendChildElm("tr", (trElm) => {
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.appendChildElm("i", (iElm) => {
+                                if (index.type === "PRIMARY") {
+                                    iElm.classList.add("fas")
+                                    iElm.classList.add("fa-circle")
+                                } else if (index.type === "UNIQUE") {
+                                    iElm.classList.add("far")
+                                    iElm.classList.add("fa-dot-circle")
+                                } else if (index.type === "PERFORMANCE") {
+                                    iElm.classList.add("far")
+                                    iElm.classList.add("fa-circle")
+                                }
+                            })
+                            tdElm.appendChildTxt(` ${index.name}`)
+                        })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.appendChildTxt(index.type)
+                        })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            if (index.columns && index.columns.length) {
+                                tdElm.appendChildElm("ul", (ulElm) => {
+                                    index.columns.forEach(column => {
+                                        ulElm.appendChildElm("li", (liElm) => {
+                                            liElm.appendChildTxt(column.column)
+                                        })
+                                    })
+                                })
+                            }
+                        })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.appendChildTxt(index.comment)
+                        })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.setAttribute("data-fqn", index.fqn)
+                            tdElm.classList.add("is-data-note-container")
+
+                            tdElm.appendChildNote(index.note)
+                        })
+                    })
+                })
+            })
+        })
+
+        document.querySelector("#statement").appendChildElm("pre", (preElm) => {
+            preElm.appendChildElm("code", (codeElm) => {
+                codeElm.appendChildTxt(table.statement)
+                codeElm.classList.add("sql")
+            })
+            hljs.initHighlightingOnLoad()
+        })
+    }).catch((err) => {
+        console.error(err)
+    })
 })()
 </script>
 </body>
