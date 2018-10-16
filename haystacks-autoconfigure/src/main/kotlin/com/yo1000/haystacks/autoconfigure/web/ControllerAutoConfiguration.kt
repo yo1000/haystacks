@@ -1,10 +1,11 @@
 package com.yo1000.haystacks.autoconfigure.web
 
-import com.yo1000.haystacks.core.service.TableService
+import com.yo1000.haystacks.core.service.TableDomainService
 import com.yo1000.haystacks.web.controller.IndexController
 import com.yo1000.haystacks.web.controller.InformationController
 import com.yo1000.haystacks.web.controller.SearchController
 import com.yo1000.haystacks.web.controller.TableController
+import com.yo1000.haystacks.web.service.TableApplicationService
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -29,26 +30,44 @@ import javax.servlet.Servlet
 @Configuration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(Servlet::class, DispatcherServlet::class, WebMvcConfigurer::class)
-@ConditionalOnBean(TableService::class)
+@ConditionalOnBean(TableDomainService::class)
 @ConditionalOnMissingBean(WebMvcConfigurationSupport::class)
 @AutoConfigureAfter(DispatcherServletAutoConfiguration::class, ValidationAutoConfiguration::class)
 @EnableConfigurationProperties(WebConfigurationProperties::class)
 class ControllerAutoConfiguration {
     @Controller
-    class TableControllerBean(props: WebConfigurationProperties, dataSourceProperties: DataSourceProperties, tableService: TableService)
-        : TableController(props.ssr, dataSourceProperties.name, tableService)
+    class TableControllerBean(
+            props: WebConfigurationProperties,
+            dataSourceProperties: DataSourceProperties,
+            tableApplicationService: TableApplicationService
+    ) : TableController(
+            props.ssr,
+            dataSourceProperties.name,
+            tableApplicationService
+    )
 
     @Controller
-    class SearchControllerBean(props: WebConfigurationProperties, dataSourceProperties: DataSourceProperties, tableService: TableService)
-        : SearchController(props.ssr, dataSourceProperties.name, tableService)
+    class SearchControllerBean(
+            props: WebConfigurationProperties,
+            dataSourceProperties: DataSourceProperties,
+            tableApplicationService: TableApplicationService
+    ) : SearchController(
+            props.ssr,
+            dataSourceProperties.name,
+            tableApplicationService
+    )
 
     @Controller
-    class InformationControllerBean(props: WebConfigurationProperties, dataSourceProperties: DataSourceProperties)
-        : InformationController(props.ssr, dataSourceProperties)
+    class InformationControllerBean(
+            props: WebConfigurationProperties,
+            dataSourceProperties: DataSourceProperties
+    ) : InformationController(
+            props.ssr,
+            dataSourceProperties
+    )
 
     @Controller
-    class IndexControllerBean()
-        : IndexController()
+    class IndexControllerBean : IndexController()
 }
 
 @ConfigurationProperties("haystacks.web")

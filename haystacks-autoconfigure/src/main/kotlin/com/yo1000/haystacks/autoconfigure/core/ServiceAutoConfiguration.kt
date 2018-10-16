@@ -3,7 +3,7 @@ package com.yo1000.haystacks.autoconfigure.core
 import com.yo1000.haystacks.core.repository.IndexRepository
 import com.yo1000.haystacks.core.repository.NoteRepository
 import com.yo1000.haystacks.core.repository.TableRepository
-import com.yo1000.haystacks.core.service.TableService
+import com.yo1000.haystacks.core.service.TableDomainService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,5 +19,5 @@ class ServiceAutoConfiguration {
             tableRepository: TableRepository,
             indexRepository: IndexRepository,
             noteRepository: NoteRepository
-    ): TableService = TableService(tableRepository, indexRepository, noteRepository)
+    ): TableDomainService = TableDomainService(tableRepository, indexRepository, noteRepository)
 }

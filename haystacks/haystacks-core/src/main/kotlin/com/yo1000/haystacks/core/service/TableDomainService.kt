@@ -11,14 +11,12 @@ import com.yo1000.haystacks.core.valueobject.FullyQualifiedName
 import com.yo1000.haystacks.core.valueobject.Note
 import com.yo1000.haystacks.core.valueobject.Statement
 import com.yo1000.haystacks.core.valueobject.TablePhysicalName
-import org.springframework.stereotype.Service
 
 /**
  *
  * @author yo1000
  */
-@Service
-class TableService(
+class TableDomainService(
         private val tableRepository: TableRepository,
         private val indexRepository: IndexRepository,
         private val noteRepository: NoteRepository

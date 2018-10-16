@@ -1,6 +1,7 @@
 package com.yo1000.haystacks.web.controller
 
-import com.yo1000.haystacks.core.service.TableService
+import com.yo1000.haystacks.core.service.TableDomainService
+import com.yo1000.haystacks.web.service.TableApplicationService
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -13,12 +14,18 @@ import org.springframework.web.bind.annotation.RequestMapping
 open class TableController(
         private val ssr: Boolean,
         private val dataSourceName: String,
-        private val tableService: TableService
+        private val tableApplicationService: TableApplicationService
 ) {
     @GetMapping("")
     fun get(model: Model): String {
         model.addAttribute("dataSourceName", dataSourceName)
-        return "tables"
+
+        if (ssr) {
+            model.addAttribute("tables", tableApplicationService.getTableOutlines())
+            return "tables.ssr"
+        } else {
+            return "tables"
+        }
     }
 
     @GetMapping("/{tableName}")
@@ -26,6 +33,11 @@ open class TableController(
         model.addAttribute("dataSourceName", dataSourceName)
         model.addAttribute("tableName", tableName)
 
-        return "table"
+        if (ssr) {
+            model.addAttribute("table", tableApplicationService.getTableByName(tableName))
+            return "table.ssr"
+        } else {
+            return "table"
+        }
     }
 }

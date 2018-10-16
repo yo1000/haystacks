@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.Mockito
 import org.mockito.internal.verification.Times
 
-class TableServiceTests {
+class TableDomainServiceTests {
     @ParameterizedTest
     @CsvSource(delimiter = ';', value = [
         "'t1, t2' ; 'TableOne, TableTwo' ; 's1.t1, s1.t2' ; '3, 11' ; '123, 456' ; '1, 0' ; '0, 1'",
@@ -53,7 +53,7 @@ class TableServiceTests {
         val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
         val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
         val noteRepositoryMock = Mockito.mock(NoteRepository::class.java)
-        val tableService = TableService(
+        val tableService = TableDomainService(
                 tableRepositoryMock.also {
                     Mockito.doReturn(namePairs).`when`(it).findTableNamesAll()
                     Mockito.doReturn(columnCountMap).`when`(it).findColumnCountMap()
@@ -91,7 +91,7 @@ class TableServiceTests {
         val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
         val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
         val noteRepositoryMock = Mockito.mock(NoteRepository::class.java)
-        val tableService = TableService(
+        val tableService = TableDomainService(
                 tableRepositoryMock.also {
                     Mockito.doReturn(table).`when`(it).findTable(any(TablePhysicalName::class.java))
                 },
@@ -115,7 +115,7 @@ class TableServiceTests {
         val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
         val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
         val noteRepositoryMock = Mockito.mock(NoteRepository::class.java)
-        val tableService = TableService(
+        val tableService = TableDomainService(
                 tableRepositoryMock,
                 indexRepositoryMock.also {
                     Mockito.doReturn(indexes).`when`(it).findByTableName(any(TablePhysicalName::class.java))
@@ -139,7 +139,7 @@ class TableServiceTests {
         val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
         val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
         val noteRepositoryMock = Mockito.mock(NoteRepository::class.java)
-        val tableService = TableService(
+        val tableService = TableDomainService(
                 tableRepositoryMock.also {
                     Mockito.doReturn(statement).`when`(it).findStatementByName(any(TablePhysicalName::class.java))
                 },
@@ -163,7 +163,7 @@ class TableServiceTests {
         val tableRepositoryMock = Mockito.mock(TableRepository::class.java)
         val indexRepositoryMock = Mockito.mock(IndexRepository::class.java)
         val noteRepositoryMock = Mockito.mock(NoteRepository::class.java)
-        val tableService = TableService(
+        val tableService = TableDomainService(
                 tableRepositoryMock.also {
                     Mockito.doReturn(foundNamesList).`when`(it).findNames(Mockito.anyString(), Mockito.anyString())
                 },
