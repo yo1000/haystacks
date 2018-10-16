@@ -35,16 +35,16 @@ import javax.servlet.Servlet
 @EnableConfigurationProperties(WebConfigurationProperties::class)
 class ControllerAutoConfiguration {
     @Controller
-    class TableControllerBean(props: WebConfigurationProperties, dataSourceProperties: DataSourceProperties)
-        : TableController(props.ssr, dataSourceProperties.name)
+    class TableControllerBean(props: WebConfigurationProperties, dataSourceProperties: DataSourceProperties, tableService: TableService)
+        : TableController(props.ssr, dataSourceProperties.name, tableService)
 
     @Controller
-    class SearchControllerBean(props: WebConfigurationProperties, dataSourceProperties: DataSourceProperties)
-        : SearchController(props.ssr, dataSourceProperties.name)
+    class SearchControllerBean(props: WebConfigurationProperties, dataSourceProperties: DataSourceProperties, tableService: TableService)
+        : SearchController(props.ssr, dataSourceProperties.name, tableService)
 
     @Controller
-    class InformationControllerBean(props: WebConfigurationProperties)
-        : InformationController(props.ssr)
+    class InformationControllerBean(props: WebConfigurationProperties, dataSourceProperties: DataSourceProperties)
+        : InformationController(props.ssr, dataSourceProperties)
 
     @Controller
     class IndexControllerBean()

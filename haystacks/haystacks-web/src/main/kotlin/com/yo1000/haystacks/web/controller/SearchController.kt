@@ -1,5 +1,6 @@
 package com.yo1000.haystacks.web.controller
 
+import com.yo1000.haystacks.core.service.TableService
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -11,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam
 @RequestMapping("/search")
 open class SearchController(
         private val ssr: Boolean,
-        private val dataSourceName: String
+        private val dataSourceName: String,
+        private val tableService: TableService
 ) {
     @GetMapping("")
     fun get(model: Model, @RequestParam q: List<String>): String {
