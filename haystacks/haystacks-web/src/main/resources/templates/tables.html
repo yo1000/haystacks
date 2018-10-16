@@ -16,97 +16,59 @@
     <div id="contents"></div>
   </div>
 </section>
+<div th:replace="_fragments :: scripts">
+  <script src="../static/js/haystacks.js"></script>
+</div>
 <script>
-const render = (containerElement, tables) => {
-    const tableElement = document.createElement("table")
-    containerElement.appendChild(tableElement)
-    tableElement.classList.add("table")
-    tableElement.classList.add("is-narrow")
-    tableElement.classList.add("is-hoverable")
-    tableElement.classList.add("is-fullwidth")
-
-    const tableHeaderElement = document.createElement("thead")
-    tableElement.appendChild(tableHeaderElement)
-
-    const headsRowElement = document.createElement("tr")
-    tableHeaderElement.appendChild(headsRowElement)
-
-    const nameHeadElement = document.createElement("th")
-    headsRowElement.appendChild(nameHeadElement)
-    nameHeadElement.appendChild(document.createTextNode("Name"))
-
-    const colsCountHeadElement = document.createElement("th")
-    headsRowElement.appendChild(colsCountHeadElement)
-    colsCountHeadElement.appendChild(document.createTextNode("Columns"))
-
-    const rowsCountHeadElement = document.createElement("th")
-    headsRowElement.appendChild(rowsCountHeadElement)
-    rowsCountHeadElement.appendChild(document.createTextNode("Rows"))
-
-    const parentCountHeadElement = document.createElement("th")
-    headsRowElement.appendChild(parentCountHeadElement)
-    parentCountHeadElement.appendChild(document.createTextNode("Parents"))
-
-    const childrenCountHeadElement = document.createElement("th")
-    headsRowElement.appendChild(childrenCountHeadElement)
-    childrenCountHeadElement.appendChild(document.createTextNode("Children"))
-
-    const commentHeadElement = document.createElement("th")
-    headsRowElement.appendChild(commentHeadElement)
-    commentHeadElement.appendChild(document.createTextNode("Comment"))
-
-    const tableBodyElement = document.createElement("tbody")
-    tableElement.appendChild(tableBodyElement)
-
-    tables.forEach(item => {
-        const cellsRowElement = document.createElement("tr")
-        tableBodyElement.appendChild(cellsRowElement)
-
-        const nameCellElement = document.createElement("td")
-        cellsRowElement.appendChild(nameCellElement)
-        const nameAnchorElement = document.createElement("a")
-        nameCellElement.appendChild(nameAnchorElement)
-        nameAnchorElement.setAttribute("href", `table/${item.name}`)
-        nameAnchorElement.appendChild(document.createTextNode(item.name))
-
-        const colsCountCellElement = document.createElement("td")
-        cellsRowElement.appendChild(colsCountCellElement)
-        colsCountCellElement.appendChild(document.createTextNode(item.columnCount))
-
-        const rowsCountCellElement = document.createElement("td")
-        cellsRowElement.appendChild(rowsCountCellElement)
-        rowsCountCellElement.appendChild(document.createTextNode(item.rowCount))
-
-        const parentCountCellElement = document.createElement("td")
-        cellsRowElement.appendChild(parentCountCellElement)
-        parentCountCellElement.appendChild(document.createTextNode(item.parentCount))
-
-        const childrenCountCellElement = document.createElement("td")
-        cellsRowElement.appendChild(childrenCountCellElement)
-        childrenCountCellElement.appendChild(document.createTextNode(item.childCount))
-
-        const commentCellElement = document.createElement("td")
-        cellsRowElement.appendChild(commentCellElement)
-        commentCellElement.appendChild(document.createTextNode(item.comment))
-    })
-}
 (function () {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "/api/tables", true);
-    xhr.onload = (e) => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                const tables = JSON.parse(xhr.responseText)
-                render(document.querySelector("#contents"), tables)
-            } else {
-                console.error(xhr.statusText)
-            }
-        }
-    }
-    xhr.onerror = (e) => {
-        console.error(xhr.statusText)
-    }
-    xhr.send(null)
+    fetch("/api/tables/").then(resp => {
+        if (!resp.ok) throw Error(resp.statusText)
+        return resp.json()
+    }).then((tables) => {
+        document.querySelector("#contents").appendChildElm("table", (tableElm) => {
+            tableElm.classList.add("table")
+            tableElm.classList.add("is-narrow")
+            tableElm.classList.add("is-hoverable")
+            tableElm.classList.add("is-fullwidth")
+
+            tableElm.appendChildElm("thead", (theadElm) => {
+                theadElm.appendChildElm("tr", (trElm) => {
+                    trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt("Name") })
+                    trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt("Columns") })
+                    trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt("Rows") })
+                    trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt("Parents") })
+                    trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt("Children") })
+                    trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt("Comment") })
+                    trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt("Note") })
+                })
+            })
+
+            tableElm.appendChildElm("tbody", (tbodyElm) => {
+                tables.forEach(item => {
+                    tbodyElm.appendChildElm("tr", (trElm) => {
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.appendChildElm("a", (aElm) => {
+                                aElm.setAttribute("href", `table/${item.name}`)
+                                aElm.appendChildTxt(item.name)
+                            })
+                        })
+                        trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt(item.columnCount) })
+                        trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt(item.rowCount) })
+                        trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt(item.parentCount) })
+                        trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt(item.childCount) })
+                        trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt(item.comment) })
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.classList.add("is-data-note-container")
+                            tdElm.setAttribute("data-fqn", item.fqn)
+                            tdElm.appendChildNote(item.note)
+                        })
+                    })
+                })
+            })
+        })
+    }).catch((err) => {
+        console.error(err)
+    })
 })()
 </script>
 </body>
