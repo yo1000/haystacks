@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam
  */
 @RequestMapping("/search")
 open class SearchController(
+        private val ssr: Boolean,
         private val dataSourceName: String
 ) {
     @GetMapping("")

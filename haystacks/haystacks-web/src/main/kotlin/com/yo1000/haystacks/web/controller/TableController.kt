@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
  */
 @RequestMapping("/table")
 open class TableController(
+        private val ssr: Boolean,
         private val dataSourceName: String
 ) {
     @GetMapping("")

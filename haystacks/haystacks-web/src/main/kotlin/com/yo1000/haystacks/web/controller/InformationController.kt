@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping
  * @author yo1000
  */
 @RequestMapping("/info")
-open class InformationController() {
+open class InformationController(
+        private val ssr: Boolean
+) {
     @GetMapping("")
     fun get(): String {
         return "info"

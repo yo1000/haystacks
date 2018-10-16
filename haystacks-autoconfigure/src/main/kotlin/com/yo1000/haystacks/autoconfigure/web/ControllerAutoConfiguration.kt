@@ -14,6 +14,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Controller
 import org.springframework.web.servlet.DispatcherServlet
@@ -30,20 +32,26 @@ import javax.servlet.Servlet
 @ConditionalOnBean(TableService::class)
 @ConditionalOnMissingBean(WebMvcConfigurationSupport::class)
 @AutoConfigureAfter(DispatcherServletAutoConfiguration::class, ValidationAutoConfiguration::class)
+@EnableConfigurationProperties(WebConfigurationProperties::class)
 class ControllerAutoConfiguration {
     @Controller
-    class TableControllerBean(dataSourceProperties: DataSourceProperties)
-        : TableController(dataSourceProperties.name)
+    class TableControllerBean(props: WebConfigurationProperties, dataSourceProperties: DataSourceProperties)
+        : TableController(props.ssr, dataSourceProperties.name)
 
     @Controller
-    class SearchControllerBean(dataSourceProperties: DataSourceProperties)
-        : SearchController(dataSourceProperties.name)
+    class SearchControllerBean(props: WebConfigurationProperties, dataSourceProperties: DataSourceProperties)
+        : SearchController(props.ssr, dataSourceProperties.name)
 
     @Controller
-    class InformationControllerBean()
-        : InformationController()
+    class InformationControllerBean(props: WebConfigurationProperties)
+        : InformationController(props.ssr)
 
     @Controller
     class IndexControllerBean()
         : IndexController()
 }
+
+@ConfigurationProperties("haystacks.web")
+class WebConfigurationProperties(
+        var ssr: Boolean = true
+)
