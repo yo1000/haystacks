@@ -1,10 +1,12 @@
 package com.yo1000.haystacks.autoconfigure.data.mysql
 
+import com.yo1000.haystacks.autoconfigure.core.DomainServiceAutoConfiguration
 import com.yo1000.haystacks.core.repository.IndexRepository
 import com.yo1000.haystacks.core.repository.TableRepository
 import com.yo1000.haystacks.data.repository.mysql.MysqlIndexRepository
 import com.yo1000.haystacks.data.repository.mysql.MysqlTableRepository
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
+import org.springframework.boot.autoconfigure.AutoConfigureBefore
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
@@ -22,6 +24,7 @@ import javax.sql.DataSource
 @ConditionalOnClass(DataSource::class, JdbcTemplate::class)
 @ConditionalOnSingleCandidate(DataSource::class)
 @AutoConfigureAfter(JdbcTemplateAutoConfiguration::class)
+@AutoConfigureBefore(DomainServiceAutoConfiguration::class)
 class MysqlRepositoryAutoConfiguration {
     @Bean
     fun tableRepository(dataSourceProperties: DataSourceProperties, jdbcTemplate: NamedParameterJdbcTemplate)
