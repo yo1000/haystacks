@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragments :: head (title='Tables ' + ${dataSourceName})">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tables name | haystacks</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+  <link rel="stylesheet" href="../static/css/haystacks.css" th:href="@{/css/haystacks.css}">
+  <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
+</head>
+<body>
+<div th:replace="_fragments :: navbar"></div>
+<section class="section">
+  <div class="container">
+    <h1 class="title is-2">Tables</h1>
+    <div id="contents">
+      <table class="table is-narrow is-hoverable is-fullwidth">
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Columns</th>
+          <th>Rows</th>
+          <th>Parents</th>
+          <th>Children</th>
+          <th>Comment</th>
+          <th>Note</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="table : ${tables}">
+          <td><a href="#" th:href="@{table/{name}(name=${table.name})}" th:text="${table.name}">table_name</a></td>
+          <td th:text="${table.columnCount}">5</td>
+          <td th:text="${table.rowCount}">200</td>
+          <td th:text="${table.parentCount}">2</td>
+          <td th:text="${table.childCount}">1</td>
+          <td th:text="${table.comment}">Table name comment</td>
+          <td class="is-data-note-container" th:attr="data-fqn=${table.fqn}" th:text="${table.note}">note</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<div th:replace="_fragments :: scripts">
+  <script src="../static/js/haystacks.js"></script>
+</div>
+<script>
+(function () {
+    document.querySelectorAll(".is-data-note-container").forEach((elm) => {
+        elm.appendChildNote(elm.textContent)
+    })
+})()
+</script>
+</body>
+</html>

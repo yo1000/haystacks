@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragments :: head (title='Table ' + ${tableName})">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Table name | haystacks</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+  <link rel="stylesheet" href="../static/css/haystacks.css" th:href="@{/css/haystacks.css}">
+  <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
+</head>
+<body>
+<div th:replace="_fragments :: navbar"></div>
+<section class="section">
+  <div class="container">
+    <h1 id="tableName" class="title is-2" th:text="${table.name}">table_name</h1>
+    <p class="subtitle">
+      <span id="tableComment" th:text="${table.comment}"></span>
+      <small><span id="tableNote" class="is-data-note-container" th:attr="data-fqn=${table.fqn}" th:text="${table.note}"></span></small>
+    </p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">Columns</h2>
+    <div id="columns">
+      <table class="table is-narrow is-hoverable is-fullwidth">
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Nullable</th>
+          <th>Default</th>
+          <th>Parent</th>
+          <th>Children</th>
+          <th>Comment</th>
+          <th>Note</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="column : ${table.columns}">
+          <td><span
+                  class="is-column-name" th:classappend="${#tables.isForeignKey(column)}? 'is-foreign-key-column'"><span
+                  class="is-column-name" th:classappend="${#tables.isPrimaryKey(column, table.indexes)}? 'is-primary-key-column'"
+                  th:text="${column.name}">column_name</span></span>
+          </td>
+          <td th:text="${column.type}">type</td>
+          <td><i th:if="${column.nullable}" class="fas fa-check"></i></td>
+          <td th:text="${column.default}">default_value</td>
+          <td>
+            <a href="#"
+               th:if="${column.parent != null}"
+               th:href="${column.parent.table}"
+               th:text="${column.parent.table} + '.' + ${column.parent.column}">table_name.column_name</a>
+          </td>
+          <td>
+            <ul th:if="${not #lists.isEmpty(column.children)}">
+              <li th:each="child : ${column.children}">
+                <a href="#"
+                   th:href="${child.table}"
+                   th:text="${child.table} + '.' + ${child.column}">table_name.column_name</a>
+              </li>
+            </ul>
+          </td>
+          <td th:text="${column.comment}">comment</td>
+          <td class="is-data-note-container" th:attr="data-fqn=${column.fqn}" th:text="${column.note}">note</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">Indexes</h2>
+    <div id="indexes">
+      <table class="table is-narrow is-hoverable is-fullwidth">
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Columns</th>
+          <th>Comment</th>
+          <th>Note</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="index : ${table.indexes}">
+          <td><i class="fas fa-circle"
+                 th:class="${index.type == 'PRIMARY'} ? 'fas fa-circle'
+                        : (${index.type == 'UNIQUE'}? 'far fa-dot-circle'
+                        : (${index.type == 'PERFORMANCE'}? 'far fa-circle'
+                        : ''))"></i> <span th:text="${index.name}">index_name</span>
+          </td>
+          <td th:text="${index.type}">INDEX_TYPE</td>
+          <td>
+            <ul th:if="${not #lists.isEmpty(index.columns)}">
+              <li th:each="column : ${index.columns}" th:text="${column.column}">column_name</li>
+            </ul>
+          </td>
+          <td th:text="${index.comment}">comment</td>
+          <td class="is-data-note-container" th:attr="data-fqn=${index.fqn}" th:text="${index.note}">note</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">Statement</h2>
+    <div id="statement">
+      <pre><code class="sql" th:text="${table.statement}">STATEMENT</code></pre>
+    </div>
+  </div>
+</section>
+<div th:replace="_fragments :: scripts">
+  <script src="../static/js/haystacks.js"></script>
+</div>
+<script th:inline="javascript">
+(function () {
+    hljs.initHighlightingOnLoad()
+
+    document.querySelectorAll(".is-data-note-container").forEach((elm) => {
+        elm.appendChildNote(elm.textContent)
+    })
+})()
+</script>
+</body>
+</html>
