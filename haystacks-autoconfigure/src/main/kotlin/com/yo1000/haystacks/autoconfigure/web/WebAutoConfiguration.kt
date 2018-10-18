@@ -2,7 +2,7 @@ package com.yo1000.haystacks.autoconfigure.web
 
 import com.yo1000.haystacks.web.controller.*
 import com.yo1000.haystacks.web.service.TableApplicationService
-import com.yo1000.haystacks.web.view.TablesDialect
+import com.yo1000.haystacks.web.view.HaystacksDialect
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -38,7 +38,7 @@ class WebAutoConfiguration {
         it.enableSpringELCompiler = props.isEnableSpringElCompiler
         templateResolvers.forEach(it::addTemplateResolver)
         dialectsProvider.getIfAvailable { emptyList() }.forEach(it::addDialect)
-        it.addDialect(TablesDialect())
+        it.addDialect(HaystacksDialect())
     }
 
     @RestController
