@@ -17,122 +17,107 @@
     <div id="searchResults"></div>
   </div>
 </section>
+<div th:replace="_fragments :: scripts">
+  <script src="../static/js/haystacks.js"></script>
+</div>
 <script th:inline="javascript">
-const renderQueries = (containerElement, queries) => {
-    queries.forEach((q, i) => {
-        if (i > 0) {
-            containerElement.appendChild(document.createTextNode(", "))
-        }
-        const queryElement = document.createElement("em")
-        containerElement.appendChild(queryElement)
-        queryElement.appendChild(document.createTextNode(q))
-    })
-}
-const renderSearchResults = (containerElement, searchResults, queries) => {
-    const tableElement = document.createElement("table")
-    containerElement.appendChild(tableElement)
-    tableElement.classList.add("table")
-    tableElement.classList.add("is-narrow")
-    tableElement.classList.add("is-hoverable")
-    tableElement.classList.add("is-fullwidth")
-
-    const tableHeadElement = document.createElement("thead")
-    tableElement.appendChild(tableHeadElement)
-    const headsTrElement = document.createElement("tr")
-    tableHeadElement.appendChild(headsTrElement)
-    const tableHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(tableHeadThElement)
-    tableHeadThElement.appendChild(document.createTextNode("Table"))
-    const columnsHeadThElement = document.createElement("th")
-    headsTrElement.appendChild(columnsHeadThElement)
-    columnsHeadThElement.appendChild(document.createTextNode("Columns"))
-
-    const tableBodyElement = document.createElement("tbody")
-    tableElement.appendChild(tableBodyElement)
-
-    searchResults.forEach(searchResult => {
-        const dataRowElement = document.createElement("tr")
-        tableBodyElement.appendChild(dataRowElement)
-
-        const tableDataElement = document.createElement("td")
-        dataRowElement.appendChild(tableDataElement)
-        tableDataElement.classList.add("is-search-result")
-        const tableDivElement = document.createElement("div")
-        tableDataElement.appendChild(tableDivElement)
-        const tableRubyElement = document.createElement("ruby")
-        tableDivElement.appendChild(tableRubyElement)
-        const tableAnchorElement = document.createElement("a")
-        tableRubyElement.appendChild(tableAnchorElement)
-        tableAnchorElement.appendChild(document.createTextNode(searchResult.table.name))
-        tableAnchorElement.setAttribute("href", `table/${searchResult.table.name}`)
-        if (queries.find(q => {
-            return searchResult.table.name.includes(q)
-        })) {
-            tableAnchorElement.classList.add("has-background-warning")
-        }
-        const tableRtElement = document.createElement("rt")
-        tableRubyElement.appendChild(tableRtElement)
-        tableRtElement.appendChild(document.createTextNode(searchResult.table.comment))
-        if (queries.find(q => {
-                return searchResult.table.comment.includes(q)
-        })) {
-            tableRtElement.classList.add("has-background-warning")
-        }
-
-        const columnsDataElement = document.createElement("td")
-        dataRowElement.appendChild(columnsDataElement)
-        columnsDataElement.classList.add("is-search-result")
-        if (searchResult.columns && searchResult.columns.length) {
-            const columnsListElement = document.createElement("ul")
-            columnsDataElement.appendChild(columnsListElement)
-            searchResult.columns.forEach(column => {
-                const columnListItemElement = document.createElement("li")
-                columnsListElement.appendChild(columnListItemElement)
-
-                const columnRubyElement = document.createElement("ruby")
-                columnListItemElement.appendChild(columnRubyElement)
-                const columnSpanElement = document.createElement("span")
-                columnRubyElement.appendChild(columnSpanElement)
-                columnSpanElement.appendChild(document.createTextNode(column.name))
-                if (queries.find(q => {
-                        return column.name.includes(q)
-                    })) {
-                    columnSpanElement.classList.add("has-background-warning")
-                }
-                const columnRtElement = document.createElement("rt")
-                columnRubyElement.appendChild(columnRtElement)
-                columnRtElement.appendChild(document.createTextNode(column.comment))
-                if (queries.find(q => {
-                        return column.comment.includes(q)
-                    })) {
-                    columnRtElement.classList.add("has-background-warning")
-                }
-            })
-        }
-    })
-}
 (function () {
     const queries = /*[[${queries}]]*/ []
     const queryString = queries.map((q, i) => {
         return `q=${q}`
     }).join("&")
-    const xhr = new XMLHttpRequest()
-    xhr.open("GET", `/api/search/?${queryString}`, true)
-    xhr.onload = (e) => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                const table = JSON.parse(xhr.responseText)
-                renderQueries(document.querySelector("#queries"), queries)
-                renderSearchResults(document.querySelector("#searchResults"), table, queries)
-            } else {
-                console.error(xhr.statusText)
-            }
-        }
-    }
-    xhr.onerror = (e) => {
-        console.error(xhr.statusText)
-    }
-    xhr.send(null)
+
+    fetch(`/api/search/?${queryString}`).then(resp => {
+        if (!resp.ok) throw Error(resp.statusText)
+        return resp.json()
+    }).then((results) => {
+        const queriesContainerElm = document.querySelector("#queries")
+        queries.forEach((q) => {
+            queriesContainerElm.appendChildElm("em", (emElm) => {
+                emElm.appendChildTxt(q)
+            })
+        })
+
+        document.querySelector("#searchResults").appendChildElm("table", (tableElm) => {
+            tableElm.classList.add("table")
+            tableElm.classList.add("is-narrow")
+            tableElm.classList.add("is-hoverable")
+            tableElm.classList.add("is-fullwidth")
+
+            tableElm.appendChildElm("thead", (theadElm) => {
+                theadElm.appendChildElm("tr", (trElm) => {
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Table") })
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Columns") })
+                })
+            })
+
+            tableElm.appendChildElm("tbody", (tbodyElm) => {
+                results.forEach(result => {
+                    tbodyElm.appendChildElm("tr", (trElm) => {
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.classList.add("is-search-result")
+
+                            tdElm.appendChildElm("div", (divElm) => {
+                                divElm.appendChildElm("ruby", (rubyElm) => {
+                                    rubyElm.appendChildElm("a", (aElm) => {
+                                        aElm.setAttribute("href", `table/${result.table.name}`)
+                                        if (queries.find(q => {
+                                            return result.table.name.includes(q)
+                                        })) {
+                                            aElm.classList.add("has-background-warning")
+                                        }
+                                        aElm.appendChildTxt(result.table.name)
+                                    })
+
+                                    rubyElm.appendChildElm("rt", (rtElm) => {
+                                        if (queries.find(q => {
+                                            return result.table.comment.includes(q)
+                                        })) {
+                                            rtElm.classList.add("has-background-warning")
+                                        }
+                                        rubyElm.appendChildTxt(result.table.comment)
+                                    })
+                                })
+                            })
+                        })
+
+                        trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.classList.add("is-search-result")
+
+                            if (result.columns && result.columns.length) {
+                                tdElm.appendChildElm("ul", (ulElm) => {
+                                    result.columns.forEach(column => {
+                                        ulElm.appendChildElm("li", (liElm) => {
+                                            liElm.appendChildElm("ruby", (rubyElm) => {
+                                                rubyElm.appendChildElm("span", (spanElm) => {
+                                                    if (queries.find(q => {
+                                                        return column.name.includes(q)
+                                                    })) {
+                                                        spanElm.classList.add("has-background-warning")
+                                                    }
+                                                    spanElm.appendChildTxt(column.name)
+                                                })
+                                                rubyElm.appendChildElm("rt", (rtElm) => {
+                                                    if (queries.find(q => {
+                                                        return column.comment.includes(q)
+                                                    })) {
+                                                        rtElm.classList.add("has-background-warning")
+                                                    }
+                                                    rtElm.appendChildTxt(column.comment)
+                                                })
+                                            })
+                                        })
+                                    })
+                                })
+                            }
+                        })
+                    })
+                })
+            })
+        })
+    }).catch((err) => {
+        console.error(err)
+    })
 })()
 </script>
 </body>
