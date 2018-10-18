@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragments :: head (title='Search ' + ${queries})">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Table name | haystacks</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+  <link rel="stylesheet" href="../static/css/haystacks.css" th:href="@{/css/haystacks.css}">
+  <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
+</head>
+<body>
+<div th:replace="_fragments :: navbar"></div>
+<section class="section">
+  <div class="container">
+    <h1 class="title is-2">Search results</h1>
+    <p id="queries" class="subtitle">for: <em th:each="q : ${queries}" th:text="${q}"></em></p>
+    <div id="searchResults">
+      <table class="table is-narrow is-hoverable is-fullwidth">
+        <thead>
+        <tr>
+          <th>Table</th>
+          <th>Columns</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="result : ${results}">
+          <td class="is-search-result">
+            <div>
+              <ruby>
+                <a href="#"
+                   th:href="@{table/{name}(name=${result.table.name})}"
+                   th:classappend="${#search.containsAnyQuery(result.table.name, queries)}? 'has-background-warning'"
+                   th:text="${result.table.name}">table_name</a>
+                <rt th:classappend="${#search.containsAnyQuery(result.table.comment, queries)}? 'has-background-warning'"
+                    th:text="${result.table.comment}">table comment</rt></ruby>
+            </div>
+          </td>
+          <td class="is-search-result">
+            <ul th:if="${not #lists.isEmpty(result.columns)}">
+              <li th:each="column : ${result.columns}"><ruby>
+                <span th:classappend="${#search.containsAnyQuery(column.name, queries)}? 'has-background-warning'"
+                      th:text="${column.name}">column_name</span>
+                <rt th:classappend="${#search.containsAnyQuery(column.comment, queries)}? 'has-background-warning'"
+                    th:text="${column.comment}">column comment</rt>
+              </ruby></li>
+            </ul>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</body>
+</html>

@@ -113,3 +113,7 @@ body {
     height: 1.5rem;
     line-height: normal;
 }
+
+#queries em:nth-of-type(n+2):before {
+    content: ', ';
+}
