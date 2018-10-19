@@ -21,71 +21,43 @@
     <div id="dataSource"></div>
   </div>
 </section>
+<div th:replace="_fragments :: scripts">
+  <script src="../static/js/haystacks.js"></script>
+</div>
 <script th:inline="javascript">
-const renderDataSource = (containerElement, dataSource) => {
-    const tableElement = document.createElement("table")
-    containerElement.appendChild(tableElement)
-    tableElement.classList.add("table")
-    tableElement.classList.add("is-narrow")
-    tableElement.classList.add("is-hoverable")
-    tableElement.classList.add("is-fullwidth")
-
-    const tableBodyElement = document.createElement("tbody")
-    tableElement.appendChild(tableBodyElement)
-
-    const urlRowElement = document.createElement("tr")
-    tableBodyElement.appendChild(urlRowElement)
-    const urlHeadElement = document.createElement("th")
-    urlRowElement.appendChild(urlHeadElement)
-    urlHeadElement.appendChild(document.createTextNode("URL"))
-    const urlDataElement = document.createElement("td")
-    urlRowElement.appendChild(urlDataElement)
-    urlDataElement.appendChild(document.createTextNode(dataSource.url))
-
-    const nameRowElement = document.createElement("tr")
-    tableBodyElement.appendChild(nameRowElement)
-    const nameHeadElement = document.createElement("th")
-    nameRowElement.appendChild(nameHeadElement)
-    nameHeadElement.appendChild(document.createTextNode("Name"))
-    const nameDataElement = document.createElement("td")
-    nameRowElement.appendChild(nameDataElement)
-    nameDataElement.appendChild(document.createTextNode(dataSource.name))
-
-    const usernameRowElement = document.createElement("tr")
-    tableBodyElement.appendChild(usernameRowElement)
-    const usernameHeadElement = document.createElement("th")
-    usernameRowElement.appendChild(usernameHeadElement)
-    usernameHeadElement.appendChild(document.createTextNode("Username"))
-    const usernameDataElement = document.createElement("td")
-    usernameRowElement.appendChild(usernameDataElement)
-    usernameDataElement.appendChild(document.createTextNode(dataSource.username))
-
-    const driverRowElement = document.createElement("tr")
-    tableBodyElement.appendChild(driverRowElement)
-    const driverHeadElement = document.createElement("th")
-    driverRowElement.appendChild(driverHeadElement)
-    driverHeadElement.appendChild(document.createTextNode("Driver"))
-    const driverDataElement = document.createElement("td")
-    driverRowElement.appendChild(driverDataElement)
-    driverDataElement.appendChild(document.createTextNode(dataSource.driverClass))
-}
 (function () {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "/api/dataSource", true);
-    xhr.onload = (e) => {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                const dataSource = JSON.parse(xhr.responseText)
-                renderDataSource(document.querySelector("#dataSource"), dataSource)
-            } else {
-                console.error(xhr.statusText)
-            }
-        }
-    }
-    xhr.onerror = (e) => {
-        console.error(xhr.statusText)
-    }
-    xhr.send(null)
+    fetch("/api/dataSource").then(resp => {
+        if (!resp.ok) throw Error(resp.statusText)
+        return resp.json()
+    }).then((dataSource) => {
+        document.querySelector("#dataSource").appendChildElm("table", (tableElm) => {
+            tableElm.classList.add("table")
+            tableElm.classList.add("is-narrow")
+            tableElm.classList.add("is-hoverable")
+            tableElm.classList.add("is-fullwidth")
+
+            tableElm.appendChildElm("tbody", (tbodyElm) => {
+                tbodyElm.appendChildElm("tr", (trElm) => {
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("URL") })
+                    trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt(dataSource.url) })
+                })
+                tbodyElm.appendChildElm("tr", (trElm) => {
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Name") })
+                    trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt(dataSource.name) })
+                })
+                tbodyElm.appendChildElm("tr", (trElm) => {
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Username") })
+                    trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt(dataSource.username) })
+                })
+                tbodyElm.appendChildElm("tr", (trElm) => {
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Driver") })
+                    trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt(dataSource.driverClass) })
+                })
+            })
+        })
+    }).catch((err) => {
+        console.error(err)
+    })
 })()
 </script>
 </body>
