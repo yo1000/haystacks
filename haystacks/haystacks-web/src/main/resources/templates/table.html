@@ -43,7 +43,7 @@
 <script th:inline="javascript">
 (function () {
     const tableName = /*[[${tableName}]]*/ "tableName";
-    fetch("/api/tables/" + tableName).then(resp => {
+    fetch(`/api/tables/${tableName}`).then(resp => {
         if (!resp.ok) throw Error(resp.statusText)
         return resp.json()
     }).then((table) => {
