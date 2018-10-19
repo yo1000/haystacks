@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragments :: head (title='DataSource')">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Table name | haystacks</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+  <link rel="stylesheet" href="../static/css/haystacks.css" th:href="@{/css/haystacks.css}">
+  <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
+</head>
+<body>
+<div th:replace="_fragments :: navbar"></div>
+<section class="section">
+  <div class="container">
+    <h1 class="title is-2">Information</h1>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <h2 class="title is-4">Data Source</h2>
+    <div id="dataSource">
+      <table class="table is-narrow is-hoverable is-fullwidth">
+        <tbody>
+        <tr>
+          <th>URL</th>
+          <td th:text="${dataSource.url}">dataSource://url</td>
+        </tr>
+        <tr>
+          <th>Name</th>
+          <td th:text="${dataSource.name}">database_name</td>
+        </tr>
+        <tr>
+          <th>Username</th>
+          <td th:text="${dataSource.username}">username</td>
+        </tr>
+        <tr>
+          <th>Driver</th>
+          <td th:text="${dataSource.driverClass}">driver.class.Name</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</body>
+</html>
