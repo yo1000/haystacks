@@ -2,7 +2,7 @@
 "haystacks" is Web based Database schema viewer.
 
 
-## Usage
+## Standard Usage
 ```bash
 curl -L -o haystacks-assembly-mysql-latest.jar \
   https://github.com/yo1000/haystacks/releases/download/v0.0.2/haystacks-assembly-mysql-0.0.2.jar
@@ -15,11 +15,23 @@ java -jar haystacks-assembly-mysql-latest.jar \
 ```
 
 
+## All options
+```bash
+java -jar haystacks-assembly-mysql-latest.jar \
+  --spring.datasource.url=jdbc:mysql://<host>:<port>/<database> \
+  --spring.datasource.name=<schema> \
+  --spring.datasource.username=<username> \
+  --spring.datasource.password=<password> \
+  --haystacks.web.ssr=<rendering mode: default(true)> \
+  --haystacks.web.title=<site title> \
+  --haystacks.web.logo=<header logo url by svg>
+```
+
+
 ## Quick Start
 
 
 ### Launch binary
- 
 with external Database. (MySQL [sakila database](https://dev.mysql.com/doc/sakila/en/) by [Docker container](https://hub.docker.com/r/thebinarypenguin/mysql-sakila/))
 
 ```bash
@@ -42,7 +54,6 @@ Browse to [http://localhost:8080](http://localhost:8080)
 
 
 ### Launch from source
-
 with embedded DEMO Database.
 
 ```bash
