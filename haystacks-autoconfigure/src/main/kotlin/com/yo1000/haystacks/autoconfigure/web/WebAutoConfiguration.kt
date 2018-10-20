@@ -56,6 +56,7 @@ class WebAutoConfiguration {
         fun addObjects(model: Model) {
             model.addAttribute("logo", webProps.logo)
             model.addAttribute("title", webProps.title)
+            model.addAttribute("favicon", webProps.favicon)
             model.addAttribute("dataSourceName", dataSourceProps.name)
         }
     }
@@ -135,5 +136,6 @@ class WebAutoConfiguration {
 class WebConfigurationProperties(
         var ssr: Boolean = true,
         var logo: String = "/img/haystacks-logo.svg",
-        var title: String = "haystacks"
+        var title: String = "haystacks",
+        var favicon: String = "/favicon.ico"
 )
