@@ -5,7 +5,7 @@
 ## Standard Usage
 ```bash
 curl -L -o haystacks-assembly-mysql-latest.jar \
-  https://github.com/yo1000/haystacks/releases/download/v0.0.2/haystacks-assembly-mysql-0.0.2.jar
+  https://github.com/yo1000/haystacks/releases/download/v0.0.3/haystacks-assembly-mysql-0.0.3.jar
 
 java -jar haystacks-assembly-mysql-latest.jar \
   --spring.datasource.url=jdbc:mysql://<host>:<port>/<database> \
@@ -41,7 +41,7 @@ docker run -d \
   thebinarypenguin/mysql-sakila:latest
 
 curl -L -o haystacks-assembly-mysql-latest.jar \
-  https://github.com/yo1000/haystacks/releases/download/v0.0.2/haystacks-assembly-mysql-0.0.2.jar
+  https://github.com/yo1000/haystacks/releases/download/v0.0.3/haystacks-assembly-mysql-0.0.3.jar
 
 java -jar haystacks-assembly-mysql-latest.jar \
   --spring.datasource.url=jdbc:mysql://localhost:3306/sakila \
