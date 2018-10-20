@@ -8,7 +8,7 @@
 ### Required options
 ```bash
 curl -L -o haystacks-assembly-mysql-latest.jar \
-  https://github.com/yo1000/haystacks/releases/download/v0.0.3/haystacks-assembly-mysql-0.0.3.jar
+  https://github.com/yo1000/haystacks/releases/download/v0.0.4/haystacks-assembly-mysql-0.0.4.jar
 
 java -jar haystacks-assembly-mysql-latest.jar \
   --spring.datasource.url=jdbc:mysql://<host>:<port>/<database> \
@@ -21,7 +21,7 @@ java -jar haystacks-assembly-mysql-latest.jar \
 ### All options
 ```bash
 curl -L -o haystacks-assembly-mysql-latest.jar \
-  https://github.com/yo1000/haystacks/releases/download/v0.0.3/haystacks-assembly-mysql-0.0.3.jar
+  https://github.com/yo1000/haystacks/releases/download/v0.0.4/haystacks-assembly-mysql-0.0.4.jar
 
 java -jar haystacks-assembly-mysql-latest.jar \
   --spring.datasource.url=jdbc:mysql://<Host>:<Port>/<Database> \
@@ -50,7 +50,7 @@ docker run -d \
   thebinarypenguin/mysql-sakila:latest
 
 curl -L -o haystacks-assembly-mysql-latest.jar \
-  https://github.com/yo1000/haystacks/releases/download/v0.0.3/haystacks-assembly-mysql-0.0.3.jar
+  https://github.com/yo1000/haystacks/releases/download/v0.0.4/haystacks-assembly-mysql-0.0.4.jar
 
 java -jar haystacks-assembly-mysql-latest.jar \
   --spring.datasource.url=jdbc:mysql://localhost:3306/sakila \
