@@ -5,6 +5,10 @@
 ## Usage
 
 
+### Requirements
+Java 8 must be installed.
+
+
 ### Required options
 ```bash
 curl -L -o haystacks-assembly-mysql-latest.jar \
