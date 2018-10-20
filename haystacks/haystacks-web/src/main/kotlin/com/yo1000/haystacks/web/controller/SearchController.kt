@@ -13,12 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam
 @RequestMapping("/search")
 open class SearchController(
         private val ssr: Boolean,
-        private val dataSourceName: String,
         private val tableApplicationService: TableApplicationService
 ) {
     @GetMapping("")
     fun get(model: Model, @RequestParam q: List<String>): String {
-        model.addAttribute("dataSourceName", dataSourceName)
         model.addAttribute("queries", q)
 
         if (ssr) {

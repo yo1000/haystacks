@@ -13,24 +13,18 @@ import org.springframework.web.bind.annotation.RequestMapping
 @RequestMapping("/table")
 open class TableController(
         private val ssr: Boolean,
-        private val dataSourceName: String,
         private val tableApplicationService: TableApplicationService
 ) {
     @GetMapping("")
-    fun get(model: Model): String {
-        model.addAttribute("dataSourceName", dataSourceName)
-
-        if (ssr) {
-            model.addAttribute("tables", tableApplicationService.getTableOutlines())
-            return "tables.ssr"
-        } else {
-            return "tables"
-        }
+    fun get(model: Model): String = if (ssr) {
+        model.addAttribute("tables", tableApplicationService.getTableOutlines())
+        "tables.ssr"
+    } else {
+        "tables"
     }
 
     @GetMapping("/{tableName}")
     fun getByName(model: Model, @PathVariable tableName: String): String {
-        model.addAttribute("dataSourceName", dataSourceName)
         model.addAttribute("tableName", tableName)
 
         if (ssr) {

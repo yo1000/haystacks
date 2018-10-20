@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="head (title)">
+<head th:fragment="head (page)">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title th:text="${title} + ' | haystacks'">header | haystacks</title>
+  <title th:text="${page} + ' | ' + ${title}">header | haystacks</title>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
@@ -17,7 +17,7 @@
     <a href="/">
       <object type="image/svg+xml" height="48"
               data="../static/img/haystacks-logo.svg"
-              th:attr="data=@{/img/haystacks-logo.svg}"></object>
+              th:attr="data=${logo}"></object>
     </a>
     <div role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
          onclick="document.querySelector('.navbar-menu').classList.toggle('is-active');">

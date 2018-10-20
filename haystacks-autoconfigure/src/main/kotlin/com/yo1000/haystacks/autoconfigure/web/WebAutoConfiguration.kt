@@ -15,6 +15,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
+import org.springframework.web.bind.annotation.ControllerAdvice
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.servlet.DispatcherServlet
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
@@ -39,6 +42,22 @@ class WebAutoConfiguration {
         templateResolvers.forEach(it::addTemplateResolver)
         dialectsProvider.getIfAvailable { emptyList() }.forEach(it::addDialect)
         it.addDialect(HaystacksDialect())
+    }
+
+    @ControllerAdvice
+    @ConditionalOnWebApplication(type = Type.SERVLET)
+    @ConditionalOnClass(Servlet::class, DispatcherServlet::class, WebMvcConfigurer::class)
+    @AutoConfigureAfter(WebAutoConfiguration::class)
+    class ModelConfigureControllerAdvice(
+            private val webProps: WebConfigurationProperties,
+            private val dataSourceProps: DataSourceProperties
+    ) {
+        @ModelAttribute
+        fun addObjects(model: Model) {
+            model.addAttribute("logo", webProps.logo)
+            model.addAttribute("title", webProps.title)
+            model.addAttribute("dataSourceName", dataSourceProps.name)
+        }
     }
 
     @RestController
@@ -75,11 +94,9 @@ class WebAutoConfiguration {
     @AutoConfigureAfter(WebAutoConfiguration::class)
     class TableControllerBean(
             props: WebConfigurationProperties,
-            dataSourceProperties: DataSourceProperties,
             tableApplicationService: TableApplicationService
     ) : TableController(
             props.ssr,
-            dataSourceProperties.name,
             tableApplicationService
     )
 
@@ -89,11 +106,9 @@ class WebAutoConfiguration {
     @AutoConfigureAfter(WebAutoConfiguration::class)
     class SearchControllerBean(
             props: WebConfigurationProperties,
-            dataSourceProperties: DataSourceProperties,
             tableApplicationService: TableApplicationService
     ) : SearchController(
             props.ssr,
-            dataSourceProperties.name,
             tableApplicationService
     )
 
@@ -118,5 +133,7 @@ class WebAutoConfiguration {
 
 @ConfigurationProperties("haystacks.web")
 class WebConfigurationProperties(
-        var ssr: Boolean = true
+        var ssr: Boolean = true,
+        var logo: String = "/img/haystacks-logo.svg",
+        var title: String = "haystacks"
 )
