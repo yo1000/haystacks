@@ -2,19 +2,6 @@ body {
     padding-bottom: 4rem;
 }
 
-.navbar-brand object {
-    position:static;
-    margin:.8rem 1rem .65rem 1rem;
-}
-
-.navbar-brand a object {
-    pointer-events:none;
-}
-
-.navbar.is-white {
-    border-bottom: .015625rem solid #000;
-}
-
 @media screen and (max-width: 1087px) {
     .navbar-menu {
         box-shadow: none;
@@ -34,6 +21,19 @@ body {
         max-width: 95%;
         width: 95%;
     }
+}
+
+.navbar-brand object {
+    position:static;
+    margin:.8rem 1rem .65rem 1rem;
+}
+
+.navbar-brand a object {
+    pointer-events:none;
+}
+
+.navbar.is-white {
+    border-bottom: .015625rem solid #000;
 }
 
 .navbar-burger {
@@ -62,6 +62,10 @@ body {
 
 .input {
     box-shadow: none;
+}
+
+.table td {
+    word-break: break-all;
 }
 
 #statement pre {
