@@ -72,7 +72,7 @@
           location.href = `/search?${queryString}`
       }
       searchTextElement.addEventListener("keypress", (event) => {
-          if (event.keyCode === 13) search()
+          if (event.key === "Enter") search()
       })
       searchButtonElement.addEventListener("click", (event) => {
           search()
