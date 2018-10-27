@@ -24,4 +24,5 @@ target/
 /nbdist/
 /.nb-gradle/
 
+.DS_Store
 note.properties
