@@ -149,9 +149,38 @@ class PostgresqlTableRepository(
         TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
     }.toMap()
 
-    override fun findReferencingCountToParentMap(): Map<TablePhysicalName, Int> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun findReferencingCountToParentMap(): Map<TablePhysicalName, Int> = jdbcOperations.query("""
+        SELECT
+            child_table             AS $OUTPUT_TABLE_NAME,
+            count(parent_column)    AS $OUTPUT_REFERENCE_COUNT
+        FROM
+            (
+                SELECT
+                    tbl_cnstr.table_name        AS child_table,
+                    col_usg.column_name         AS child_column,
+                    cnstr_col_usg.table_name    AS parent_table,
+                    cnstr_col_usg.column_name   AS parent_column
+                FROM
+                    information_schema.table_constraints tbl_cnstr
+                JOIN
+                    information_schema.key_column_usage col_usg
+                    ON  tbl_cnstr.constraint_name = col_usg.constraint_name
+                    AND tbl_cnstr.table_schema = col_usg.table_schema
+                JOIN
+                    information_schema.constraint_column_usage AS cnstr_col_usg
+                    ON  tbl_cnstr.constraint_name = cnstr_col_usg.constraint_name
+                    AND tbl_cnstr.table_schema = cnstr_col_usg.table_schema
+                WHERE
+                    tbl_cnstr.table_schema = :$INPUT_SCHEMA_NAME
+                AND tbl_cnstr.constraint_type = 'FOREIGN KEY'
+            ) parent_child_cnstr
+        GROUP BY
+            child_table
+        """.trimIndent(), mapOf(
+            INPUT_SCHEMA_NAME to schemaName
+    )) { resultSet, _ ->
+        TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
+    }.filter { it.second > 0 }.toMap()
 
     override fun findStatementByName(name: TablePhysicalName): Statement {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
