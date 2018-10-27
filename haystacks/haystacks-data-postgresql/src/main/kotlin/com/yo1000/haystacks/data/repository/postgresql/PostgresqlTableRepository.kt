@@ -182,7 +182,5 @@ class PostgresqlTableRepository(
         TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
     }.filter { it.second > 0 }.toMap()
 
-    override fun findStatementByName(name: TablePhysicalName): Statement {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun findStatementByName(name: TablePhysicalName): Statement = Statement("<NOT SUPPORTED>")
 }
