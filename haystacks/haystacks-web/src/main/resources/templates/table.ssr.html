@@ -41,28 +41,39 @@
           <td><span
                   class="is-column-name" th:classappend="${#tables.isForeignKey(column)}? 'is-foreign-key-column'"><span
                   class="is-column-name" th:classappend="${#tables.isPrimaryKey(column, table.indexes)}? 'is-primary-key-column'"
-                  th:text="${column.name}">column_name</span></span>
-          </td>
+                  th:text="${column.name}">
+            toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_column_name
+          </span></span></td>
           <td th:text="${column.type}">type</td>
           <td><i th:if="${column.nullable}" class="fas fa-check"></i></td>
-          <td th:text="${column.default}">default_value</td>
+          <td th:text="${column.default}">
+            toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_default_value
+          </td>
           <td>
             <a href="#"
                th:if="${column.parent != null}"
                th:href="${column.parent.table}"
-               th:text="${column.parent.table} + '.' + ${column.parent.column}">table_name.column_name</a>
+               th:text="${column.parent.table} + '.' + ${column.parent.column}">
+              toooooooooooooooooooooooooooooooo_long_table_name.toooooooooooooooooooooooooooooooo_long_column_name
+            </a>
           </td>
           <td>
             <ul th:if="${not #lists.isEmpty(column.children)}">
               <li th:each="child : ${column.children}">
                 <a href="#"
                    th:href="${child.table}"
-                   th:text="${child.table} + '.' + ${child.column}">table_name.column_name</a>
+                   th:text="${child.table} + '.' + ${child.column}">
+                  toooooooooooooooooooooooooooooooo_long_table_name.toooooooooooooooooooooooooooooooo_long_column_name
+                </a>
               </li>
             </ul>
           </td>
-          <td th:text="${column.comment}">comment</td>
-          <td class="is-data-note-container" th:attr="data-fqn=${column.fqn}" th:text="${column.note}">note</td>
+          <td th:text="${column.comment}">
+            Tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo long column comment
+          </td>
+          <td class="is-data-note-container" th:attr="data-fqn=${column.fqn}" th:text="${column.note}">
+            Toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo long column note
+          </td>
         </tr>
         </tbody>
       </table>
@@ -89,16 +100,24 @@
                  th:class="${index.type == 'PRIMARY'} ? 'fas fa-circle'
                         : (${index.type == 'UNIQUE'}? 'far fa-dot-circle'
                         : (${index.type == 'PERFORMANCE'}? 'far fa-circle'
-                        : ''))"></i> <span th:text="${index.name}">index_name</span>
+                        : ''))"></i> <span th:text="${index.name}">
+            tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_index_name
+          </span>
           </td>
           <td th:text="${index.type}">INDEX_TYPE</td>
           <td>
             <ul th:if="${not #lists.isEmpty(index.columns)}">
-              <li th:each="column : ${index.columns}" th:text="${column.column}">column_name</li>
+              <li th:each="column : ${index.columns}" th:text="${column.column}">
+                toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_column_name
+              </li>
             </ul>
           </td>
-          <td th:text="${index.comment}">comment</td>
-          <td class="is-data-note-container" th:attr="data-fqn=${index.fqn}" th:text="${index.note}">note</td>
+          <td th:text="${index.comment}">
+            Tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo long column comment
+          </td>
+          <td class="is-data-note-container" th:attr="data-fqn=${index.fqn}" th:text="${index.note}">
+            Toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo long column note
+          </td>
         </tr>
       </table>
     </div>

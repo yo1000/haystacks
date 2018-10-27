@@ -28,13 +28,19 @@
         </thead>
         <tbody>
         <tr th:each="table : ${tables}">
-          <td><a href="#" th:href="@{table/{name}(name=${table.name})}" th:text="${table.name}">table_name</a></td>
+          <td><a href="#" th:href="@{table/{name}(name=${table.name})}" th:text="${table.name}">
+            tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_table_name
+          </a></td>
           <td th:text="${table.columnCount}">5</td>
-          <td th:text="${table.rowCount}">200</td>
-          <td th:text="${table.parentCount}">2</td>
-          <td th:text="${table.childCount}">1</td>
-          <td th:text="${table.comment}">Table name comment</td>
-          <td class="is-data-note-container" th:attr="data-fqn=${table.fqn}" th:text="${table.note}">note</td>
+          <td th:text="${table.rowCount}">888888888888</td>
+          <td th:text="${table.parentCount}">88</td>
+          <td th:text="${table.childCount}">8888</td>
+          <td th:text="${table.comment}">
+            Toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo long Table comment
+          </td>
+          <td class="is-data-note-container" th:attr="data-fqn=${table.fqn}" th:text="${table.note}">
+            Tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo long Table note
+          </td>
         </tr>
         </tbody>
       </table>
