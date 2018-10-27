@@ -37,6 +37,12 @@
           <th>Driver</th>
           <td th:text="${dataSource.driverClass}">driver.class.Name</td>
         </tr>
+        <tr>
+          <th>Note</th>
+          <td><a href="/note/download" th:href="@{/note/download/{name}(name=${noteFile.name})}" th:text="${noteFile.path}">
+            /var/opt/haystacks/note.properties
+          </a></td>
+        </tr>
         </tbody>
       </table>
     </div>

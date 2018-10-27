@@ -1,5 +1,6 @@
 package com.yo1000.haystacks.autoconfigure.web
 
+import com.yo1000.haystacks.autoconfigure.core.NoteFileConfigurationProperties
 import com.yo1000.haystacks.web.controller.*
 import com.yo1000.haystacks.web.service.TableApplicationService
 import com.yo1000.haystacks.web.view.HaystacksDialect
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.thymeleaf.dialect.IDialect
 import org.thymeleaf.spring5.SpringTemplateEngine
 import org.thymeleaf.templateresolver.ITemplateResolver
+import java.nio.file.Paths
 import javax.servlet.Servlet
 
 @Configuration
@@ -65,29 +67,50 @@ class WebAutoConfiguration {
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @ConditionalOnClass(Servlet::class, DispatcherServlet::class, WebMvcConfigurer::class)
     @AutoConfigureAfter(WebAutoConfiguration::class)
-    class TableRestControllerBean(tableApplicationService:TableApplicationService)
-        : TableRestController(tableApplicationService)
+    class TableRestControllerBean(
+            tableApplicationService: TableApplicationService
+    ) : TableRestController(
+            tableApplicationService
+    )
 
     @RestController
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @ConditionalOnClass(Servlet::class, DispatcherServlet::class, WebMvcConfigurer::class)
     @AutoConfigureAfter(WebAutoConfiguration::class)
-    class SearchRestControllerBean(tableApplicationService:TableApplicationService)
-        : SearchRestController(tableApplicationService)
+    class SearchRestControllerBean(
+            tableApplicationService: TableApplicationService
+    ) : SearchRestController(
+            tableApplicationService
+    )
 
     @RestController
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @ConditionalOnClass(Servlet::class, DispatcherServlet::class, WebMvcConfigurer::class)
     @AutoConfigureAfter(WebAutoConfiguration::class)
-    class DataSourceRestControllerBean(dataSourceProperties: DataSourceProperties)
-        : DataSourceRestController(dataSourceProperties)
+    class InformationRestControllerBean(
+            dataSourceProperties: DataSourceProperties,
+            noteFileConfigurationProperties: NoteFileConfigurationProperties
+    ) : InformationRestController(
+            dataSourceUrl = dataSourceProperties.url,
+            dataSourceName = dataSourceProperties.name,
+            dataSourceUsername = dataSourceProperties.username,
+            dataSourceDriverClassName = dataSourceProperties.driverClassName,
+            noteFilePath = noteFileConfigurationProperties.storeLocation.takeIf {
+                !it.trim().isEmpty()
+            }?.let {
+                Paths.get(it)
+            } ?: Paths.get(System.getProperty("user.dir")).resolve("note.properties")
+    )
 
     @RestController
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @ConditionalOnClass(Servlet::class, DispatcherServlet::class, WebMvcConfigurer::class)
     @AutoConfigureAfter(WebAutoConfiguration::class)
-    class NoteRestControllerBean(tableApplicationService:TableApplicationService)
-        : NoteRestController(tableApplicationService)
+    class NoteRestControllerBean(
+            tableApplicationService: TableApplicationService
+    ) : NoteRestController(
+            tableApplicationService
+    )
 
     @Controller
     @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -119,10 +142,30 @@ class WebAutoConfiguration {
     @AutoConfigureAfter(WebAutoConfiguration::class)
     class InformationControllerBean(
             props: WebConfigurationProperties,
-            dataSourceProperties: DataSourceProperties
+            dataSourceProperties: DataSourceProperties,
+            noteFileProperties: NoteFileConfigurationProperties
     ) : InformationController(
             props.ssr,
-            dataSourceProperties
+            dataSourceProperties,
+            noteFileProperties.storeLocation.takeIf {
+                !it.trim().isEmpty()
+            }?.let {
+                Paths.get(it)
+            } ?: Paths.get(System.getProperty("user.dir")).resolve("note.properties")
+    )
+
+    @Controller
+    @ConditionalOnWebApplication(type = Type.SERVLET)
+    @ConditionalOnClass(Servlet::class, DispatcherServlet::class, WebMvcConfigurer::class)
+    @AutoConfigureAfter(WebAutoConfiguration::class)
+    class NoteControllerBean(
+            props: NoteFileConfigurationProperties
+    ) : NoteController(
+            props.storeLocation.takeIf {
+                !it.trim().isEmpty()
+            }?.let {
+                Paths.get(it)
+            } ?: Paths.get(System.getProperty("user.dir")).resolve("note.properties")
     )
 
     @Controller

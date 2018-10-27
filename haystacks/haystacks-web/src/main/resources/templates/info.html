@@ -26,17 +26,17 @@
 </div>
 <script th:inline="javascript">
 (function () {
-    fetch("/api/dataSource").then(resp => {
-        if (!resp.ok) throw Error(resp.statusText)
-        return resp.json()
-    }).then((dataSource) => {
-        document.querySelector("#dataSource").appendChildElm("table", (tableElm) => {
-            tableElm.classList.add("table")
-            tableElm.classList.add("is-narrow")
-            tableElm.classList.add("is-hoverable")
-            tableElm.classList.add("is-fullwidth")
+    document.querySelector("#dataSource").appendChildElm("table", (tableElm) => {
+        tableElm.classList.add("table")
+        tableElm.classList.add("is-narrow")
+        tableElm.classList.add("is-hoverable")
+        tableElm.classList.add("is-fullwidth")
 
-            tableElm.appendChildElm("tbody", (tbodyElm) => {
+        tableElm.appendChildElm("tbody", (tbodyElm) => {
+            fetch("/api/info/dataSource").then(resp => {
+                if (!resp.ok) throw Error(resp.statusText)
+                return resp.json()
+            }).then((dataSource) => {
                 tbodyElm.appendChildElm("tr", (trElm) => {
                     trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("URL") })
                     trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt(dataSource.url) })
@@ -53,10 +53,27 @@
                     trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Driver") })
                     trElm.appendChildElm("td", (tdElm) => { tdElm.appendChildTxt(dataSource.driverClass) })
                 })
+            }).catch((err) => {
+                console.error(err)
+            })
+
+            fetch("/api/info/note").then(resp => {
+                if (!resp.ok) throw Error(resp.statusText)
+                return resp.json()
+            }).then((noteFile) => {
+                tbodyElm.appendChildElm("tr", (trElm) => {
+                    trElm.appendChildElm("th", (thElm) => { thElm.appendChildTxt("Note") })
+                    trElm.appendChildElm("td", (tdElm) => {
+                        tdElm.appendChildElm("a", (aElm) => {
+                            aElm.setAttribute("href", `/note/download/${noteFile.name}`)
+                            aElm.appendChildTxt(noteFile.path)
+                        })
+                    })
+                })
+            }).catch((err) => {
+                console.error(err)
             })
         })
-    }).catch((err) => {
-        console.error(err)
     })
 })()
 </script>
