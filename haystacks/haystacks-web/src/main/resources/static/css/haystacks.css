@@ -29,6 +29,11 @@ body {
     .navbar-end>.navbar-item:hover {
         height: 4.75rem;
     }
+
+    .container {
+        max-width: 95%;
+        width: 95%;
+    }
 }
 
 .navbar-burger {
