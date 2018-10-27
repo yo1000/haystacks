@@ -66,6 +66,7 @@ body {
 
 .table td {
     word-break: break-all;
+    max-width: 20rem;
 }
 
 #statement pre {
