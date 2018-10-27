@@ -97,9 +97,24 @@ class PostgresqlTableRepository(
         TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
     }.toMap()
 
-    override fun findRowCountMap(): Map<TablePhysicalName, Long> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun findRowCountMap(): Map<TablePhysicalName, Long> = jdbcOperations.query("""
+        SELECT
+            tbl.table_name  AS $OUTPUT_TABLE_NAME,
+            stat.n_live_tup AS $OUTPUT_TABLE_ROWS
+        FROM
+            information_schema.tables tbl
+        INNER JOIN
+            pg_stat_user_tables stat
+            ON  tbl.table_schema = stat.schemaname
+            AND tbl.table_name = stat.relname
+        WHERE
+            tbl.table_schema = $INPUT_SCHEMA_NAME
+        AND tbl.table_type = 'BASE TABLE'
+        """.trimIndent(), mapOf(
+            INPUT_SCHEMA_NAME to schemaName
+    )) { resultSet, _ ->
+        TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getLong(OUTPUT_TABLE_ROWS)
+    }.toMap()
 
     override fun findReferencedCountFromChildrenMap(): Map<TablePhysicalName, Int> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
