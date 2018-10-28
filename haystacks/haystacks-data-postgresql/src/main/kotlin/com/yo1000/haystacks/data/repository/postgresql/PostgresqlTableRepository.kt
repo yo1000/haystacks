@@ -1,13 +1,8 @@
 package com.yo1000.haystacks.data.repository.postgresql
 
-import com.yo1000.haystacks.core.entity.FoundNames
-import com.yo1000.haystacks.core.entity.Table
-import com.yo1000.haystacks.core.entity.TableNames
+import com.yo1000.haystacks.core.entity.*
 import com.yo1000.haystacks.core.repository.TableRepository
-import com.yo1000.haystacks.core.valueobject.FullyQualifiedName
-import com.yo1000.haystacks.core.valueobject.LogicalName
-import com.yo1000.haystacks.core.valueobject.Statement
-import com.yo1000.haystacks.core.valueobject.TablePhysicalName
+import com.yo1000.haystacks.core.valueobject.*
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations
 
 class PostgresqlTableRepository(
@@ -73,7 +68,245 @@ class PostgresqlTableRepository(
     }
 
     override fun findTable(name: TablePhysicalName): Table {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        data class TableItem(
+                val name: String,
+                val comment: String,
+                val fqn: String,
+                val rows: Long
+        )
+        data class ColumnItem(
+                val name: String,
+                val comment: String,
+                val fqn: String,
+                val type: String,
+                val nullable: Boolean,
+                val default: String?
+        )
+        data class RelationItem(
+                val tableName: String,
+                val columnName: String
+        )
+        data class ResultItem(
+                val tableItem: TableItem,
+                val columnItem: ColumnItem,
+                val parentItem: RelationItem?,
+                val childItem: RelationItem?
+        )
+
+        return jdbcOperations.query("""
+        WITH
+        qry_dat AS (
+            SELECT
+                als_col.table_schema    AS schema_name,
+                als_col.table_name      AS table_name,
+                CONCAT(
+                    als_col.table_schema, '.',
+                    als_col.table_name
+                )                       AS table_fqn,
+                als_col.column_name     AS column_name,
+                CONCAT(
+                    als_col.table_schema, '.',
+                    als_col.table_name, '.',
+                    als_col.column_name
+                )                       AS column_fqn,
+                als_col.data_type       AS column_type,
+                als_col.is_nullable     AS column_nullable,
+                als_col.column_default  AS column_default
+            FROM
+                information_schema.columns als_col
+            WHERE
+                    als_col.table_schema = :$INPUT_SCHEMA_NAME
+                AND als_col.table_name = :$INPUT_TABLE_NAME
+            ORDER BY
+                als_col.ordinal_position
+        ),
+        qry_cmt_tbl AS (
+            SELECT
+                als_stt.schemaname      AS schema_name,
+                als_stt.relname         AS table_name,
+                CONCAT(
+                    als_stt.schemaname, '.',
+                    als_stt.relname
+                )                       AS table_fqn,
+                als_dsc_tbl.description AS table_comment,
+                als_stt.n_live_tup      AS table_rows
+            FROM
+                pg_stat_user_tables als_stt
+            LEFT OUTER JOIN
+                pg_description als_dsc_tbl
+                ON  als_stt.relid = als_dsc_tbl.objoid
+                AND als_dsc_tbl.objsubid = 0
+            WHERE
+                    als_stt.schemaname = :$INPUT_SCHEMA_NAME
+                AND als_stt.relname = :$INPUT_TABLE_NAME
+            ORDER BY
+                als_dsc_tbl.objsubid
+        ),
+        qry_cmt_col AS (
+            SELECT
+                als_atr.attname         AS column_name,
+                als_dsc_col.description AS column_comment,
+                CONCAT(
+                    als_stt.schemaname, '.',
+                    als_stt.relname, '.',
+                    als_atr.attname
+                )                       AS column_fqn
+            FROM
+                pg_stat_user_tables als_stt
+            LEFT OUTER JOIN
+                pg_description als_dsc_col
+                ON  als_stt.relid = als_dsc_col.objoid
+                AND als_dsc_col.objsubid <> 0
+            LEFT OUTER JOIN
+                pg_attribute als_atr
+                ON  als_dsc_col.objoid = als_atr.attrelid
+                AND als_dsc_col.objsubid = als_atr.attnum
+            WHERE
+                    als_stt.schemaname = :$INPUT_SCHEMA_NAME
+                AND als_stt.relname = :$INPUT_TABLE_NAME
+            ORDER BY
+                als_dsc_col.objsubid
+        ),
+        qry_rel AS (
+            SELECT
+                als_cns_tbl.table_schema    AS schema_name,
+                als_cns_tbl.table_name      AS child_table_name,
+                als_key_col_usg.column_name AS child_column_name,
+                CONCAT(
+                    als_cns_tbl.table_schema, '.',
+                    als_cns_tbl.table_name, '.',
+                    als_key_col_usg.column_name
+                )                           AS child_column_fqn,
+                als_cns_col_usg.table_name  AS parent_table_name,
+                als_cns_col_usg.column_name AS parent_column_name,
+                CONCAT(
+                    als_cns_tbl.table_schema, '.',
+                    als_cns_col_usg.table_name, '.',
+                    als_cns_col_usg.column_name
+                )                           AS parent_column_fqn
+            FROM
+                information_schema.table_constraints als_cns_tbl
+            JOIN
+                information_schema.key_column_usage als_key_col_usg
+                ON  als_cns_tbl.constraint_name = als_key_col_usg.constraint_name
+                AND als_cns_tbl.table_schema = als_key_col_usg.table_schema
+            JOIN
+                information_schema.constraint_column_usage AS als_cns_col_usg
+                ON  als_cns_tbl.constraint_name = als_cns_col_usg.constraint_name
+                AND als_cns_tbl.table_schema = als_cns_col_usg.table_schema
+            WHERE
+                als_cns_tbl.table_schema = :$INPUT_SCHEMA_NAME
+            AND als_cns_tbl.constraint_type = 'FOREIGN KEY'
+        )
+        SELECT
+            *
+        FROM
+            qry_dat
+        LEFT OUTER JOIN
+            qry_cmt_tbl
+            ON qry_dat.table_fqn = qry_cmt_tbl.table_fqn
+        LEFT OUTER JOIN
+            qry_cmt_col
+            ON qry_dat.column_fqn = qry_cmt_col.column_fqn
+        LEFT OUTER JOIN
+            qry_rel AS als_rel_cld
+            ON qry_dat.column_fqn = als_rel_cld.child_column_fqn
+        LEFT OUTER JOIN
+            qry_rel AS als_rel_prt
+            ON qry_dat.column_fqn = als_rel_prt.parent_column_fqn
+    """.trimIndent(), mapOf(
+                INPUT_SCHEMA_NAME to schemaName,
+                INPUT_TABLE_NAME to name.value
+        )) { resultSet, _ ->
+            // TODO correct select columns
+
+            val tableName = resultSet.getString(OUTPUT_TABLE_NAME)
+            val tableComment = resultSet.getString(OUTPUT_TABLE_COMMENT)
+            val tableFqn = resultSet.getString(OUTPUT_TABLE_FQN)
+            val tableRows = resultSet.getLong(OUTPUT_TABLE_ROWS)
+
+            val columnName = resultSet.getString(OUTPUT_COLUMN_NAME)
+            val columnComment = resultSet.getString(OUTPUT_COLUMN_COMMENT)
+            val columnFqn = resultSet.getString(OUTPUT_COLUMN_FQN)
+            val columnType = resultSet.getString(OUTPUT_COLUMN_TYPE)
+            val columnNullable = resultSet.getString(OUTPUT_COLUMN_NULLABLE)
+            val columnDefault = resultSet.getString(OUTPUT_COLUMN_DEFAULT)
+
+            val parentTableName = resultSet.getString(OUTPUT_PARENT_TABLE_NAME)
+            val parentColumnName = resultSet.getString(OUTPUT_PARENT_COLUMN_NAME)
+            val childTableName = resultSet.getString(OUTPUT_CHILD_TABLE_NAME)
+            val childColumnName = resultSet.getString(OUTPUT_CHILD_COLUMN_NAME)
+
+            ResultItem(
+                    tableItem = TableItem(
+                            name = tableName,
+                            comment = tableComment ?: "",
+                            fqn = tableFqn,
+                            rows = tableRows
+                    ),
+                    columnItem = ColumnItem(
+                            name = columnName,
+                            comment = columnComment ?: "",
+                            fqn = columnFqn,
+                            type = columnType,
+                            nullable = columnNullable != "NO",
+                            default = columnDefault
+                    ),
+                    parentItem = parentColumnName?.let {
+                        RelationItem(
+                                tableName = parentTableName,
+                                columnName = parentColumnName
+                        )
+                    },
+                    childItem = childColumnName?.let {
+                        RelationItem(
+                                tableName = childTableName,
+                                columnName = childColumnName
+                        )
+                    }
+            )
+        }.groupBy({
+            it.tableItem
+        }, {
+            Triple(it.columnItem, it.parentItem, it.childItem)
+        }).map {
+            Table(
+                    names = TableNames(
+                            physicalName = TablePhysicalName(it.key.name),
+                            logicalName = LogicalName(it.key.comment),
+                            fullyQualifiedName = FullyQualifiedName(it.key.fqn)
+                    ),
+                    rowCount = it.key.rows,
+                    columns = it.value.groupBy({
+                        it.first
+                    }, {
+                        it.second to it.third
+                    }).map {
+                        Column(
+                                names = ColumnNames(
+                                        physicalName = ColumnPhysicalName(it.key.name),
+                                        logicalName = LogicalName(it.key.comment),
+                                        fullyQualifiedName = FullyQualifiedName(it.key.fqn)
+                                ),
+                                type = it.key.type,
+                                nullable = it.key.nullable,
+                                default = it.key.default,
+                                parent = it.value.mapNotNull { it.first }.firstOrNull()?.let {
+                                    Relation(
+                                            tablePhysicalName = TablePhysicalName(it.tableName),
+                                            columnPhysicalName = ColumnPhysicalName(it.columnName)
+                                    )
+                                },
+                                children = it.value.mapNotNull { it.second }.map {
+                                    Relation(
+                                            tablePhysicalName = TablePhysicalName(it.tableName),
+                                            columnPhysicalName = ColumnPhysicalName(it.columnName)
+                                    )
+                                }
+                        )
+                    }
+            )
+        }.first()
     }
 
     override fun findColumnCountMap(): Map<TablePhysicalName, Int> = jdbcOperations.query("""
