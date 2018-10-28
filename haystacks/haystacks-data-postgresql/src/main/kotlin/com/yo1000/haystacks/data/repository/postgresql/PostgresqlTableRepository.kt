@@ -94,127 +94,127 @@ class PostgresqlTableRepository(
         )
 
         return jdbcOperations.query("""
-        WITH
-        qry_dat AS (
+            WITH
+            qry_dat AS (
+                SELECT
+                    als_col.table_schema    AS schema_name,
+                    als_col.table_name      AS table_name,
+                    CONCAT(
+                        als_col.table_schema, '.',
+                        als_col.table_name
+                    )                       AS table_fqn,
+                    als_col.column_name     AS column_name,
+                    CONCAT(
+                        als_col.table_schema, '.',
+                        als_col.table_name, '.',
+                        als_col.column_name
+                    )                       AS column_fqn,
+                    als_col.data_type       AS column_type,
+                    als_col.is_nullable     AS column_nullable,
+                    als_col.column_default  AS column_default
+                FROM
+                    information_schema.columns als_col
+                WHERE
+                        als_col.table_schema = :$INPUT_SCHEMA_NAME
+                    AND als_col.table_name = :$INPUT_TABLE_NAME
+                ORDER BY
+                    als_col.ordinal_position
+            ),
+            qry_cmt_tbl AS (
+                SELECT
+                    als_stt.schemaname      AS schema_name,
+                    als_stt.relname         AS table_name,
+                    CONCAT(
+                        als_stt.schemaname, '.',
+                        als_stt.relname
+                    )                       AS table_fqn,
+                    als_dsc_tbl.description AS table_comment,
+                    als_stt.n_live_tup      AS table_rows
+                FROM
+                    pg_stat_user_tables als_stt
+                LEFT OUTER JOIN
+                    pg_description als_dsc_tbl
+                    ON  als_stt.relid = als_dsc_tbl.objoid
+                    AND als_dsc_tbl.objsubid = 0
+                WHERE
+                        als_stt.schemaname = :$INPUT_SCHEMA_NAME
+                    AND als_stt.relname = :$INPUT_TABLE_NAME
+                ORDER BY
+                    als_dsc_tbl.objsubid
+            ),
+            qry_cmt_col AS (
+                SELECT
+                    als_atr.attname         AS column_name,
+                    als_dsc_col.description AS column_comment,
+                    CONCAT(
+                        als_stt.schemaname, '.',
+                        als_stt.relname, '.',
+                        als_atr.attname
+                    )                       AS column_fqn
+                FROM
+                    pg_stat_user_tables als_stt
+                LEFT OUTER JOIN
+                    pg_description als_dsc_col
+                    ON  als_stt.relid = als_dsc_col.objoid
+                    AND als_dsc_col.objsubid <> 0
+                LEFT OUTER JOIN
+                    pg_attribute als_atr
+                    ON  als_dsc_col.objoid = als_atr.attrelid
+                    AND als_dsc_col.objsubid = als_atr.attnum
+                WHERE
+                        als_stt.schemaname = :$INPUT_SCHEMA_NAME
+                    AND als_stt.relname = :$INPUT_TABLE_NAME
+                ORDER BY
+                    als_dsc_col.objsubid
+            ),
+            qry_rel AS (
+                SELECT
+                    als_cns_tbl.table_schema    AS schema_name,
+                    als_cns_tbl.table_name      AS child_table_name,
+                    als_key_col_usg.column_name AS child_column_name,
+                    CONCAT(
+                        als_cns_tbl.table_schema, '.',
+                        als_cns_tbl.table_name, '.',
+                        als_key_col_usg.column_name
+                    )                           AS child_column_fqn,
+                    als_cns_col_usg.table_name  AS parent_table_name,
+                    als_cns_col_usg.column_name AS parent_column_name,
+                    CONCAT(
+                        als_cns_tbl.table_schema, '.',
+                        als_cns_col_usg.table_name, '.',
+                        als_cns_col_usg.column_name
+                    )                           AS parent_column_fqn
+                FROM
+                    information_schema.table_constraints als_cns_tbl
+                JOIN
+                    information_schema.key_column_usage als_key_col_usg
+                    ON  als_cns_tbl.constraint_name = als_key_col_usg.constraint_name
+                    AND als_cns_tbl.table_schema = als_key_col_usg.table_schema
+                JOIN
+                    information_schema.constraint_column_usage AS als_cns_col_usg
+                    ON  als_cns_tbl.constraint_name = als_cns_col_usg.constraint_name
+                    AND als_cns_tbl.table_schema = als_cns_col_usg.table_schema
+                WHERE
+                    als_cns_tbl.table_schema = :$INPUT_SCHEMA_NAME
+                AND als_cns_tbl.constraint_type = 'FOREIGN KEY'
+            )
             SELECT
-                als_col.table_schema    AS schema_name,
-                als_col.table_name      AS table_name,
-                CONCAT(
-                    als_col.table_schema, '.',
-                    als_col.table_name
-                )                       AS table_fqn,
-                als_col.column_name     AS column_name,
-                CONCAT(
-                    als_col.table_schema, '.',
-                    als_col.table_name, '.',
-                    als_col.column_name
-                )                       AS column_fqn,
-                als_col.data_type       AS column_type,
-                als_col.is_nullable     AS column_nullable,
-                als_col.column_default  AS column_default
+                *
             FROM
-                information_schema.columns als_col
-            WHERE
-                    als_col.table_schema = :$INPUT_SCHEMA_NAME
-                AND als_col.table_name = :$INPUT_TABLE_NAME
-            ORDER BY
-                als_col.ordinal_position
-        ),
-        qry_cmt_tbl AS (
-            SELECT
-                als_stt.schemaname      AS schema_name,
-                als_stt.relname         AS table_name,
-                CONCAT(
-                    als_stt.schemaname, '.',
-                    als_stt.relname
-                )                       AS table_fqn,
-                als_dsc_tbl.description AS table_comment,
-                als_stt.n_live_tup      AS table_rows
-            FROM
-                pg_stat_user_tables als_stt
+                qry_dat
             LEFT OUTER JOIN
-                pg_description als_dsc_tbl
-                ON  als_stt.relid = als_dsc_tbl.objoid
-                AND als_dsc_tbl.objsubid = 0
-            WHERE
-                    als_stt.schemaname = :$INPUT_SCHEMA_NAME
-                AND als_stt.relname = :$INPUT_TABLE_NAME
-            ORDER BY
-                als_dsc_tbl.objsubid
-        ),
-        qry_cmt_col AS (
-            SELECT
-                als_atr.attname         AS column_name,
-                als_dsc_col.description AS column_comment,
-                CONCAT(
-                    als_stt.schemaname, '.',
-                    als_stt.relname, '.',
-                    als_atr.attname
-                )                       AS column_fqn
-            FROM
-                pg_stat_user_tables als_stt
+                qry_cmt_tbl
+                ON qry_dat.table_fqn = qry_cmt_tbl.table_fqn
             LEFT OUTER JOIN
-                pg_description als_dsc_col
-                ON  als_stt.relid = als_dsc_col.objoid
-                AND als_dsc_col.objsubid <> 0
+                qry_cmt_col
+                ON qry_dat.column_fqn = qry_cmt_col.column_fqn
             LEFT OUTER JOIN
-                pg_attribute als_atr
-                ON  als_dsc_col.objoid = als_atr.attrelid
-                AND als_dsc_col.objsubid = als_atr.attnum
-            WHERE
-                    als_stt.schemaname = :$INPUT_SCHEMA_NAME
-                AND als_stt.relname = :$INPUT_TABLE_NAME
-            ORDER BY
-                als_dsc_col.objsubid
-        ),
-        qry_rel AS (
-            SELECT
-                als_cns_tbl.table_schema    AS schema_name,
-                als_cns_tbl.table_name      AS child_table_name,
-                als_key_col_usg.column_name AS child_column_name,
-                CONCAT(
-                    als_cns_tbl.table_schema, '.',
-                    als_cns_tbl.table_name, '.',
-                    als_key_col_usg.column_name
-                )                           AS child_column_fqn,
-                als_cns_col_usg.table_name  AS parent_table_name,
-                als_cns_col_usg.column_name AS parent_column_name,
-                CONCAT(
-                    als_cns_tbl.table_schema, '.',
-                    als_cns_col_usg.table_name, '.',
-                    als_cns_col_usg.column_name
-                )                           AS parent_column_fqn
-            FROM
-                information_schema.table_constraints als_cns_tbl
-            JOIN
-                information_schema.key_column_usage als_key_col_usg
-                ON  als_cns_tbl.constraint_name = als_key_col_usg.constraint_name
-                AND als_cns_tbl.table_schema = als_key_col_usg.table_schema
-            JOIN
-                information_schema.constraint_column_usage AS als_cns_col_usg
-                ON  als_cns_tbl.constraint_name = als_cns_col_usg.constraint_name
-                AND als_cns_tbl.table_schema = als_cns_col_usg.table_schema
-            WHERE
-                als_cns_tbl.table_schema = :$INPUT_SCHEMA_NAME
-            AND als_cns_tbl.constraint_type = 'FOREIGN KEY'
-        )
-        SELECT
-            *
-        FROM
-            qry_dat
-        LEFT OUTER JOIN
-            qry_cmt_tbl
-            ON qry_dat.table_fqn = qry_cmt_tbl.table_fqn
-        LEFT OUTER JOIN
-            qry_cmt_col
-            ON qry_dat.column_fqn = qry_cmt_col.column_fqn
-        LEFT OUTER JOIN
-            qry_rel AS als_rel_cld
-            ON qry_dat.column_fqn = als_rel_cld.child_column_fqn
-        LEFT OUTER JOIN
-            qry_rel AS als_rel_prt
-            ON qry_dat.column_fqn = als_rel_prt.parent_column_fqn
-    """.trimIndent(), mapOf(
+                qry_rel AS als_rel_cld
+                ON qry_dat.column_fqn = als_rel_cld.child_column_fqn
+            LEFT OUTER JOIN
+                qry_rel AS als_rel_prt
+                ON qry_dat.column_fqn = als_rel_prt.parent_column_fqn
+            """.trimIndent(), mapOf(
                 INPUT_SCHEMA_NAME to schemaName,
                 INPUT_TABLE_NAME to name.value
         )) { resultSet, _ ->
