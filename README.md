@@ -73,8 +73,8 @@ with embedded DEMO Database.
 git clone https://github.com/yo1000/haystacks.git
 cd haystacks
 
-./mvnw clean install
-./mvnw clean spring-boot:run \
+./mvnw clean install && \
+./mvnw spring-boot:run \
   -pl haystacks-assemblies/haystacks-assembly-mysql \
   -P demo
 ```
