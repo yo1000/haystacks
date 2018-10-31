@@ -6,7 +6,7 @@
 
 
 ### Requirements
-Java 8 must be installed.
+Java 8+
 
 
 ### Required options
