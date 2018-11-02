@@ -198,8 +198,21 @@ class PostgresqlTableRepository(
                     als_cns_tbl.table_schema = :$INPUT_SCHEMA_NAME
                 AND als_cns_tbl.constraint_type = 'FOREIGN KEY'
             )
-            SELECT
-                *
+            SELECT DISTINCT
+                qry_dat.table_fqn               AS $OUTPUT_TABLE_FQN,
+                qry_dat.table_name              AS $OUTPUT_TABLE_NAME,
+                qry_cmt_tbl.table_comment       AS $OUTPUT_TABLE_COMMENT,
+                qry_cmt_tbl.table_rows          AS $OUTPUT_TABLE_ROWS,
+                qry_dat.column_fqn              AS $OUTPUT_COLUMN_FQN,
+                qry_dat.column_name             AS $OUTPUT_COLUMN_NAME,
+                qry_dat.column_type             AS $OUTPUT_COLUMN_TYPE,
+                qry_dat.column_nullable         AS $OUTPUT_COLUMN_NULLABLE,
+                qry_dat.column_default          AS $OUTPUT_COLUMN_DEFAULT,
+                qry_cmt_col.column_comment      AS $OUTPUT_COLUMN_COMMENT,
+                als_rel_prt.parent_table_name   AS $OUTPUT_PARENT_TABLE_NAME,
+                als_rel_prt.parent_column_name  AS $OUTPUT_PARENT_COLUMN_NAME,
+                als_rel_cld.child_table_name    AS $OUTPUT_CHILD_TABLE_NAME,
+                als_rel_cld.child_column_name   AS $OUTPUT_CHILD_COLUMN_NAME
             FROM
                 qry_dat
             LEFT OUTER JOIN
@@ -218,8 +231,6 @@ class PostgresqlTableRepository(
                 INPUT_SCHEMA_NAME to schemaName,
                 INPUT_TABLE_NAME to name.value
         )) { resultSet, _ ->
-            // TODO correct select columns
-
             val tableName = resultSet.getString(OUTPUT_TABLE_NAME)
             val tableComment = resultSet.getString(OUTPUT_TABLE_COMMENT)
             val tableFqn = resultSet.getString(OUTPUT_TABLE_FQN)
