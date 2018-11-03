@@ -303,10 +303,10 @@ class PostgresqlTableRepository(
                 qry_tbl_col.column_nullable     AS $OUTPUT_COLUMN_NULLABLE,
                 qry_tbl_col.column_default      AS $OUTPUT_COLUMN_DEFAULT,
                 qry_tbl_col.column_comment      AS $OUTPUT_COLUMN_COMMENT,
-                als_rel_prt.parent_table_name   AS $OUTPUT_PARENT_TABLE_NAME,
-                als_rel_prt.parent_column_name  AS $OUTPUT_PARENT_COLUMN_NAME,
-                als_rel_cld.child_table_name    AS $OUTPUT_CHILD_TABLE_NAME,
-                als_rel_cld.child_column_name   AS $OUTPUT_CHILD_COLUMN_NAME
+                als_rel_cld.parent_table_name   AS $OUTPUT_PARENT_TABLE_NAME,
+                als_rel_cld.parent_column_name  AS $OUTPUT_PARENT_COLUMN_NAME,
+                als_rel_prt.child_table_name    AS $OUTPUT_CHILD_TABLE_NAME,
+                als_rel_prt.child_column_name   AS $OUTPUT_CHILD_COLUMN_NAME
             FROM
                 qry_tbl_col
             LEFT OUTER JOIN
