@@ -149,25 +149,28 @@ class PostgresqlTableRepository(
 
     override fun findTableNamesAll(): List<TableNames> = jdbcOperations.query("""
         SELECT
-            tbl.table_name    AS $OUTPUT_TABLE_NAME,
-            dsc.description   AS $OUTPUT_TABLE_COMMENT,
+            als_tbl.table_name          AS $OUTPUT_TABLE_COMMENT,
             CONCAT(
-                tbl.table_schema, '.',
-                tbl.table_name
-            )                 AS $OUTPUT_TABLE_FQN
+                als_tbl.table_schema, '.',
+                als_tbl.table_name
+            )                           AS $OUTPUT_TABLE_FQN,
+            als_dsc_tbl.description     AS $OUTPUT_TABLE_COMMENT,
+            als_stt.n_live_tup          AS $OUTPUT_TABLE_ROWS
         FROM
-            information_schema.tables tbl
+            information_schema.tables als_tbl
+        INNER JOIN
+            pg_stat_user_tables als_stt
+            ON  als_tbl.table_schema = als_stt.schemaname
+            AND als_tbl.table_name   = als_stt.relname
         LEFT OUTER JOIN
-            pg_description dsc
-            ON CONCAT(
-                tbl.table_schema, '.',
-                tbl.table_name
-            )::regclass = dsc.objoid
+            pg_description als_dsc_tbl
+            ON  als_stt.relid = als_dsc_tbl.objoid
+            AND als_dsc_tbl.objsubid = 0
         WHERE
-            tbl.table_schema = :$INPUT_SCHEMA_NAME
-        AND tbl.table_type = 'BASE TABLE'
+                als_tbl.table_schema    = :$INPUT_SCHEMA_NAME
+            AND als_tbl.table_type      = 'BASE TABLE'
         ORDER BY
-            tbl.table_name
+            als_tbl.table_name
         """.trimIndent(), mapOf(
             INPUT_SCHEMA_NAME to schemaName
     )) { resultSet, _ ->
