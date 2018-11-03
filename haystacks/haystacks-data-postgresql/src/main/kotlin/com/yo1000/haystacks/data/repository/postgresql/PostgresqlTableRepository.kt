@@ -32,9 +32,120 @@ class PostgresqlTableRepository(
         const val INPUT_TABLE_NAME = "tableName"
     }
 
-    override fun findNames(vararg q: String): List<FoundNames> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun findNames(vararg q: String): List<FoundNames> = jdbcOperations.query("""
+        WITH
+        qry_tbl_col AS (
+            SELECT
+                als_stt.relid               AS obj_oid,
+                als_att.attnum              AS obj_subid,
+                als_tbl.table_schema        AS schema_name,
+                als_tbl.table_name          AS table_name,
+                CONCAT(
+                    als_tbl.table_schema, '.',
+                    als_tbl.table_name
+                )                           AS table_fqn,
+                als_dsc_tbl.description     AS table_comment,
+                als_stt.n_live_tup          AS table_rows,
+                als_col.column_name         AS column_name,
+                CONCAT(
+                    als_tbl.table_schema, '.',
+                    als_tbl.table_name, '.',
+                    als_col.column_name
+                )                           AS column_fqn,
+                als_dsc_col.description     AS column_comment,
+                als_col.column_default      AS column_default,
+                als_col.is_nullable         AS column_nullable,
+                als_col.data_type           AS column_type,
+                als_col.ordinal_position    AS ordinal_position
+            FROM
+                information_schema.tables als_tbl
+            INNER JOIN
+                information_schema.columns als_col
+                ON  als_tbl.table_schema = als_col.table_schema
+                AND als_tbl.table_name   = als_col.table_name
+            INNER JOIN
+                pg_stat_user_tables als_stt
+                ON  als_tbl.table_schema = als_stt.schemaname
+                AND als_tbl.table_name   = als_stt.relname
+            INNER JOIN
+                pg_attribute als_att
+                ON  als_stt.relid       = als_att.attrelid
+                AND als_col.column_name = als_att.attname
+            LEFT OUTER JOIN
+                pg_description als_dsc_tbl
+                ON  als_stt.relid = als_dsc_tbl.objoid
+                AND als_dsc_tbl.objsubid = 0
+            LEFT OUTER JOIN
+                pg_description als_dsc_col
+                ON  als_stt.relid  = als_dsc_col.objoid
+                AND als_att.attnum = als_dsc_col.objsubid
+            WHERE
+                als_tbl.table_type = 'BASE TABLE'
+            AND als_tbl.table_schema = :$INPUT_SCHEMA_NAME
+            AND als_tbl.table_name = :$INPUT_TABLE_NAME
+            ORDER BY
+                als_stt.relid,
+                als_col.ordinal_position
+        ),
+        qry_fnd_tbl AS (
+            SELECT DISTINCT
+                als_tbl.table_schema    AS schema_name,
+                als_tbl.table_name      AS table_name,
+                als_tbl.table_fqn       AS table_fqn
+            FROM
+                qry_tbl_col
+            WHERE
+                ( ${(1..q.size).map { """
+                        tbl_1.table_name        LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    OR  tbl_1.table_comment     LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    OR  col_1.column_name       LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    OR  col_1.column_comment    LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    """ }.joinToString(separator = " OR ")} )
+        )
+        SELECT
+            qry_tbl_col.table_name      AS $OUTPUT_TABLE_NAME,
+            qry_tbl_col.table_comment   AS $OUTPUT_TABLE_COMMENT,
+            qry_tbl_col.table_fqn       AS $OUTPUT_TABLE_FQN,
+            qry_tbl_col.column_name     AS $OUTPUT_COLUMN_NAME,
+            qry_tbl_col.column_comment  AS $OUTPUT_COLUMN_COMMENT,
+            qry_tbl_col.column_fqn      AS $OUTPUT_COLUMN_FQN
+        FROM
+            qry_fnd_tbl
+        INNER JOIN
+            qry_tbl_col
+            ON  tbl.table_schema    = col.table_schema
+            AND tbl.table_name      = col.table_name
+        """.trimIndent(), (
+                (1..q.size).map { "keyword_$it" to q[it - 1]
+                } + (INPUT_SCHEMA_NAME to schemaName)).toMap()
+        ) { resultSet, _ ->
+            val tableName = resultSet.getString(OUTPUT_TABLE_NAME)
+            val tableComment = resultSet.getString(OUTPUT_TABLE_COMMENT)
+            val tableFqn = resultSet.getString(OUTPUT_TABLE_FQN)
+
+            val columnName = resultSet.getString(OUTPUT_COLUMN_NAME)
+            val columnComment = resultSet.getString(OUTPUT_COLUMN_COMMENT)
+            val columnFqn = resultSet.getString(OUTPUT_COLUMN_FQN)
+
+            TableNames(
+                    physicalName = TablePhysicalName(tableName),
+                    logicalName = LogicalName(tableComment),
+                    fullyQualifiedName = FullyQualifiedName(tableFqn)
+            ) to ColumnNames(
+                    physicalName = ColumnPhysicalName(columnName),
+                    logicalName = LogicalName(columnComment),
+                    fullyQualifiedName = FullyQualifiedName(columnFqn)
+            )
+        }.groupBy({
+            it.first
+        }, {
+            it.second
+        }).map {
+            FoundNames(
+                    tableNames = it.key,
+                    columnNamesList = ColumnNamesList(*it.value.toTypedArray())
+            )
+        }
 
     override fun findTableNamesAll(): List<TableNames> = jdbcOperations.query("""
         SELECT
@@ -95,77 +206,58 @@ class PostgresqlTableRepository(
 
         return jdbcOperations.query("""
             WITH
-            qry_dat AS (
+            qry_tbl_col AS (
                 SELECT
-                    als_col.table_schema    AS schema_name,
-                    als_col.table_name      AS table_name,
+                    als_stt.relid               AS obj_oid,
+                    als_att.attnum              AS obj_subid,
+                    als_tbl.table_schema        AS schema_name,
+                    als_tbl.table_name          AS table_name,
                     CONCAT(
-                        als_col.table_schema, '.',
-                        als_col.table_name
-                    )                       AS table_fqn,
-                    als_col.column_name     AS column_name,
+                        als_tbl.table_schema, '.',
+                        als_tbl.table_name
+                    )                           AS table_fqn,
+                    als_dsc_tbl.description     AS table_comment,
+                    als_stt.n_live_tup          AS table_rows,
+                    als_col.column_name         AS column_name,
                     CONCAT(
-                        als_col.table_schema, '.',
-                        als_col.table_name, '.',
+                        als_tbl.table_schema, '.',
+                        als_tbl.table_name, '.',
                         als_col.column_name
-                    )                       AS column_fqn,
-                    als_col.data_type       AS column_type,
-                    als_col.is_nullable     AS column_nullable,
-                    als_col.column_default  AS column_default
+                    )                           AS column_fqn,
+                    als_dsc_col.description     AS column_comment,
+                    als_col.column_default      AS column_default,
+                    als_col.is_nullable         AS column_nullable,
+                    als_col.data_type           AS column_type,
+                    als_col.ordinal_position    AS ordinal_position
                 FROM
+                    information_schema.tables als_tbl
+                INNER JOIN
                     information_schema.columns als_col
-                WHERE
-                        als_col.table_schema = :$INPUT_SCHEMA_NAME
-                    AND als_col.table_name = :$INPUT_TABLE_NAME
-                ORDER BY
-                    als_col.ordinal_position
-            ),
-            qry_cmt_tbl AS (
-                SELECT
-                    als_stt.schemaname      AS schema_name,
-                    als_stt.relname         AS table_name,
-                    CONCAT(
-                        als_stt.schemaname, '.',
-                        als_stt.relname
-                    )                       AS table_fqn,
-                    als_dsc_tbl.description AS table_comment,
-                    als_stt.n_live_tup      AS table_rows
-                FROM
+                    ON  als_tbl.table_schema = als_col.table_schema
+                    AND als_tbl.table_name   = als_col.table_name
+                INNER JOIN
                     pg_stat_user_tables als_stt
+                    ON  als_tbl.table_schema = als_stt.schemaname
+                    AND als_tbl.table_name   = als_stt.relname
+                INNER JOIN
+                    pg_attribute als_att
+                    ON  als_stt.relid       = als_att.attrelid
+                    AND als_col.column_name = als_att.attname
                 LEFT OUTER JOIN
                     pg_description als_dsc_tbl
                     ON  als_stt.relid = als_dsc_tbl.objoid
                     AND als_dsc_tbl.objsubid = 0
-                WHERE
-                        als_stt.schemaname = :$INPUT_SCHEMA_NAME
-                    AND als_stt.relname = :$INPUT_TABLE_NAME
-                ORDER BY
-                    als_dsc_tbl.objsubid
-            ),
-            qry_cmt_col AS (
-                SELECT
-                    als_atr.attname         AS column_name,
-                    als_dsc_col.description AS column_comment,
-                    CONCAT(
-                        als_stt.schemaname, '.',
-                        als_stt.relname, '.',
-                        als_atr.attname
-                    )                       AS column_fqn
-                FROM
-                    pg_stat_user_tables als_stt
                 LEFT OUTER JOIN
                     pg_description als_dsc_col
-                    ON  als_stt.relid = als_dsc_col.objoid
-                    AND als_dsc_col.objsubid <> 0
-                LEFT OUTER JOIN
-                    pg_attribute als_atr
-                    ON  als_dsc_col.objoid = als_atr.attrelid
-                    AND als_dsc_col.objsubid = als_atr.attnum
+                    ON  als_stt.relid  = als_dsc_col.objoid
+                    AND als_att.attnum = als_dsc_col.objsubid
                 WHERE
-                        als_stt.schemaname = :$INPUT_SCHEMA_NAME
-                    AND als_stt.relname = :$INPUT_TABLE_NAME
+                    als_tbl.table_type = 'BASE TABLE'
+                AND als_tbl.table_schema = :$INPUT_SCHEMA_NAME
+                AND als_tbl.table_name = :$INPUT_TABLE_NAME
                 ORDER BY
-                    als_dsc_col.objsubid
+                    als_stt.relid,
+                    als_col.ordinal_position
             ),
             qry_rel AS (
                 SELECT
@@ -199,34 +291,32 @@ class PostgresqlTableRepository(
                 AND als_cns_tbl.constraint_type = 'FOREIGN KEY'
             )
             SELECT DISTINCT
-                qry_dat.table_fqn               AS $OUTPUT_TABLE_FQN,
-                qry_dat.table_name              AS $OUTPUT_TABLE_NAME,
-                qry_cmt_tbl.table_comment       AS $OUTPUT_TABLE_COMMENT,
-                qry_cmt_tbl.table_rows          AS $OUTPUT_TABLE_ROWS,
-                qry_dat.column_fqn              AS $OUTPUT_COLUMN_FQN,
-                qry_dat.column_name             AS $OUTPUT_COLUMN_NAME,
-                qry_dat.column_type             AS $OUTPUT_COLUMN_TYPE,
-                qry_dat.column_nullable         AS $OUTPUT_COLUMN_NULLABLE,
-                qry_dat.column_default          AS $OUTPUT_COLUMN_DEFAULT,
-                qry_cmt_col.column_comment      AS $OUTPUT_COLUMN_COMMENT,
+                qry_tbl_col.table_fqn           AS $OUTPUT_TABLE_FQN,
+                qry_tbl_col.table_name          AS $OUTPUT_TABLE_NAME,
+                qry_tbl_col.table_comment       AS $OUTPUT_TABLE_COMMENT,
+                qry_tbl_col.table_rows          AS $OUTPUT_TABLE_ROWS,
+                qry_tbl_col.column_fqn          AS $OUTPUT_COLUMN_FQN,
+                qry_tbl_col.column_name         AS $OUTPUT_COLUMN_NAME,
+                qry_tbl_col.column_type         AS $OUTPUT_COLUMN_TYPE,
+                qry_tbl_col.column_nullable     AS $OUTPUT_COLUMN_NULLABLE,
+                qry_tbl_col.column_default      AS $OUTPUT_COLUMN_DEFAULT,
+                qry_tbl_col.column_comment      AS $OUTPUT_COLUMN_COMMENT,
                 als_rel_prt.parent_table_name   AS $OUTPUT_PARENT_TABLE_NAME,
                 als_rel_prt.parent_column_name  AS $OUTPUT_PARENT_COLUMN_NAME,
                 als_rel_cld.child_table_name    AS $OUTPUT_CHILD_TABLE_NAME,
                 als_rel_cld.child_column_name   AS $OUTPUT_CHILD_COLUMN_NAME
             FROM
-                qry_dat
-            LEFT OUTER JOIN
-                qry_cmt_tbl
-                ON qry_dat.table_fqn = qry_cmt_tbl.table_fqn
-            LEFT OUTER JOIN
-                qry_cmt_col
-                ON qry_dat.column_fqn = qry_cmt_col.column_fqn
+                qry_tbl_col
             LEFT OUTER JOIN
                 qry_rel AS als_rel_cld
-                ON qry_dat.column_fqn = als_rel_cld.child_column_fqn
+                ON  qry_tbl_col.schema_name = als_rel_cld.schema_name
+                AND qry_tbl_col.table_name  = als_rel_cld.child_table_name
+                AND qry_tbl_col.column_name = als_rel_cld.child_column_name
             LEFT OUTER JOIN
                 qry_rel AS als_rel_prt
-                ON qry_dat.column_fqn = als_rel_prt.parent_column_fqn
+                ON  qry_tbl_col.schema_name = als_rel_prt.schema_name
+                AND qry_tbl_col.table_name = als_rel_prt.parent_table_name
+                AND qry_tbl_col.column_name = als_rel_prt.parent_column_name
             """.trimIndent(), mapOf(
                 INPUT_SCHEMA_NAME to schemaName,
                 INPUT_TABLE_NAME to name.value
