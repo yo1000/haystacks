@@ -3,8 +3,6 @@ package com.yo1000.haystacks.autoconfigure.data.postgresql
 import com.yo1000.haystacks.autoconfigure.core.DomainServiceAutoConfiguration
 import com.yo1000.haystacks.core.repository.IndexRepository
 import com.yo1000.haystacks.core.repository.TableRepository
-import com.yo1000.haystacks.data.repository.mysql.MysqlIndexRepository
-import com.yo1000.haystacks.data.repository.mysql.MysqlTableRepository
 import com.yo1000.haystacks.data.repository.postgresql.PostgresqlIndexRepository
 import com.yo1000.haystacks.data.repository.postgresql.PostgresqlTableRepository
 import org.postgresql.Driver

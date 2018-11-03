@@ -109,6 +109,11 @@
 				<artifactId>haystacks-starter-data-mysql</artifactId>
 				<version>${haystacks.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>com.yo1000</groupId>
+                <artifactId>haystacks-starter-data-postgresql</artifactId>
+                <version>${haystacks.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>com.yo1000</groupId>
 				<artifactId>haystacks-assemblies</artifactId>

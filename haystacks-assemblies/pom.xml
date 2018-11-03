@@ -25,5 +25,6 @@
 
 	<modules>
 		<module>haystacks-assembly-mysql</module>
+		<module>haystacks-assembly-postgresql</module>
 	</modules>
 </project>

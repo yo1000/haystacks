@@ -149,7 +149,7 @@ class PostgresqlTableRepository(
 
     override fun findTableNamesAll(): List<TableNames> = jdbcOperations.query("""
         SELECT
-            als_tbl.table_name          AS $OUTPUT_TABLE_COMMENT,
+            als_tbl.table_name          AS $OUTPUT_TABLE_NAME,
             CONCAT(
                 als_tbl.table_schema, '.',
                 als_tbl.table_name
@@ -176,7 +176,7 @@ class PostgresqlTableRepository(
     )) { resultSet, _ ->
         TableNames(
                 physicalName = TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)),
-                logicalName = LogicalName(resultSet.getString(OUTPUT_TABLE_COMMENT)),
+                logicalName = LogicalName(resultSet.getString(OUTPUT_TABLE_COMMENT) ?: ""),
                 fullyQualifiedName = FullyQualifiedName(resultSet.getString(OUTPUT_TABLE_FQN))
         )
     }

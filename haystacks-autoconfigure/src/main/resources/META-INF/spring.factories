@@ -3,4 +3,5 @@ com.yo1000.haystacks.autoconfigure.core.DomainServiceAutoConfiguration,\
 com.yo1000.haystacks.autoconfigure.core.PropertiesRepositoryAutoConfiguration,\
 com.yo1000.haystacks.autoconfigure.web.ApplicationServiceAutoConfiguration,\
 com.yo1000.haystacks.autoconfigure.web.WebAutoConfiguration,\
-com.yo1000.haystacks.autoconfigure.data.mysql.MysqlRepositoryAutoConfiguration
+com.yo1000.haystacks.autoconfigure.data.mysql.MysqlRepositoryAutoConfiguration,\
+com.yo1000.haystacks.autoconfigure.data.postgresql.PostgresqlRepositoryAutoConfiguration
