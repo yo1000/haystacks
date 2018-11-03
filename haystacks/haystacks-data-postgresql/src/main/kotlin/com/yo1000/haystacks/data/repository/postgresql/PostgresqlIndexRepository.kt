@@ -9,7 +9,16 @@ class PostgresqlIndexRepository(
         private val jdbcOperations: NamedParameterJdbcOperations,
         private val schemaName: String
 ) : IndexRepository {
-    override fun findByTableName(name: TablePhysicalName): List<Index> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    companion object {
+        const val OUTPUT_INDEX_NAME = "index_name"
+        const val OUTPUT_INDEX_COMMENT = "index_comment"
+        const val OUTPUT_INDEX_FQN = "index_fqn"
+        const val OUTPUT_INDEX_TYPE = "index_type"
+        const val OUTPUT_INDEXED_COLUMN_NAME = "indexed_column_name"
+
+        const val INPUT_SCHEMA_NAME = "schemaName"
+        const val INPUT_TABLE_NAME = "tableName"
     }
+
+    override fun findByTableName(name: TablePhysicalName): List<Index> = emptyList()
 }
