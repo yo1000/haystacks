@@ -25,6 +25,8 @@
 		<maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
 		<mysql.version>8.0.11</mysql.version>
 		<wix-embedded-mysql.version>4.2.0</wix-embedded-mysql.version>
+		<postgresql.version>42.2.5</postgresql.version>
+		<postgresql-embedded.version>2.9</postgresql-embedded.version>
 		<log4jdbc-log4j2-jdbc41.version>1.16</log4jdbc-log4j2-jdbc41.version>
 		<haystacks.version>0.0.8-SNAPSHOT</haystacks.version>
 	</properties>
@@ -40,6 +42,16 @@
 				<groupId>com.wix</groupId>
 				<artifactId>wix-embedded-mysql</artifactId>
 				<version>${wix-embedded-mysql.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${postgresql.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ru.yandex.qatools.embed</groupId>
+				<artifactId>postgresql-embedded</artifactId>
+				<version>${postgresql-embedded.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.bgee.log4jdbc-log4j2</groupId>
@@ -67,6 +79,11 @@
 				<artifactId>haystacks-data-mysql</artifactId>
 				<version>${haystacks.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>com.yo1000</groupId>
+                <artifactId>haystacks-data-postgresql</artifactId>
+                <version>${haystacks.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>com.yo1000</groupId>
 				<artifactId>haystacks-autoconfigure</artifactId>
@@ -92,6 +109,11 @@
 				<artifactId>haystacks-starter-data-mysql</artifactId>
 				<version>${haystacks.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>com.yo1000</groupId>
+                <artifactId>haystacks-starter-data-postgresql</artifactId>
+                <version>${haystacks.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>com.yo1000</groupId>
 				<artifactId>haystacks-assemblies</artifactId>
@@ -129,6 +151,13 @@
 						</dependency>
 					</dependencies>
 				</plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <useSystemClassLoader>false</useSystemClassLoader>
+                    </configuration>
+                </plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

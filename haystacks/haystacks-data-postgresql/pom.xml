@@ -3,80 +3,52 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>haystacks-autoconfigure</artifactId>
+	<artifactId>haystacks-data-postgresql</artifactId>
 	<packaging>jar</packaging>
 
-	<name>haystacks-autoconfigure</name>
+	<name>haystacks-data-postgresql</name>
 	<description/>
 
 	<parent>
 		<groupId>com.yo1000</groupId>
-		<artifactId>haystacks-parent</artifactId>
+		<artifactId>haystacks</artifactId>
 		<version>0.0.8-SNAPSHOT</version>
-		<relativePath>../haystacks-parent</relativePath>
+		<relativePath>..</relativePath>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-kotlin</artifactId>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-stdlib-jdk8</artifactId>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-reflect</artifactId>
-			<optional>true</optional>
 		</dependency>
 
 		<dependency>
 			<groupId>com.yo1000</groupId>
 			<artifactId>haystacks-core</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.yo1000</groupId>
-			<artifactId>haystacks-web</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.yo1000</groupId>
-			<artifactId>haystacks-data-mysql</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.yo1000</groupId>
-			<artifactId>haystacks-data-postgresql</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -100,9 +72,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.wix</groupId>
-			<artifactId>wix-embedded-mysql</artifactId>
-			<version>${wix-embedded-mysql.version}</version>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.yandex.qatools.embed</groupId>
+			<artifactId>postgresql-embedded</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -27,5 +27,6 @@
 		<module>haystacks-core</module>
 		<module>haystacks-web</module>
 		<module>haystacks-data-mysql</module>
+		<module>haystacks-data-postgresql</module>
 	</modules>
 </project>

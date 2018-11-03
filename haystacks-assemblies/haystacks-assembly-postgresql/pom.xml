@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>haystacks-assembly-mysql</artifactId>
+	<artifactId>haystacks-assembly-postgresql</artifactId>
 	<packaging>jar</packaging>
 
-	<name>haystacks-assembly-mysql</name>
+	<name>haystacks-assembly-postgresql</name>
 	<description/>
 
 	<parent>
@@ -64,14 +64,10 @@
 		</dependency>
 		<dependency>
 			<groupId>com.yo1000</groupId>
-			<artifactId>haystacks-starter-data-mysql</artifactId>
+			<artifactId>haystacks-starter-data-postgresql</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.wix</groupId>
-			<artifactId>wix-embedded-mysql</artifactId>
-			<scope>provided</scope>
-		</dependency>
+		<!-- TODO Depend to embedded postgresql -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -87,10 +83,8 @@
 				<maven.spring.profile>demo</maven.spring.profile>
 			</properties>
 			<dependencies>
-				<dependency>
-					<groupId>com.wix</groupId>
-					<artifactId>wix-embedded-mysql</artifactId>
-				</dependency>
+				<!-- TODO Depend to embedded postgresql -->
+
 				<dependency>
 					<groupId>org.bgee.log4jdbc-log4j2</groupId>
 					<artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>

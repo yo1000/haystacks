@@ -1,11 +1,11 @@
-package com.yo1000.haystacks.autoconfigure.data.mysql
+package com.yo1000.haystacks.autoconfigure.data.postgresql
 
-import com.mysql.jdbc.Driver
 import com.yo1000.haystacks.autoconfigure.core.DomainServiceAutoConfiguration
 import com.yo1000.haystacks.core.repository.IndexRepository
 import com.yo1000.haystacks.core.repository.TableRepository
-import com.yo1000.haystacks.data.repository.mysql.MysqlIndexRepository
-import com.yo1000.haystacks.data.repository.mysql.MysqlTableRepository
+import com.yo1000.haystacks.data.repository.postgresql.PostgresqlIndexRepository
+import com.yo1000.haystacks.data.repository.postgresql.PostgresqlTableRepository
+import org.postgresql.Driver
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.AutoConfigureBefore
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -26,12 +26,12 @@ import javax.sql.DataSource
 @ConditionalOnSingleCandidate(DataSource::class)
 @AutoConfigureAfter(JdbcTemplateAutoConfiguration::class)
 @AutoConfigureBefore(DomainServiceAutoConfiguration::class)
-class MysqlRepositoryAutoConfiguration {
+class PostgresqlRepositoryAutoConfiguration {
     @Bean
     fun tableRepository(dataSourceProperties: DataSourceProperties, jdbcTemplate: NamedParameterJdbcTemplate)
-            : TableRepository = MysqlTableRepository(jdbcTemplate, dataSourceProperties.name)
+            : TableRepository = PostgresqlTableRepository(jdbcTemplate, dataSourceProperties.name)
 
     @Bean
     fun indexRepository(dataSourceProperties: DataSourceProperties, jdbcTemplate: NamedParameterJdbcTemplate)
-            : IndexRepository = MysqlIndexRepository(jdbcTemplate, dataSourceProperties.name)
+            : IndexRepository = PostgresqlIndexRepository(jdbcTemplate, dataSourceProperties.name)
 }
