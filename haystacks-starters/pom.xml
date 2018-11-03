@@ -27,5 +27,6 @@
 		<module>haystacks-starter</module>
 		<module>haystacks-starter-web</module>
 		<module>haystacks-starter-data-mysql</module>
+		<module>haystacks-starter-data-postgresql</module>
 	</modules>
 </project>

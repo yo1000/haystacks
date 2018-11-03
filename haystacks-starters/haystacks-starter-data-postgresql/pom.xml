@@ -3,10 +3,10 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>haystacks-starter-data-mysql</artifactId>
+	<artifactId>haystacks-starter-data-postgresql</artifactId>
 	<packaging>jar</packaging>
 
-	<name>haystacks-starter-data-mysql</name>
+	<name>haystacks-starter-data-postgresql</name>
 	<description/>
 
 	<parent>
@@ -30,15 +30,15 @@
 		</dependency>
 		<dependency>
 			<groupId>com.yo1000</groupId>
-			<artifactId>haystacks-data-mysql</artifactId>
+			<artifactId>haystacks-data-postgresql</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
 		</dependency>
 	</dependencies>
 </project>

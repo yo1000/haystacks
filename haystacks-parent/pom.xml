@@ -79,6 +79,11 @@
 				<artifactId>haystacks-data-mysql</artifactId>
 				<version>${haystacks.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>com.yo1000</groupId>
+                <artifactId>haystacks-data-postgresql</artifactId>
+                <version>${haystacks.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>com.yo1000</groupId>
 				<artifactId>haystacks-autoconfigure</artifactId>

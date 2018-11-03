@@ -68,10 +68,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.wix</groupId>
 			<artifactId>wix-embedded-mysql</artifactId>
 			<scope>provided</scope>

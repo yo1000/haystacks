@@ -63,6 +63,21 @@
 			<artifactId>haystacks-data-mysql</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>com.yo1000</groupId>
+			<artifactId>haystacks-data-postgresql</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<optional>true</optional>
+		</dependency>
 
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
