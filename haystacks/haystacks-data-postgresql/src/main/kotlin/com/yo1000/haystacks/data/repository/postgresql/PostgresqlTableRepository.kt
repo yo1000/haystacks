@@ -80,26 +80,25 @@ class PostgresqlTableRepository(
                 ON  als_stt.relid  = als_dsc_col.objoid
                 AND als_att.attnum = als_dsc_col.objsubid
             WHERE
-                als_tbl.table_type = 'BASE TABLE'
-            AND als_tbl.table_schema = :$INPUT_SCHEMA_NAME
-            AND als_tbl.table_name = :$INPUT_TABLE_NAME
+                    als_tbl.table_type = 'BASE TABLE'
+                AND als_tbl.table_schema = :$INPUT_SCHEMA_NAME
             ORDER BY
                 als_stt.relid,
                 als_col.ordinal_position
         ),
         qry_fnd_tbl AS (
             SELECT DISTINCT
-                als_tbl.table_schema    AS schema_name,
-                als_tbl.table_name      AS table_name,
-                als_tbl.table_fqn       AS table_fqn
+                qry_tbl_col.schema_name     AS schema_name,
+                qry_tbl_col.table_name      AS table_name,
+                qry_tbl_col.table_fqn       AS table_fqn
             FROM
                 qry_tbl_col
             WHERE
                 ( ${(1..q.size).map { """
-                        tbl_1.table_name        LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
-                    OR  tbl_1.table_comment     LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
-                    OR  col_1.column_name       LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
-                    OR  col_1.column_comment    LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                        qry_tbl_col.table_name      LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    OR  qry_tbl_col.table_comment   LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    OR  qry_tbl_col.column_name     LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    OR  qry_tbl_col.column_comment  LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
                     """ }.joinToString(separator = " OR ")} )
         )
         SELECT
@@ -113,18 +112,18 @@ class PostgresqlTableRepository(
             qry_fnd_tbl
         INNER JOIN
             qry_tbl_col
-            ON  tbl.table_schema    = col.table_schema
-            AND tbl.table_name      = col.table_name
+            ON  qry_fnd_tbl.schema_name = qry_tbl_col.schema_name
+            AND qry_fnd_tbl.table_name = qry_tbl_col.table_name
         """.trimIndent(), (
                 (1..q.size).map { "keyword_$it" to q[it - 1]
                 } + (INPUT_SCHEMA_NAME to schemaName)).toMap()
         ) { resultSet, _ ->
             val tableName = resultSet.getString(OUTPUT_TABLE_NAME)
-            val tableComment = resultSet.getString(OUTPUT_TABLE_COMMENT)
+            val tableComment = resultSet.getString(OUTPUT_TABLE_COMMENT) ?: ""
             val tableFqn = resultSet.getString(OUTPUT_TABLE_FQN)
 
             val columnName = resultSet.getString(OUTPUT_COLUMN_NAME)
-            val columnComment = resultSet.getString(OUTPUT_COLUMN_COMMENT)
+            val columnComment = resultSet.getString(OUTPUT_COLUMN_COMMENT) ?: ""
             val columnFqn = resultSet.getString(OUTPUT_COLUMN_FQN)
 
             TableNames(
@@ -325,12 +324,12 @@ class PostgresqlTableRepository(
                 INPUT_TABLE_NAME to name.value
         )) { resultSet, _ ->
             val tableName = resultSet.getString(OUTPUT_TABLE_NAME)
-            val tableComment = resultSet.getString(OUTPUT_TABLE_COMMENT)
+            val tableComment = resultSet.getString(OUTPUT_TABLE_COMMENT) ?: ""
             val tableFqn = resultSet.getString(OUTPUT_TABLE_FQN)
             val tableRows = resultSet.getLong(OUTPUT_TABLE_ROWS)
 
             val columnName = resultSet.getString(OUTPUT_COLUMN_NAME)
-            val columnComment = resultSet.getString(OUTPUT_COLUMN_COMMENT)
+            val columnComment = resultSet.getString(OUTPUT_COLUMN_COMMENT) ?: ""
             val columnFqn = resultSet.getString(OUTPUT_COLUMN_FQN)
             val columnType = resultSet.getString(OUTPUT_COLUMN_TYPE)
             val columnNullable = resultSet.getString(OUTPUT_COLUMN_NULLABLE)
