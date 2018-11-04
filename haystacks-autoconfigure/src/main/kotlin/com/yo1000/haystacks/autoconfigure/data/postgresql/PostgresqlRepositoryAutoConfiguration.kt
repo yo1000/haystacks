@@ -28,10 +28,25 @@ import javax.sql.DataSource
 @AutoConfigureBefore(DomainServiceAutoConfiguration::class)
 class PostgresqlRepositoryAutoConfiguration {
     @Bean
-    fun tableRepository(dataSourceProperties: DataSourceProperties, jdbcTemplate: NamedParameterJdbcTemplate)
-            : TableRepository = PostgresqlTableRepository(jdbcTemplate, dataSourceProperties.name)
+    fun tableRepository(
+            dataSourceProperties: DataSourceProperties,
+            jdbcTemplate: NamedParameterJdbcTemplate
+    ): TableRepository = PostgresqlTableRepository(
+            jdbcTemplate,
+            dataSourceProperties.url.takeIf {
+                it.contains("//")
+            }?.substringAfter("//")?.split(Regex("[:/]"))?.first() ?: "",
+            dataSourceProperties.url.split(Regex("[:/]")).last(),
+            dataSourceProperties.username,
+            dataSourceProperties.name
+    )
 
     @Bean
-    fun indexRepository(dataSourceProperties: DataSourceProperties, jdbcTemplate: NamedParameterJdbcTemplate)
-            : IndexRepository = PostgresqlIndexRepository(jdbcTemplate, dataSourceProperties.name)
+    fun indexRepository(
+            dataSourceProperties: DataSourceProperties,
+            jdbcTemplate: NamedParameterJdbcTemplate
+    ): IndexRepository = PostgresqlIndexRepository(
+            jdbcTemplate,
+            dataSourceProperties.name
+    )
 }

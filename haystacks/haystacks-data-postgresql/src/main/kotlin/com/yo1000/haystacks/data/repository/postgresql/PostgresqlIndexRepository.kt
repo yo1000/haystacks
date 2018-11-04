@@ -58,6 +58,13 @@ class PostgresqlIndexRepository(
         WHERE
                 als_stt.schemaname = :$INPUT_SCHEMA_NAME
             AND als_stt.relname = :$INPUT_TABLE_NAME
+        ORDER BY
+            CASE
+                WHEN als_idx.indisprimary = 't' THEN 1
+                WHEN als_idx.indisunique  = 't' THEN 2
+                ELSE                                 3
+            END,
+            als_cls_idx.relname
         """.trimIndent(), mapOf(
             INPUT_SCHEMA_NAME to schemaName,
             INPUT_TABLE_NAME to name.value

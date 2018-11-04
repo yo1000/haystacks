@@ -7,6 +7,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations
 
 class PostgresqlTableRepository(
         private val jdbcOperations: NamedParameterJdbcOperations,
+        private val hostname: String,
+        private val database: String,
+        private val username: String,
         private val schemaName: String
 ) : TableRepository {
     companion object {
@@ -518,5 +521,12 @@ class PostgresqlTableRepository(
         TablePhysicalName(resultSet.getString(OUTPUT_TABLE_NAME)) to resultSet.getInt(OUTPUT_REFERENCE_COUNT)
     }.filter { it.second > 0 }.toMap()
 
-    override fun findStatementByName(name: TablePhysicalName): Statement = Statement("<NOT SUPPORTED>")
+    override fun findStatementByName(name: TablePhysicalName): Statement = Statement("""
+        Sorry.
+        DDL dump direct display function is not supported.
+        Please try the following command.
+
+        pg_dump -U '$username' -h '$hostname' '$database' -t '${name.value}' -s
+        """.trimIndent()
+    )
 }
