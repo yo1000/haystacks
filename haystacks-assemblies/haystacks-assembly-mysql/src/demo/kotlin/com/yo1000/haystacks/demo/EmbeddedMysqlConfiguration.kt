@@ -55,21 +55,21 @@ class EmbeddedMysqlInitializer(
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Artists';
                 """.trimIndent(), """
                 CREATE TABLE `mediums` (
-                  `id`          varchar(4)  NOT NULL    COMMENT 'ID',
-                  `description` varchar(80) NOT NULL    COMMENT 'Description',
-                  PRIMARY KEY(`id`)
+                    `id`          varchar(4)  NOT NULL    COMMENT 'ID',
+                    `description` varchar(80) NOT NULL    COMMENT 'Description',
+                    PRIMARY KEY(`id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
                 """.trimIndent(), """
                 CREATE TABLE `pictures` (
-                  `id`          varchar(4)  NOT NULL    COMMENT 'ID',
-                  `title`       varchar(80) NOT NULL    COMMENT 'Title',
-                  `country_id`  varchar(4)  NOT NULL    COMMENT 'Country ID',
-                  `artist_id`   varchar(4)  NOT NULL    COMMENT 'Artist ID',
-                  `medium_id`   varchar(4)              COMMENT 'Medium ID',
-                  PRIMARY KEY(`id`),
-                  CONSTRAINT `fk_pictures_country_id`   FOREIGN KEY (`country_id`)  REFERENCES `countries`  (`id`),
-                  CONSTRAINT `fk_pictures_artist_id`    FOREIGN KEY (`artist_id`)   REFERENCES `artists`    (`id`),
-                  CONSTRAINT `fk_pictures_medium_id`    FOREIGN KEY (`medium_id`)   REFERENCES `mediums`    (`id`)
+                    `id`          varchar(4)  NOT NULL    COMMENT 'ID',
+                    `title`       varchar(80) NOT NULL    COMMENT 'Title',
+                    `country_id`  varchar(4)  NOT NULL    COMMENT 'Country ID',
+                    `artist_id`   varchar(4)  NOT NULL    COMMENT 'Artist ID',
+                    `medium_id`   varchar(4)              COMMENT 'Medium ID',
+                    PRIMARY KEY(`id`),
+                    CONSTRAINT `fk_pictures_country_id`   FOREIGN KEY (`country_id`)  REFERENCES `countries`  (`id`),
+                    CONSTRAINT `fk_pictures_artist_id`    FOREIGN KEY (`artist_id`)   REFERENCES `artists`    (`id`),
+                    CONSTRAINT `fk_pictures_medium_id`    FOREIGN KEY (`medium_id`)   REFERENCES `mediums`    (`id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Pictures';
                 """.trimIndent()
             ).forEach(it::addBatch)
