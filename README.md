@@ -111,6 +111,13 @@ Browse to [http://localhost:8080](http://localhost:8080)
 with embedded DEMO Database.
 
 ```bash
+git clone https://github.com/yo1000/haystacks.git
+cd haystacks
+
+./mvnw clean install && \
+./mvnw spring-boot:run \
+  -pl haystacks-assemblies/haystacks-assembly-postgresql \
+  -P demo
 ```
 
 Browse to [http://localhost:8080](http://localhost:8080)

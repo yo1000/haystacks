@@ -67,7 +67,11 @@
 			<artifactId>haystacks-starter-data-postgresql</artifactId>
 		</dependency>
 
-		<!-- TODO Depend to embedded postgresql -->
+		<dependency>
+			<groupId>ru.yandex.qatools.embed</groupId>
+			<artifactId>postgresql-embedded</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -83,8 +87,10 @@
 				<maven.spring.profile>demo</maven.spring.profile>
 			</properties>
 			<dependencies>
-				<!-- TODO Depend to embedded postgresql -->
-
+				<dependency>
+					<groupId>ru.yandex.qatools.embed</groupId>
+					<artifactId>postgresql-embedded</artifactId>
+				</dependency>
 				<dependency>
 					<groupId>org.bgee.log4jdbc-log4j2</groupId>
 					<artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
