@@ -232,7 +232,14 @@ class PostgresqlTableRepository(
                     als_dsc_col.description     AS column_comment,
                     als_col.column_default      AS column_default,
                     als_col.is_nullable         AS column_nullable,
-                    als_col.data_type           AS column_type,
+                    CASE
+                        WHEN als_col.character_maximum_length IS NOT NULL THEN
+                            CONCAT(als_col.data_type, '(', als_col.character_maximum_length, ')')
+                        WHEN als_col.data_type = 'numeric' THEN
+                            CONCAT(als_col.data_type, '(', als_col.numeric_precision, ',', als_col.numeric_scale, ')')
+                        ELSE
+                            als_col.data_type
+                    END                         AS column_type,
                     als_col.ordinal_position    AS ordinal_position
                 FROM
                     information_schema.tables als_tbl
