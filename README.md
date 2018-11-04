@@ -82,7 +82,7 @@ cd haystacks
 Browse to [http://localhost:8080](http://localhost:8080)
 
 
-## Quick Start (PostgreSQL) *In Progress
+## Quick Start (PostgreSQL)
 
 
 ### Launch binary
