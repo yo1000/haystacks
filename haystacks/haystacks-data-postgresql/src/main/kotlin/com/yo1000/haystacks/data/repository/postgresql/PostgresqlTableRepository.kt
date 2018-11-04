@@ -309,7 +309,8 @@ class PostgresqlTableRepository(
                 als_rel_cld.parent_table_name   AS $OUTPUT_PARENT_TABLE_NAME,
                 als_rel_cld.parent_column_name  AS $OUTPUT_PARENT_COLUMN_NAME,
                 als_rel_prt.child_table_name    AS $OUTPUT_CHILD_TABLE_NAME,
-                als_rel_prt.child_column_name   AS $OUTPUT_CHILD_COLUMN_NAME
+                als_rel_prt.child_column_name   AS $OUTPUT_CHILD_COLUMN_NAME,
+                qry_tbl_col.ordinal_position    AS ordinal_position
             FROM
                 qry_tbl_col
             LEFT OUTER JOIN
@@ -322,6 +323,8 @@ class PostgresqlTableRepository(
                 ON  qry_tbl_col.schema_name = als_rel_prt.schema_name
                 AND qry_tbl_col.table_name = als_rel_prt.parent_table_name
                 AND qry_tbl_col.column_name = als_rel_prt.parent_column_name
+            ORDER BY
+                ordinal_position
             """.trimIndent(), mapOf(
                 INPUT_SCHEMA_NAME to schemaName,
                 INPUT_TABLE_NAME to name.value
