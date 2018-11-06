@@ -71,6 +71,11 @@ class MysqlTableRepository(
                     OR  tbl_1.table_comment     LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
                     OR  col_1.column_name       LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
                     OR  col_1.column_comment    LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    OR  CONCAT(
+                            tbl_1.table_schema, '.',
+                            tbl_1.table_name, '.',
+                            col_1.column_name
+                        ) = :keyword_$it
                     """ }.joinToString(separator = " OR ")} )
             ) tbl
         INNER JOIN

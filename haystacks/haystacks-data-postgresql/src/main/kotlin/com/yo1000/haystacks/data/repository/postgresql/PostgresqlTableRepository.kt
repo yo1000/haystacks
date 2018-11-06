@@ -102,6 +102,11 @@ class PostgresqlTableRepository(
                     OR  qry_tbl_col.table_comment   LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
                     OR  qry_tbl_col.column_name     LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
                     OR  qry_tbl_col.column_comment  LIKE CONCAT(CONCAT('%', :keyword_$it), '%')
+                    OR  CONCAT(
+                            qry_tbl_col.schema_name, '.',
+                            qry_tbl_col.table_name, '.',
+                            qry_tbl_col.column_name
+                        ) = :keyword_$it
                     """ }.joinToString(separator = " OR ")} )
         )
         SELECT

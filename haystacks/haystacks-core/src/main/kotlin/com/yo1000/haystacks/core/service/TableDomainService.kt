@@ -47,5 +47,11 @@ class TableDomainService(
             noteRepository.findNoteMapByFullyQualifiedTableName(fullyQualifiedTableName)
     fun setNote(fqn: FullyQualifiedName, note: Note) = noteRepository.save(fqn, note)
 
-    fun find(vararg q: String): List<FoundNames> = tableRepository.findNames(*q)
+    fun find(vararg q: String): List<FoundNames> = tableRepository.findNames(*(
+            noteRepository.findNoteMap().entries.filter { entry ->
+                q.any { entry.value.value.contains(it) }
+            }.map {
+                it.key.value
+            } + q).toTypedArray()
+    )
 }
