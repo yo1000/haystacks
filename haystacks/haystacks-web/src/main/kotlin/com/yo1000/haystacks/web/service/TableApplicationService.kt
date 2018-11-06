@@ -82,15 +82,18 @@ class TableApplicationService(
     }
 
     fun search(q: List<String>): List<SearchResult> = tableDomainService.find(*q.toTypedArray()).map {
+        val noteMap = tableDomainService.getNotesMap()
         SearchResult(
                 table = SearchResult.Table(
                         name = it.tableNames.physicalName.value,
-                        comment = it.tableNames.logicalName.value
+                        comment = it.tableNames.logicalName.value,
+                        note = noteMap[it.tableNames.fullyQualifiedName]?.value ?: ""
                 ),
                 columns = it.columnNamesList.map {
                     SearchResult.Column(
                             name = it.physicalName.value,
-                            comment = it.logicalName.value
+                            comment = it.logicalName.value,
+                            note = noteMap[it.fullyQualifiedName]?.value ?: ""
                     )
                 }
         )

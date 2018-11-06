@@ -31,8 +31,8 @@
                    th:href="@{table/{name}(name=${result.table.name})}"
                    th:classappend="${#search.containsAnyQuery(result.table.name, queries)}? 'has-background-warning'"
                    th:text="${result.table.name}">table_name</a>
-                <rt th:classappend="${#search.containsAnyQuery(result.table.comment, queries)}? 'has-background-warning'"
-                    th:text="${result.table.comment}">table comment</rt></ruby>
+                <rt th:classappend="${#search.containsAnyQuery(result.table.comment, queries) || #search.containsAnyQuery(result.table.note, queries)}? 'has-background-warning'"
+                    th:text="${result.table.comment} + ' ' + ${result.table.note}">table comment</rt></ruby>
             </div>
           </td>
           <td class="is-search-result">
@@ -40,8 +40,8 @@
               <li th:each="column : ${result.columns}"><ruby>
                 <span th:classappend="${#search.containsAnyQuery(column.name, queries)}? 'has-background-warning'"
                       th:text="${column.name}">column_name</span>
-                <rt th:classappend="${#search.containsAnyQuery(column.comment, queries)}? 'has-background-warning'"
-                    th:text="${column.comment}">column comment</rt>
+                <rt th:classappend="${#search.containsAnyQuery(column.comment, queries) || #search.containsAnyQuery(column.note, queries)}? 'has-background-warning'"
+                    th:text="${column.comment} + ' ' + ${column.note}">column comment</rt>
               </ruby></li>
             </ul>
           </td>

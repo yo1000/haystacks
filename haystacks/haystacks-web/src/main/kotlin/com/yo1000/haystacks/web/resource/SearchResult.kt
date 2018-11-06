@@ -10,11 +10,13 @@ data class SearchResult(
 ) {
     data class Table(
             val name: String,
-            val comment: String
+            val comment: String,
+            val note: String
     )
 
     data class Column(
             val name: String,
-            val comment: String
+            val comment: String,
+            val note: String
     )
 }

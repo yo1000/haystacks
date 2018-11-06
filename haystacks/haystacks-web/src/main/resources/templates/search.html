@@ -71,11 +71,11 @@
 
                                     rubyElm.appendChildElm("rt", (rtElm) => {
                                         if (queries.find(q => {
-                                            return result.table.comment.includes(q)
+                                            return result.table.comment.includes(q) || result.table.note.includes(q)
                                         })) {
                                             rtElm.classList.add("has-background-warning")
                                         }
-                                        rubyElm.appendChildTxt(result.table.comment)
+                                        rtElm.appendChildTxt(`${result.table.comment} ${result.table.note}`)
                                     })
                                 })
                             })
@@ -99,11 +99,11 @@
                                                 })
                                                 rubyElm.appendChildElm("rt", (rtElm) => {
                                                     if (queries.find(q => {
-                                                        return column.comment.includes(q)
+                                                        return column.comment.includes(q) || column.note.includes(q)
                                                     })) {
                                                         rtElm.classList.add("has-background-warning")
                                                     }
-                                                    rtElm.appendChildTxt(column.comment)
+                                                    rtElm.appendChildTxt(`${column.comment} ${column.note}`)
                                                 })
                                             })
                                         })
