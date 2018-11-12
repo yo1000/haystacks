@@ -1,4 +1,4 @@
-haystacks = haystacks || {}
+var haystacks = haystacks || {}
 haystacks.onClickSave = (event) => {
     const clickSaveContainerElm = event.target.closest(".is-data-note-container")
     const savingInputElm = clickSaveContainerElm.querySelector("input")
