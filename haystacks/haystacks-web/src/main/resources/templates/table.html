@@ -58,7 +58,7 @@
         tableNoteContainerElm.classList.add("is-data-note-container")
         tableNoteContainerElm.appendChildNote(table.note)
 
-        document.querySelector("#columns").appendChildElm("table", (tableElm) => {
+        document.querySelector("#columns").appendChild(new DocumentFragment().appendChildElm("table", (tableElm) => {
             tableElm.classList.add("table")
             tableElm.classList.add("is-narrow")
             tableElm.classList.add("is-hoverable")
@@ -149,9 +149,9 @@
                     })
                 })
             })
-        })
+        }))
 
-        document.querySelector("#indexes").appendChildElm("table", (tableElm) => {
+        document.querySelector("#indexes").appendChild(new DocumentFragment().appendChildElm("table", (tableElm) => {
             tableElm.classList.add("table")
             tableElm.classList.add("is-narrow")
             tableElm.classList.add("is-hoverable")
@@ -211,15 +211,15 @@
                     })
                 })
             })
-        })
+        }))
 
-        document.querySelector("#statement").appendChildElm("pre", (preElm) => {
+        document.querySelector("#statement").appendChild(new DocumentFragment().appendChildElm("pre", (preElm) => {
             preElm.appendChildElm("code", (codeElm) => {
                 codeElm.appendChildTxt(table.statement)
                 codeElm.classList.add("sql")
             })
             hljs.initHighlightingOnLoad()
-        })
+        }))
     }).catch((err) => {
         console.error(err)
     })

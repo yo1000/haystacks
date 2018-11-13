@@ -26,7 +26,7 @@
 </div>
 <script th:inline="javascript">
 (function () {
-    document.querySelector("#dataSource").appendChildElm("table", (tableElm) => {
+    document.querySelector("#dataSource").appendChild(new DocumentFragment().appendChildElm("table", (tableElm) => {
         tableElm.classList.add("table")
         tableElm.classList.add("is-narrow")
         tableElm.classList.add("is-hoverable")
@@ -74,7 +74,7 @@
                 console.error(err)
             })
         })
-    })
+    }))
 })()
 </script>
 </body>

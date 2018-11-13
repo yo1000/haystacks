@@ -59,12 +59,11 @@ Node.prototype.removeChildren = function() {
 }
 
 Node.prototype.appendChildNote = function(note) {
-    this.removeChildren()
-
-    this.appendChildElm("span", (spanElm) => {
+    const fragment = new DocumentFragment()
+    fragment.appendChildElm("span", (spanElm) => {
         spanElm.appendChildTxt(note)
     })
-    this.appendChildElm("a", (aElm) => {
+    fragment.appendChildElm("a", (aElm) => {
         aElm.appendChildElm("i", (iElm) => {
             iElm.classList.add("fas")
             iElm.classList.add("fa-pen")
@@ -94,4 +93,7 @@ Node.prototype.appendChildNote = function(note) {
             })
         })
     })
+
+    this.removeChildren()
+    this.appendChild(fragment)
 }

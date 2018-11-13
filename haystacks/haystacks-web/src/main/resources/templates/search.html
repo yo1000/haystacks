@@ -38,7 +38,7 @@
             })
         })
 
-        document.querySelector("#searchResults").appendChildElm("table", (tableElm) => {
+        document.querySelector("#searchResults").appendChild(new DocumentFragment().appendChildElm("table", (tableElm) => {
             tableElm.classList.add("table")
             tableElm.classList.add("is-narrow")
             tableElm.classList.add("is-hoverable")
@@ -114,7 +114,7 @@
                     })
                 })
             })
-        })
+        }))
     }).catch((err) => {
         console.error(err)
     })
