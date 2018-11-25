@@ -12,7 +12,7 @@ Java 8+
 ### Required options
 ```bash
 curl -L -o haystacks-assembly-<mysql|postgresql>-latest.jar \
-  https://github.com/yo1000/haystacks/releases/download/v0.0.11/haystacks-assembly-<mysql|postgresql>-0.0.11.jar
+  https://github.com/yo1000/haystacks/releases/download/v0.0.12/haystacks-assembly-<mysql|postgresql>-0.0.12.jar
 
 java -jar haystacks-assembly-<mysql|postgresql>-latest.jar \
   --spring.datasource.url=jdbc:mysql://<host>:<port>/<database> \
@@ -25,7 +25,7 @@ java -jar haystacks-assembly-<mysql|postgresql>-latest.jar \
 ### All options
 ```bash
 curl -L -o haystacks-assembly-<mysql|postgresql>-latest.jar \
-  https://github.com/yo1000/haystacks/releases/download/v0.0.11/haystacks-assembly-<mysql|postgresql>-0.0.11.jar
+  https://github.com/yo1000/haystacks/releases/download/v0.0.12/haystacks-assembly-<mysql|postgresql>-0.0.12.jar
 
 java -jar haystacks-assembly-<mysql|postgresql>-latest.jar \
   --spring.datasource.url=jdbc:mysql://<Host>:<Port>/<Database> \
@@ -55,7 +55,7 @@ docker run -d \
   thebinarypenguin/mysql-sakila:latest
 
 curl -L -o haystacks-assembly-mysql-latest.jar \
-  https://github.com/yo1000/haystacks/releases/download/v0.0.11/haystacks-assembly-mysql-0.0.11.jar
+  https://github.com/yo1000/haystacks/releases/download/v0.0.12/haystacks-assembly-mysql-0.0.12.jar
 
 java -jar haystacks-assembly-mysql-latest.jar \
   --spring.datasource.url=jdbc:mysql://localhost:3306/sakila \
@@ -96,7 +96,7 @@ docker run -d \
   mujz/pagila:latest
 
 curl -L -o haystacks-assembly-postgresql-latest.jar \
-  https://github.com/yo1000/haystacks/releases/download/v0.0.11/haystacks-assembly-postgresql-0.0.11.jar
+  https://github.com/yo1000/haystacks/releases/download/v0.0.12/haystacks-assembly-postgresql-0.0.12.jar
 
 java -jar haystacks-assembly-postgresql-latest.jar \
   --spring.datasource.url=jdbc:postgresql://localhost:5432/pagila \
