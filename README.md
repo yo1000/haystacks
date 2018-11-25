@@ -34,10 +34,11 @@ java -jar haystacks-assembly-<mysql|postgresql>-latest.jar \
   --spring.datasource.password=<Password> \
   --haystacks.note.file.store-location=<Notes Save file location> \
   --haystacks.note.file.create-on-missing=<File creation on missing: default(true)> \
-  --haystacks.web.ssr=<Rendering mode: default(true)> \
+  --haystacks.web.ssr=<Rendering mode: default(false)> \
   --haystacks.web.title=<Site title> \
   --haystacks.web.logo=<Header logo url by svg> \
-  --haystacks.web.favicon=<Favicon url>
+  --haystacks.web.favicon=<Favicon url> \
+  --haystacks.cache.enabled=<Table-outlines service caching: default(true)>
 ```
 
 
