@@ -11,17 +11,23 @@ import com.yo1000.haystacks.core.valueobject.FullyQualifiedName
 import com.yo1000.haystacks.core.valueobject.Note
 import com.yo1000.haystacks.core.valueobject.Statement
 import com.yo1000.haystacks.core.valueobject.TablePhysicalName
+import org.springframework.cache.annotation.Cacheable
 
 /**
  *
  * @author yo1000
  */
-class TableDomainService(
+open class TableDomainService(
         private val tableRepository: TableRepository,
         private val indexRepository: IndexRepository,
         private val noteRepository: NoteRepository
 ) {
-    fun getTableOutlines(): List<TableOutline> {
+    companion object {
+        const val CACHE_NAME_TABLE_OUTLINES = "TableDomainService.TableOutlines"
+    }
+
+    @Cacheable(CACHE_NAME_TABLE_OUTLINES)
+    open fun getTableOutlines(): List<TableOutline> {
         val columnCountMap = tableRepository.findColumnCountMap()
         val rowCountMap = tableRepository.findRowCountMap()
         val childrenCountMap = tableRepository.findReferencedCountFromChildrenMap()
@@ -38,16 +44,16 @@ class TableDomainService(
         }
     }
 
-    fun getTable(name: TablePhysicalName): Table = tableRepository.findTable(name)
-    fun getIndexes(name: TablePhysicalName): List<Index> = indexRepository.findByTableName(name)
-    fun getStatement(name: TablePhysicalName): Statement = tableRepository.findStatementByName(name)
+    open fun getTable(name: TablePhysicalName): Table = tableRepository.findTable(name)
+    open fun getIndexes(name: TablePhysicalName): List<Index> = indexRepository.findByTableName(name)
+    open fun getStatement(name: TablePhysicalName): Statement = tableRepository.findStatementByName(name)
 
-    fun getNotesMap(): Map<FullyQualifiedName, Note> = noteRepository.findNoteMap()
-    fun getNotesMapByTable(fullyQualifiedTableName: FullyQualifiedName): Map<FullyQualifiedName, Note> =
+    open fun getNotesMap(): Map<FullyQualifiedName, Note> = noteRepository.findNoteMap()
+    open fun getNotesMapByTable(fullyQualifiedTableName: FullyQualifiedName): Map<FullyQualifiedName, Note> =
             noteRepository.findNoteMapByFullyQualifiedTableName(fullyQualifiedTableName)
-    fun setNote(fqn: FullyQualifiedName, note: Note) = noteRepository.save(fqn, note)
+    open fun setNote(fqn: FullyQualifiedName, note: Note) = noteRepository.save(fqn, note)
 
-    fun find(vararg q: String): List<FoundNames> = tableRepository.findNames(*(
+    open fun find(vararg q: String): List<FoundNames> = tableRepository.findNames(*(
             noteRepository.findNoteMap().entries.filter { entry ->
                 q.any { entry.value.value.contains(it) }
             }.map {
