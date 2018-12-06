@@ -66,8 +66,16 @@ body {
 }
 
 .table td {
-    word-break: break-all;
     max-width: 20rem;
+
+    overflow: hidden;
+    word-break: break-all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.table tr:hover td {
+    white-space: normal;
 }
 
 #statement pre {
