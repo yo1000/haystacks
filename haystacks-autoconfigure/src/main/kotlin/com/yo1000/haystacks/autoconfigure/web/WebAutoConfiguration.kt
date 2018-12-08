@@ -177,7 +177,7 @@ class WebAutoConfiguration {
 
 @ConfigurationProperties("haystacks.web")
 class WebConfigurationProperties(
-        var ssr: Boolean = false,
+        var ssr: Boolean = true,
         var logo: String = "/img/haystacks-logo.svg",
         var title: String = "haystacks",
         var favicon: String = "/favicon.ico"
