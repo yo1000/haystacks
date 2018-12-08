@@ -74,8 +74,29 @@ body {
     text-overflow: ellipsis;
 }
 
+.table .is-table-column-children .is-ellipsis-shade {
+    box-shadow: 0 -1rem 2rem 0 #fff inset;
+    height: 3rem;
+    width: 40rem;
+    position: absolute;
+    z-index: 1;
+}
+
+.table .is-table-column-children ul {
+    height: 3rem;
+    overflow: hidden;
+}
+
 .table tr:hover td {
     white-space: normal;
+}
+
+.table tr:hover .is-table-column-children ul {
+    height: auto;
+}
+
+.table tr:hover .is-table-column-children .is-ellipsis-shade {
+    display: none;
 }
 
 #statement pre {
