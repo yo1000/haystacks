@@ -57,7 +57,8 @@
               toooooooooooooooooooooooooooooooo_long_table_name.toooooooooooooooooooooooooooooooo_long_column_name
             </a>
           </td>
-          <td>
+          <td class="is-table-column-children">
+            <div class="is-ellipsis-shade"></div>
             <ul th:if="${not #lists.isEmpty(column.children)}">
               <li th:each="child : ${column.children}">
                 <a href="#"
