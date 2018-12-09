@@ -127,9 +127,11 @@
                             tdElm.classList.add("is-table-column-children")
 
                             if (column.children && column.children.length) {
-                                tdElm.appendChildElm("div", (divElm) => {
-                                    divElm.classList.add("is-ellipsis-shade")
-                                })
+                                if (column.children.length > 1) {
+                                    tdElm.appendChildElm("div", (divElm) => {
+                                        divElm.classList.add("is-ellipsis-shade")
+                                    })
+                                }
                                 tdElm.appendChildElm("ul", (ulElm) => {
                                     column.children.forEach(child => {
                                         ulElm.appendChildElm("li", (liElm) => {
