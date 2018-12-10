@@ -300,7 +300,7 @@ class MysqlTableRepository(
                                             tablePhysicalName = TablePhysicalName(it.tableName),
                                             columnPhysicalName = ColumnPhysicalName(it.columnName)
                                     )
-                                }
+                                }.distinct()
                         )
                     }
             )
