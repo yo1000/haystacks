@@ -39,13 +39,13 @@
         <tbody>
         <tr th:each="column : ${table.columns}">
           <td><span
-                  class="is-column-name" th:classappend="${#tables.isForeignKey(column)}? 'is-foreign-key-column'"><span
-                  class="is-column-name" th:classappend="${#tables.isPrimaryKey(column, table.indexes)}? 'is-primary-key-column'"
+                  class="is-black-box" th:if="${#tables.isPrimaryKey(column, table.indexes)}">P</span><span
+                  class="is-white-box" th:if="${#tables.isForeignKey(column)}">F</span><span
                   th:text="${column.name}">
             toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_column_name
           </span></span></td>
           <td th:text="${column.type}">type</td>
-          <td><i th:if="${column.nullable}" class="fas fa-check"></i></td>
+          <td><span th:if="${column.nullable}" class="is-check"></span></td>
           <td th:text="${column.default}">
             toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_default_value
           </td>
@@ -97,11 +97,11 @@
         </thead>
         <tbody>
         <tr th:each="index : ${table.indexes}">
-          <td><i class="fas fa-circle"
-                 th:class="${index.type == 'PRIMARY'} ? 'fas fa-circle'
-                        : (${index.type == 'UNIQUE'}? 'far fa-dot-circle'
-                        : (${index.type == 'PERFORMANCE'}? 'far fa-circle'
-                        : ''))"></i> <span th:text="${index.name}">
+          <td><span
+                  class="is-black-circle" th:if="${index.type == 'PRIMARY'}">&nbsp;</span><span
+                  class="is-white-circle" th:if="${index.type == 'UNIQUE'}">1</span><span
+                  class="is-white-circle" th:if="${index.type == 'PERFORMANCE'}">&nbsp;</span><span
+                  th:text="${index.name}">
             tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_index_name
           </span>
           </td>

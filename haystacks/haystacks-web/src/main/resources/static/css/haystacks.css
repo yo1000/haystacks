@@ -25,12 +25,12 @@ body {
 }
 
 .navbar-brand object {
-    position:static;
-    margin:.8rem 1rem .65rem 1rem;
+    position: static;
+    margin: .8rem 1rem .65rem 1rem;
 }
 
 .navbar-brand a object {
-    pointer-events:none;
+    pointer-events: none;
 }
 
 .navbar.is-white {
@@ -65,7 +65,8 @@ body {
     box-shadow: none;
 }
 
-.table td {
+.table td,
+.table td ul {
     max-width: 14rem;
 
     overflow: hidden;
@@ -77,12 +78,13 @@ body {
 .table .is-table-column-children .is-ellipsis-shade {
     box-shadow: 0 -1rem 2rem 0 #fff inset;
     height: 3rem;
-    width: 16rem;
+    width: 100%;
     position: absolute;
+    margin-left: -.5rem;
 }
 
 .table .is-table-column-children ul {
-    height: 3rem;
+    max-height: 3rem;
     overflow: hidden;
 }
 
@@ -91,7 +93,7 @@ body {
 }
 
 .table tr:hover .is-table-column-children ul {
-    height: auto;
+    max-height: unset;
 }
 
 .table tr:hover .is-table-column-children .is-ellipsis-shade {
@@ -107,17 +109,74 @@ body {
     background-color: transparent;
 }
 
-.is-column-name {
+.is-black-box {
     display: inline-block;
-    padding-bottom: 1px;
+    border: 1px solid #363636;
+    background-color: #363636;
+    color: #fff;
+    font-size: .75rem;
+    width: 1rem;
+    height: 1rem;
+    line-height: .875rem;
+    text-align: center;
+    border-radius: .25rem;
+    position: relative;
+    top: -.125rem;
+    margin-right: .25rem;
 }
 
-.is-primary-key-column {
-    border-bottom: 1px solid #000;
+.is-white-box {
+    display: inline-block;
+    border: 1px solid #363636;
+    font-size: .75rem;
+    width: 1rem;
+    height: 1rem;
+    line-height: 0.875rem;
+    text-align: center;
+    border-radius: .25rem;
+    position: relative;
+    top: -.125rem;
+    margin-right: .25rem;
 }
 
-.is-foreign-key-column {
-    border-bottom: 1px dashed #000;
+.is-black-circle {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border-radius: .5rem;
+    border: 1px solid #363636;
+    background-color: #363636;
+    position: relative;
+    top: -.125rem;
+    margin-right: .25rem;
+    font-size: .5rem;
+    text-align: center;
+}
+
+.is-white-circle {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border-radius: .5rem;
+    border: 1px solid #363636;
+    background-color: #fff;
+    position: relative;
+    top: -.125rem;
+    margin-right: .25rem;
+    font-size: .5rem;
+    text-align: center;
+}
+
+.is-check {
+    display: inline-block;
+    width: 15px;
+    height: 8px;
+    border: 2px solid;
+    border-color: transparent transparent #363636 #363636;
+    transform: rotate(-45deg);
+    border-radius: 1px;
+    position: absolute;
+    margin-top: .33rem;
 }
 
 .is-search-result li {
