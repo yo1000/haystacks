@@ -81,24 +81,24 @@
                 table.columns.forEach(column => {
                     tbodyElm.appendChildElm("tr", (trElm) => {
                         trElm.appendChildElm("td", (tdElm) => {
-                            tdElm.appendChildElm("span", (fkSpanElm) => {
-                                fkSpanElm.classList.add("is-column-name")
-                                fkSpanElm.appendChildElm("span", (pkSpanElm) => {
-                                    pkSpanElm.classList.add("is-column-name")
-                                    pkSpanElm.appendChildTxt(column.name)
-
-                                    if (table.indexes.find((element) => {
-                                        return element.type === "PRIMARY" && element.columns.find((col) => {
-                                            return col.column === column.name
-                                        })
-                                    })) {
-                                        pkSpanElm.classList.add("is-primary-key-column")
-                                    }
-
-                                    if (column.parent) {
-                                        fkSpanElm.classList.add("is-foreign-key-column")
-                                    }
+                            if (table.indexes.find((element) => {
+                                return element.type === "PRIMARY" && element.columns.find((col) => {
+                                    return col.column === column.name
                                 })
+                            })) {
+                                tdElm.appendChildElm("span", (pkSpanElm) => {
+                                    pkSpanElm.classList.add("is-black-box")
+                                    pkSpanElm.appendChildTxt("P")
+                                })
+                            }
+                            if (column.parent) {
+                                tdElm.appendChildElm("span", (fkSpanElm) => {
+                                    fkSpanElm.classList.add("is-white-box")
+                                    fkSpanElm.appendChildTxt("F")
+                                })
+                            }
+                            tdElm.appendChildElm("span", (spanElm) => {
+                                spanElm.appendChildTxt(column.name)
                             })
                         })
                         trElm.appendChildElm("td", (tdElm) => {
@@ -106,9 +106,8 @@
                         })
                         trElm.appendChildElm("td", (tdElm) => {
                             if (column.nullable) {
-                                tdElm.appendChildElm("i", (iElm) => {
-                                    iElm.classList.add("fas")
-                                    iElm.classList.add("fa-check")
+                                tdElm.appendChildElm("span", (spanElm) => {
+                                    spanElm.classList.add("is-check")
                                 })
                             }
                         })
@@ -178,16 +177,16 @@
                 table.indexes.forEach(index => {
                     tbodyElm.appendChildElm("tr", (trElm) => {
                         trElm.appendChildElm("td", (tdElm) => {
-                            tdElm.appendChildElm("i", (iElm) => {
+                            tdElm.appendChildElm("span", (spanElm) => {
                                 if (index.type === "PRIMARY") {
-                                    iElm.classList.add("fas")
-                                    iElm.classList.add("fa-circle")
+                                    spanElm.classList.add("is-black-circle")
+                                    spanElm.appendChildTxt("\u00A0")
                                 } else if (index.type === "UNIQUE") {
-                                    iElm.classList.add("far")
-                                    iElm.classList.add("fa-dot-circle")
+                                    spanElm.classList.add("is-white-circle")
+                                    spanElm.appendChildTxt("1")
                                 } else if (index.type === "PERFORMANCE") {
-                                    iElm.classList.add("far")
-                                    iElm.classList.add("fa-circle")
+                                    spanElm.classList.add("is-white-circle")
+                                    spanElm.appendChildTxt("\u00A0")
                                 }
                             })
                             tdElm.appendChildTxt(` ${index.name}`)

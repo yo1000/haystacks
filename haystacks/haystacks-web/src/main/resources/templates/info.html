@@ -32,8 +32,8 @@
         tableElm.classList.add("is-hoverable")
         tableElm.classList.add("is-fullwidth")
 
-        tableElm.appendChildElm("tbody", (tbodyElm) => {
-            fetch("/api/info/dataSource").then(resp => {
+        tableElm.appendChildElm("tbody", async (tbodyElm) => {
+            await fetch("/api/info/dataSource").then(resp => {
                 if (!resp.ok) throw Error(resp.statusText)
                 return resp.json()
             }).then((dataSource) => {
@@ -57,7 +57,7 @@
                 console.error(err)
             })
 
-            fetch("/api/info/note").then(resp => {
+            await fetch("/api/info/note").then(resp => {
                 if (!resp.ok) throw Error(resp.statusText)
                 return resp.json()
             }).then((noteFile) => {
