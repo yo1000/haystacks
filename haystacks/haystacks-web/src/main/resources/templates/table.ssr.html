@@ -23,7 +23,7 @@
   <div class="container">
     <h2 class="title is-4">Columns</h2>
     <div id="columns">
-      <table class="table is-narrow is-hoverable is-fullwidth">
+      <table class="table is-narrow is-hoverable is-fullwidth is-table-columns">
         <thead>
         <tr>
           <th>Name</th>
@@ -57,8 +57,8 @@
               toooooooooooooooooooooooooooooooo_long_table_name.toooooooooooooooooooooooooooooooo_long_column_name
             </a>
           </td>
-          <td class="is-table-column-children">
-            <div th:class="${#lists.size(column.children) &gt; 1} ? 'is-ellipsis-shade' : ''" class="is-ellipsis-shade"></div>
+          <td class="is-table-columns-children">
+            <div th:if="${#lists.size(column.children) &gt; 1}" class="is-ellipsis-shade"></div>
             <ul th:if="${not #lists.isEmpty(column.children)}">
               <li th:each="child : ${column.children}">
                 <a href="#"
@@ -85,7 +85,7 @@
   <div class="container">
     <h2 class="title is-4">Indexes</h2>
     <div id="indexes">
-      <table class="table is-narrow is-hoverable is-fullwidth">
+      <table class="table is-narrow is-hoverable is-fullwidth is-table-indexes">
         <thead>
         <tr>
           <th>Name</th>
@@ -106,7 +106,8 @@
           </span>
           </td>
           <td th:text="${index.type}">INDEX_TYPE</td>
-          <td>
+          <td class="is-table-indexes-columns">
+            <div th:if="${#lists.size(index.columns) &gt; 1}" class="is-ellipsis-shade"></div>
             <ul th:if="${not #lists.isEmpty(index.columns)}">
               <li th:each="column : ${index.columns}" th:text="${column.column}">
                 toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_column_name

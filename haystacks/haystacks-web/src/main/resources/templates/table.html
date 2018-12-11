@@ -63,6 +63,7 @@
             tableElm.classList.add("is-narrow")
             tableElm.classList.add("is-hoverable")
             tableElm.classList.add("is-fullwidth")
+            tableElm.classList.add("is-table-columns")
 
             tableElm.appendChildElm("thead", (theadElm) => {
                 theadElm.appendChildElm("tr", (trElm) => {
@@ -123,7 +124,7 @@
                             }
                         })
                         trElm.appendChildElm("td", (tdElm) => {
-                            tdElm.classList.add("is-table-column-children")
+                            tdElm.classList.add("is-table-columns-children")
 
                             if (column.children && column.children.length) {
                                 if (column.children.length > 1) {
@@ -162,6 +163,7 @@
             tableElm.classList.add("is-narrow")
             tableElm.classList.add("is-hoverable")
             tableElm.classList.add("is-fullwidth")
+            tableElm.classList.add("is-table-indexes")
 
             tableElm.appendChildElm("thead", (theadElm) => {
                 theadElm.appendChildElm("tr", (trElm) => {
@@ -195,7 +197,14 @@
                             tdElm.appendChildTxt(index.type)
                         })
                         trElm.appendChildElm("td", (tdElm) => {
+                            tdElm.classList.add("is-table-indexes-columns")
+
                             if (index.columns && index.columns.length) {
+                                if (index.columns.length > 1) {
+                                    tdElm.appendChildElm("div", (divElm) => {
+                                        divElm.classList.add("is-ellipsis-shade")
+                                    })
+                                }
                                 tdElm.appendChildElm("ul", (ulElm) => {
                                     index.columns.forEach(column => {
                                         ulElm.appendChildElm("li", (liElm) => {

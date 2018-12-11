@@ -65,17 +65,35 @@ body {
     box-shadow: none;
 }
 
-.table td,
-.table td ul {
-    max-width: 14rem;
+.is-tables-tables td,
+.is-tables-tables td ul,
+.is-tables-tables td ul li {
+    max-width: 10rem;
+}
 
+.is-table-columns td,
+.is-table-columns td ul,
+.is-table-columns td ul li {
+    max-width: 8.75rem;
+}
+
+.is-table-indexes td,
+.is-table-indexes td ul,
+.is-table-indexes td ul li {
+    max-width: 14rem;
+}
+
+.table td,
+.table td ul,
+.table td ul li {
     overflow: hidden;
     word-break: break-all;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.table .is-table-column-children .is-ellipsis-shade {
+.table .is-table-columns-children .is-ellipsis-shade,
+.table .is-table-indexes-columns .is-ellipsis-shade {
     box-shadow: 0 -1rem 2rem 0 #fff inset;
     height: 3rem;
     width: 100%;
@@ -83,20 +101,25 @@ body {
     margin-left: -.5rem;
 }
 
-.table .is-table-column-children ul {
+.table .is-table-columns-children ul,
+.table .is-table-indexes-columns ul {
     max-height: 3rem;
     overflow: hidden;
 }
 
-.table tr:hover td {
+.table tr:hover td,
+.table tr:hover td ul,
+.table tr:hover td ul li {
     white-space: normal;
 }
 
-.table tr:hover .is-table-column-children ul {
+.table tr:hover .is-table-columns-children ul,
+.table tr:hover .is-table-indexes-columns ul {
     max-height: unset;
 }
 
-.table tr:hover .is-table-column-children .is-ellipsis-shade {
+.table tr:hover .is-table-columns-children .is-ellipsis-shade,
+.table tr:hover .is-table-indexes-columns .is-ellipsis-shade {
     display: none;
 }
 
