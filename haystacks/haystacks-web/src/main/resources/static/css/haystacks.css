@@ -132,62 +132,107 @@ body {
     background-color: transparent;
 }
 
-.is-black-box {
-    display: inline-block;
-    border: 1px solid #363636;
-    background-color: #363636;
-    color: #fff;
-    font-size: .75rem;
-    width: 1rem;
-    height: 1rem;
-    line-height: .875rem;
-    text-align: center;
-    border-radius: .25rem;
-    position: relative;
-    top: -.125rem;
-    margin-right: .25rem;
+.table.is-narrow td.is-table-columns-name {
+    margin-left: -1.5rem;
+    padding: 0;
 }
 
-.is-white-box {
+.is-left,
+.is-right {
+    position: relative;
     display: inline-block;
-    border: 1px solid #363636;
-    font-size: .75rem;
+    padding: .25em 0;
+}
+
+.is-left {
+    width: 1rem;
+    margin: 0;
+}
+
+.is-right {
+    vertical-align: top;
+    max-width: 80%;
+    left: .625rem;
+
+    overflow: hidden;
+    word-break: break-all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.is-first-box,
+.is-second-box {
+    position: absolute;
+    display: inline-block;
+    border: 1px solid #dbdbdb;
+    font-size: .5rem;
+    line-height: .625rem;
+    text-align: center;
+    width: .75rem;
+    height: .75rem;
+    top: 0;
+
+    opacity: 0;
+}
+
+.is-single-box .is-first-box {
+    border-radius: .1875rem;
+    top: 0;
+    left: .375rem;
+}
+
+.is-double-box .is-first-box {
+    border-right: 0;
+    border-radius: .1875rem 0 0 .1875rem;
+    top: 0;
+}
+
+.is-double-box .is-second-box {
+    border-left: 0;
+    border-radius: 0 .1875rem .1875rem 0;
+    left: .75rem;
+}
+
+.is-pk-box,
+.is-fk-box {
+    opacity: 1;
+}
+
+.is-pk-box {
+    background-color: #dbdbdb;
+    color: #363636;
+}
+
+.is-fk-box {
+    background-color: #fff;
+    color: #363636;
+}
+
+tr:hover .is-table-columns-name .is-right {
+    white-space: normal;
+}
+
+.is-black-circle,
+.is-white-circle {
+    position: relative;
+    display: inline-block;
     width: 1rem;
     height: 1rem;
-    line-height: 0.875rem;
+    top: -.0625rem;
+    margin-right: .375rem;
+    border-radius: .5rem;
+    font-size: .5rem;
     text-align: center;
-    border-radius: .25rem;
-    position: relative;
-    top: -.125rem;
-    margin-right: .25rem;
 }
 
 .is-black-circle {
-    display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    border-radius: .5rem;
     border: 1px solid #363636;
     background-color: #363636;
-    position: relative;
-    top: -.125rem;
-    margin-right: .25rem;
-    font-size: .5rem;
-    text-align: center;
 }
 
 .is-white-circle {
-    display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    border-radius: .5rem;
     border: 1px solid #363636;
     background-color: #fff;
-    position: relative;
-    top: -.125rem;
-    margin-right: .25rem;
-    font-size: .5rem;
-    text-align: center;
 }
 
 .is-check {

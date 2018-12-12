@@ -38,12 +38,23 @@
         </thead>
         <tbody>
         <tr th:each="column : ${table.columns}">
-          <td><span
-                  class="is-black-box" th:if="${#tables.isPrimaryKey(column, table.indexes)}">P</span><span
-                  class="is-white-box" th:if="${#tables.isForeignKey(column)}">F</span><span
-                  th:text="${column.name}">
-            toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_column_name
-          </span></span></td>
+          <td class="is-table-columns-name">
+            <div class="is-left" th:classappend="${
+              #tables.isPrimaryKey(column, table.indexes) and #tables.isForeignKey(column) ? 'is-double-box' : (
+              #tables.isPrimaryKey(column, table.indexes) or  #tables.isForeignKey(column) ? 'is-single-box' : '')}">
+              <span class="is-first-box"
+                    th:classappend="${#tables.isPrimaryKey(column, table.indexes) ? 'is-pk-box' : (#tables.isForeignKey(column) ? 'is-fk-box' : '')}"
+                    th:text="${#tables.isPrimaryKey(column, table.indexes) ? 'P' : (#tables.isForeignKey(column) ? 'F' : '')}">P</span>
+              <span class="is-second-box"
+                    th:classappend="${#tables.isPrimaryKey(column, table.indexes) and #tables.isForeignKey(column) ? 'is-fk-box' : ''}"
+                    th:text="${#tables.isPrimaryKey(column, table.indexes) and #tables.isForeignKey(column) ? 'F' : ''}">F</span>
+            </div>
+            <div class="is-right">
+              <span th:text="${column.name}">
+                toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_column_name
+              </span>
+            </div>
+          </td>
           <td th:text="${column.type}">type</td>
           <td><span th:if="${column.nullable}" class="is-check"></span></td>
           <td th:text="${column.default}">
