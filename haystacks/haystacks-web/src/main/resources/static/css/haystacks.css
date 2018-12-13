@@ -214,7 +214,8 @@ body {
     color: #363636;
 }
 
-tr:hover .is-table-columns-name .is-right {
+tr:hover .is-table-columns-name .is-right,
+tr:hover .is-table-indexes-name .is-right {
     white-space: normal;
 }
 

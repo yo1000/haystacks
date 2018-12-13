@@ -82,24 +82,43 @@
                 table.columns.forEach(column => {
                     tbodyElm.appendChildElm("tr", (trElm) => {
                         trElm.appendChildElm("td", (tdElm) => {
-                            if (table.indexes.find((element) => {
-                                return element.type === "PRIMARY" && element.columns.find((col) => {
-                                    return col.column === column.name
+                            tdElm.classList.add("is-table-columns-name")
+                            tdElm.appendChildElm("div", (divElm) => {
+                                divElm.classList.add("is-left")
+                                const isPk = table.indexes.find((element) => {
+                                    return element.type === "PRIMARY" && element.columns.find((col) => {
+                                        return col.column === column.name
+                                    })
                                 })
-                            })) {
-                                tdElm.appendChildElm("span", (pkSpanElm) => {
-                                    pkSpanElm.classList.add("is-black-box")
-                                    pkSpanElm.appendChildTxt("P")
+                                const isFk = column.parent
+                                if (isPk && isFk) {
+                                    divElm.classList.add("is-double-box")
+                                } else if (isPk || isFk) {
+                                    divElm.classList.add("is-single-box")
+                                }
+                                divElm.appendChildElm("span", (spanElm) => {
+                                    spanElm.classList.add("is-first-box")
+                                    if (isPk) {
+                                        spanElm.classList.add("is-pk-box")
+                                        spanElm.appendChildTxt("P")
+                                    } else if (isFk) {
+                                        spanElm.classList.add("is-fk-box")
+                                        spanElm.appendChildTxt("F")
+                                    }
                                 })
-                            }
-                            if (column.parent) {
-                                tdElm.appendChildElm("span", (fkSpanElm) => {
-                                    fkSpanElm.classList.add("is-white-box")
-                                    fkSpanElm.appendChildTxt("F")
+                                divElm.appendChildElm("span", (spanElm) => {
+                                    spanElm.classList.add("is-second-box")
+                                    if (isPk && isFk) {
+                                        spanElm.classList.add("is-fk-box")
+                                        spanElm.appendChildTxt("F")
+                                    }
                                 })
-                            }
-                            tdElm.appendChildElm("span", (spanElm) => {
-                                spanElm.appendChildTxt(column.name)
+                            })
+                            tdElm.appendChildElm("div", (divElm) => {
+                                divElm.classList.add("is-right")
+                                divElm.appendChildElm("span", (spanElm) => {
+                                    spanElm.appendChildTxt(column.name)
+                                })
                             })
                         })
                         trElm.appendChildElm("td", (tdElm) => {
@@ -179,19 +198,32 @@
                 table.indexes.forEach(index => {
                     tbodyElm.appendChildElm("tr", (trElm) => {
                         trElm.appendChildElm("td", (tdElm) => {
-                            tdElm.appendChildElm("span", (spanElm) => {
+                            tdElm.classList.add("is-table-indexes-name")
+                            tdElm.appendChildElm("div", (divElm) => {
+                                divElm.classList.add("is-left", "is-single-box")
                                 if (index.type === "PRIMARY") {
-                                    spanElm.classList.add("is-black-circle")
-                                    spanElm.appendChildTxt("\u00A0")
+                                    divElm.appendChildElm("span", (spanElm) => {
+                                        spanElm.classList.add("is-first-box", "is-pk-box")
+                                        spanElm.appendChildTxt("P")
+                                    })
                                 } else if (index.type === "UNIQUE") {
-                                    spanElm.classList.add("is-white-circle")
-                                    spanElm.appendChildTxt("1")
+                                    divElm.appendChildElm("span", (spanElm) => {
+                                        spanElm.classList.add("is-first-box", "is-uq-box")
+                                        spanElm.appendChildTxt("U")
+                                    })
                                 } else if (index.type === "PERFORMANCE") {
-                                    spanElm.classList.add("is-white-circle")
-                                    spanElm.appendChildTxt("\u00A0")
+                                    divElm.appendChildElm("span", (spanElm) => {
+                                        spanElm.classList.add("is-first-box", "is-ix-box")
+                                        spanElm.appendChildTxt("X")
+                                    })
                                 }
                             })
-                            tdElm.appendChildTxt(`${index.name}`)
+                            tdElm.appendChildElm("div", (divElm) => {
+                                divElm.classList.add("is-right")
+                                divElm.appendChildElm("span", (spanElm) => {
+                                    spanElm.appendChildTxt(index.name)
+                                })
+                            })
                         })
                         trElm.appendChildElm("td", (tdElm) => {
                             tdElm.appendChildTxt(index.type)
