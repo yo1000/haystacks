@@ -254,7 +254,44 @@ tr:hover .is-table-indexes-name .is-right {
     margin-top: .33rem;
 }
 
-.is-search-result li {
+.is-search-result div,
+.is-search-result li,
+.is-search-result ruby,
+.is-search-result ruby rt,
+.is-search-result ruby a,
+.is-search-result ruby span {
+    overflow: hidden;
+    word-break: break-all;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    vertical-align: top;
+}
+
+.is-search-result div,
+.is-search-result li,
+.is-search-result ruby,
+.is-search-result ruby rt,
+.is-search-result ruby a,
+.is-search-result ruby span {
+    max-width: 20rem;
+}
+
+.is-search-result:last-of-type {
+    max-width: 53rem;
+}
+
+tr:hover .is-search-result div,
+tr:hover .is-search-result li,
+tr:hover .is-search-result ruby,
+tr:hover .is-search-result ruby rt,
+tr:hover .is-search-result ruby a,
+tr:hover .is-search-result ruby span {
+    white-space: normal;
+}
+
+.is-search-result a,
+.is-search-result li,
+.is-search-result ruby span {
     display: inline-block;
 }
 
