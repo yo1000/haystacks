@@ -132,7 +132,8 @@ body {
     background-color: transparent;
 }
 
-.table.is-narrow td.is-table-columns-name {
+.table.is-narrow td.is-table-columns-name,
+.table.is-narrow td.is-table-indexes-name {
     margin-left: -1.5rem;
     padding: 0;
 }
@@ -194,8 +195,11 @@ body {
 }
 
 .is-pk-box,
-.is-fk-box {
+.is-fk-box,
+.is-uq-box,
+.is-ix-box {
     opacity: 1;
+    padding-right: .03125rem;
 }
 
 .is-pk-box {
@@ -203,7 +207,9 @@ body {
     color: #363636;
 }
 
-.is-fk-box {
+.is-fk-box,
+.is-uq-box,
+.is-ix-box {
     background-color: #fff;
     color: #363636;
 }

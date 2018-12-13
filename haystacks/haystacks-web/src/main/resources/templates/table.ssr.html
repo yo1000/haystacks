@@ -108,13 +108,17 @@
         </thead>
         <tbody>
         <tr th:each="index : ${table.indexes}">
-          <td><span
-                  class="is-black-circle" th:if="${index.type == 'PRIMARY'}">&nbsp;</span><span
-                  class="is-white-circle" th:if="${index.type == 'UNIQUE'}">1</span><span
-                  class="is-white-circle" th:if="${index.type == 'PERFORMANCE'}">&nbsp;</span><span
-                  th:text="${index.name}">
-            tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_index_name
-          </span>
+          <td class="is-table-indexes-name">
+            <div class="is-left is-single-box">
+              <span class="is-first-box is-pk-box" th:if="${index.type == 'PRIMARY'}">P</span>
+              <span class="is-first-box is-uq-box" th:if="${index.type == 'UNIQUE'}">U</span>
+              <span class="is-first-box is-ix-box" th:if="${index.type == 'PERFORMANCE'}">X</span>
+            </div>
+            <div class="is-right">
+              <span th:text="${index.name}">
+                tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_index_name
+              </span>
+            </div>
           </td>
           <td th:text="${index.type}">INDEX_TYPE</td>
           <td class="is-table-indexes-columns">
