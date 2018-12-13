@@ -5,7 +5,7 @@
 
 	<groupId>com.yo1000</groupId>
 	<artifactId>haystacks-parent</artifactId>
-	<version>0.0.14-SNAPSHOT</version>
+	<version>0.0.14</version>
 	<packaging>pom</packaging>
 
 	<name>haystacks-parent</name>
@@ -28,7 +28,7 @@
 		<postgresql.version>42.2.5</postgresql.version>
 		<postgresql-embedded.version>2.9</postgresql-embedded.version>
 		<log4jdbc-log4j2-jdbc41.version>1.16</log4jdbc-log4j2-jdbc41.version>
-		<haystacks.version>0.0.14-SNAPSHOT</haystacks.version>
+		<haystacks.version>0.0.14</haystacks.version>
 	</properties>
 
 	<dependencyManagement>
