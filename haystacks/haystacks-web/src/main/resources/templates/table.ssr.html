@@ -72,7 +72,8 @@
             <div th:if="${#lists.size(column.children) &gt; 1}" class="is-ellipsis-shade"></div>
             <ul th:if="${not #lists.isEmpty(column.children)}">
               <li th:each="child : ${column.children}">
-                <a href="#"
+                <span class="is-bullet"></span>
+                <a class="is-bullet-item" href="#"
                    th:href="${child.table}"
                    th:text="${child.table} + '.' + ${child.column}">
                   toooooooooooooooooooooooooooooooo_long_table_name.toooooooooooooooooooooooooooooooo_long_column_name
@@ -124,8 +125,11 @@
           <td class="is-table-indexes-columns">
             <div th:if="${#lists.size(index.columns) &gt; 1}" class="is-ellipsis-shade"></div>
             <ul th:if="${not #lists.isEmpty(index.columns)}">
-              <li th:each="column : ${index.columns}" th:text="${column.column}">
-                toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_column_name
+              <li th:each="column : ${index.columns}">
+                <span class="is-bullet"></span>
+                <span class="is-bullet-item" th:text="${column.column}">
+                  toooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo_long_column_name
+                </span>
               </li>
             </ul>
           </td>

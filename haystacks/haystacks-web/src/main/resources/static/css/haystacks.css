@@ -242,16 +242,31 @@ tr:hover .is-table-indexes-name .is-right {
     background-color: #fff;
 }
 
-.is-check {
+.is-check,
+.is-bullet {
     display: inline-block;
-    width: 15px;
-    height: 8px;
     border: 2px solid;
-    border-color: transparent transparent #363636 #363636;
     transform: rotate(-45deg);
     border-radius: 1px;
     position: absolute;
+}
+
+.is-check {
+    width: 15px;
+    height: 8px;
+    border-color: transparent transparent #363636 #363636;
     margin-top: .33rem;
+}
+
+.is-bullet {
+    width: 4px;
+    height: 4px;
+    border-color: transparent #363636 #363636 transparent;
+    margin-top: .625rem;
+}
+
+.is-bullet-item {
+    margin-left: .625rem;
 }
 
 .is-search-result div,
