@@ -156,6 +156,8 @@
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <useSystemClassLoader>false</useSystemClassLoader>
+                        <forkCount>4</forkCount>
+                        <reuseForks>false</reuseForks>
                     </configuration>
                 </plugin>
 			</plugins>
